@@ -5,6 +5,13 @@ using System.Windows.Media;
 
 namespace CommandWizard.Models
 {
+    public enum ArgumentValueStyle
+    {
+        SpaceSeparated,
+        EqualsSeparated,
+        Attached
+    }
+
     public sealed record TagPreset(string Name, string Color)
     {
         public Brush Brush { get; } = new SolidColorBrush(
@@ -111,6 +118,9 @@ namespace CommandWizard.Models
             }
         }
 
+        public ObservableCollection<SchemaArgument> Arguments { get; set; } = new();
+        public ObservableCollection<SchemaParameter> Parameters { get; set; } = new();
+
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -123,6 +133,7 @@ namespace CommandWizard.Models
         private string _long = string.Empty;
         private string _description = string.Empty;
         private string _type = "boolean";
+        private ArgumentValueStyle _valueStyle = ArgumentValueStyle.SpaceSeparated;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -168,6 +179,34 @@ namespace CommandWizard.Models
                 _type = value;
                 OnPropertyChanged();
             }
+        }
+
+        public ArgumentValueStyle ValueStyle
+        {
+            get => _valueStyle;
+            set
+            {
+                if (_valueStyle == value) return;
+                _valueStyle = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ValueStyleText));
+            }
+        }
+
+        public string ValueStyleText
+        {
+            get => _valueStyle switch
+            {
+                ArgumentValueStyle.EqualsSeparated => "equals",
+                ArgumentValueStyle.Attached => "attached",
+                _ => "space"
+            };
+            set => ValueStyle = value?.ToLowerInvariant() switch
+            {
+                "equals" or "equals_separated" => ArgumentValueStyle.EqualsSeparated,
+                "attached" => ArgumentValueStyle.Attached,
+                _ => ArgumentValueStyle.SpaceSeparated
+            };
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

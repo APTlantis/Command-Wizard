@@ -5,7 +5,15 @@
       "Bash(dotnet add:*)",
       "Bash(dotnet build:*)",
       "Bash(find A:/AptWeb/zypper-operations/CommandWizard -path */MaterialDesignThemes.Wpf/themes/*.xaml)",
-      "Bash(powershell -Command \"Add-Type -Path ''''MaterialDesignThemes.Wpf.dll''''; $asm = [System.Reflection.Assembly]::LoadFrom\\(''''MaterialDesignThemes.Wpf.dll''''\\); $asm.GetManifestResourceNames\\(\\) | Where-Object { $_-like ''''*.xaml'''' }\")"
+      "Bash(powershell -Command \"Add-Type -Path ''''MaterialDesignThemes.Wpf.dll''''; $asm = [System.Reflection.Assembly]::LoadFrom\\(''''MaterialDesignThemes.Wpf.dll''''\\); $asm.GetManifestResourceNames\\(\\) | Where-Object { $_-like ''''*.xaml'''' }\")",
+      "Bash(Get-ChildItem -Path \"B:\\\\zypper-operations\\\\CommandWizard\" -Recurse -Force)",
+      "Bash(Select-Object -Property FullName, PSIsContainer)",
+      "Bash(Sort-Object FullName)",
+      "Bash(ConvertTo-Csv -NoTypeInformation)",
+      "Bash(Out-String)",
+      "PowerShell(Get-ChildItem -Path \"B:\\\\zypper-operations\\\\CommandWizard\" -Recurse -Force | Select-Object -Property @{Name='Path';Expression={$_.FullName}}, PSIsContainer | Format-Table -AutoSize | Out-String -Width 200)",
+      "PowerShell(Test-Path *)",
+      "PowerShell(Get-ChildItem *)"
     ]
   }
 }

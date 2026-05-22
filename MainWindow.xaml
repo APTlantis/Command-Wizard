@@ -184,6 +184,7 @@
                                                 <DataGridTextColumn Header="Flag" Binding="{Binding Flag, UpdateSourceTrigger=PropertyChanged}" Width="*" />
                                                 <DataGridTextColumn Header="Long" Binding="{Binding Long, UpdateSourceTrigger=PropertyChanged}" Width="*" />
                                                 <DataGridTextColumn Header="Type" Binding="{Binding Type, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                                <DataGridTextColumn Header="Value Style" Binding="{Binding ValueStyleText, UpdateSourceTrigger=PropertyChanged}" Width="*" />
                                                 <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="2*" />
                                             </DataGrid.Columns>
                                         </DataGrid>
@@ -412,60 +413,161 @@
                                           DisplayMemberPath="Name" />
                             </StackPanel>
 
-                            <StackPanel Margin="0,12,0,0">
-                                <TextBlock Text="Options" />
-                                <ItemsControl ItemsSource="{Binding SelectedTool.Options}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Margin="0,6,0,0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-                                                <CheckBox Grid.Column="0"
-                                                          VerticalAlignment="Center"
-                                                          IsChecked="{Binding IsSelected}"
-                                                          ToolTip="{Binding Description}"
-                                                          Visibility="{Binding IsBoolean, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                                <TextBox Grid.Column="0"
-                                                         Width="200"
-                                                         Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
-                                                         ToolTip="{Binding Description}"
-                                                         Visibility="{Binding IsBoolean, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
-                                                <TextBlock Grid.Column="1"
-                                                           Margin="12,0,0,0"
-                                                           Text="{Binding DisplayName}"
-                                                           ToolTip="{Binding Description}" />
-                                                <Button Grid.Column="2"
-                                                        Content="Edit"
-                                                        Width="60"
-                                                        Margin="12,0,0,0"
-                                                        Click="OnEditOptionClicked" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                            <!-- Command Parts Stack -->
+                            <StackPanel Margin="0,14,0,0">
+                                <TextBlock Text="Command Parts"
+                                           FontWeight="Medium"
+                                           Margin="0,0,0,6" />
+                                <Border BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="4"
+                                        Padding="8"
+                                        MinHeight="46"
+                                        Background="{StaticResource SurfaceBrush}">
+                                    <ItemsControl ItemsSource="{Binding CommandParts}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Margin="0,0,4,4"
+                                                        Padding="5,3,5,3"
+                                                        CornerRadius="4"
+                                                        Background="{StaticResource SurfaceBrush}"
+                                                        BorderBrush="{StaticResource BorderBrush}"
+                                                        BorderThickness="1"
+                                                        AllowDrop="True"
+                                                        Drop="OnChipDrop"
+                                                        DragOver="OnChipDragOver">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <!-- Drag handle (hidden for fixed chips) -->
+                                                        <TextBlock Text="⠿"
+                                                                   Foreground="{StaticResource TextMutedBrush}"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0,0,5,0"
+                                                                   Cursor="SizeAll"
+                                                                   PreviewMouseLeftButtonDown="OnChipDragHandleMouseDown"
+                                                                   Visibility="{Binding IsRemovable, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                        <!-- Role badge -->
+                                                        <Border Background="{Binding RoleBadgeColor}"
+                                                                CornerRadius="3"
+                                                                Padding="4,1"
+                                                                Margin="0,0,5,0">
+                                                            <TextBlock Text="{Binding RoleBadgeText}"
+                                                                       Foreground="White"
+                                                                       FontSize="10"
+                                                                       FontWeight="Medium" />
+                                                        </Border>
+                                                        <!-- Static token (non-editable) -->
+                                                        <TextBlock Text="{Binding Value}"
+                                                                   VerticalAlignment="Center"
+                                                                   FontFamily="Consolas"
+                                                                   Margin="0,0,4,0"
+                                                                   Visibility="{Binding ShowValueInput, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                                                        <!-- Editable value input -->
+                                                        <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                                                 MinWidth="80"
+                                                                 FontFamily="Consolas"
+                                                                 VerticalAlignment="Center"
+                                                                 Margin="0,0,4,0"
+                                                                 Visibility="{Binding ShowValueInput, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                        <!-- Warning -->
+                                                        <TextBlock Text="⚠"
+                                                                   Foreground="Orange"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0,0,4,0"
+                                                                   ToolTip="{Binding WarningMessage}"
+                                                                   Visibility="{Binding HasWarning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                        <!-- Remove -->
+                                                        <Button Content="✕"
+                                                                Width="18"
+                                                                Height="18"
+                                                                Padding="0"
+                                                                FontSize="10"
+                                                                VerticalAlignment="Center"
+                                                                Command="{Binding RemoveCommand}"
+                                                                Visibility="{Binding IsRemovable, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Border>
                             </StackPanel>
 
-                            <StackPanel Margin="0,12,0,0">
-                                <TextBlock Text="Parameters" />
-                                <ItemsControl ItemsSource="{Binding SelectedTool.Parameters}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Margin="0,6,0,0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="180" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" Text="{Binding Parameter.Name}" />
-                                                <TextBox Grid.Column="1"
-                                                         Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
+                            <!-- Available Options (to add to the stack) -->
+                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4"
+                                    Background="{StaticResource SurfaceBrush}" Margin="0,10,0,0">
+                                <Expander Header="Available Options" IsExpanded="True">
+                                    <StackPanel Margin="8,4,8,8">
+                                        <ItemsControl ItemsSource="{Binding SelectedTool.Options}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,5,0,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <CheckBox Grid.Column="0"
+                                                                  VerticalAlignment="Center"
+                                                                  IsChecked="{Binding IsSelected}"
+                                                                  ToolTip="{Binding Description}"
+                                                                  Visibility="{Binding IsBoolean, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                        <TextBox Grid.Column="0"
+                                                                 Width="180"
+                                                                 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                                                 ToolTip="{Binding Description}"
+                                                                 Visibility="{Binding IsBoolean, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                                                        <TextBlock Grid.Column="1"
+                                                                   Margin="10,0,0,0"
+                                                                   VerticalAlignment="Center"
+                                                                   Text="{Binding DisplayName}"
+                                                                   ToolTip="{Binding Description}" />
+                                                        <TextBlock Grid.Column="2"
+                                                                   Margin="8,0,0,0"
+                                                                   VerticalAlignment="Center"
+                                                                   Foreground="{StaticResource TextMutedBrush}"
+                                                                   FontSize="11"
+                                                                   Text="{Binding Description}" />
+                                                        <Button Grid.Column="3"
+                                                                Content="Edit"
+                                                                Width="50"
+                                                                Margin="8,0,0,0"
+                                                                Click="OnEditOptionClicked" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+
+                                        <!-- Parameters -->
+                                        <TextBlock Text="Parameters"
+                                                   FontWeight="Medium"
+                                                   Margin="0,10,0,4"
+                                                   Visibility="{Binding SelectedTool.Parameters.Count, Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}" />
+                                        <ItemsControl ItemsSource="{Binding SelectedTool.Parameters}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,5,0,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="140" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0"
+                                                                   VerticalAlignment="Center"
+                                                                   Text="{Binding Parameter.Name}" />
+                                                        <TextBox Grid.Column="1"
+                                                                 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Expander>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
 

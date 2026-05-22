@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using CommandWizard.ViewModels;
+using System.Windows.Controls;
 
 namespace CommandWizard
 {
@@ -16,6 +17,7 @@ namespace CommandWizard
         public static RoutedCommand HelpCommand { get; } = new RoutedCommand();
 
         private readonly MainViewModel _viewModel;
+        private CommandPartViewModel? _draggedChip;
 
         public MainWindow()
         {
@@ -280,6 +282,37 @@ namespace CommandWizard
         private void OnExportFavoritesClicked(object sender, RoutedEventArgs e)
         {
             _viewModel.ExportFavorites();
+        }
+
+        private void OnChipDragHandleMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is FrameworkElement elem && elem.DataContext is CommandPartViewModel vm && vm.IsRemovable)
+            {
+                _draggedChip = vm;
+                DragDrop.DoDragDrop(elem, vm, DragDropEffects.Move);
+                e.Handled = true;
+            }
+        }
+
+        private void OnChipDrop(object sender, DragEventArgs e)
+        {
+            if (_draggedChip == null) return;
+            if (sender is FrameworkElement target && target.DataContext is CommandPartViewModel targetVm && targetVm != _draggedChip)
+            {
+                var parts = _viewModel.CommandParts;
+                var fromIdx = parts.IndexOf(_draggedChip);
+                var toIdx = parts.IndexOf(targetVm);
+                if (fromIdx >= 0 && toIdx >= 0)
+                    _viewModel.MoveCommandPart(fromIdx, toIdx);
+            }
+            _draggedChip = null;
+            e.Handled = true;
+        }
+
+        private void OnChipDragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = _draggedChip != null ? DragDropEffects.Move : DragDropEffects.None;
+            e.Handled = true;
         }
     }
 }
