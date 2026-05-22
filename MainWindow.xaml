@@ -105,10 +105,10 @@
                     </Grid>
 
                     <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <TextBlock Text="Schema Details" FontSize="16" FontWeight="SemiBold" />
+                        <StackPanel Margin="0,0,4,0">
+                            <TextBlock Text="Schema Details" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10" />
 
-                            <Border Background="#FFF4CE" BorderBrush="#FFCC00" BorderThickness="1" Padding="8" Margin="0,8,0,0"
+                            <Border Background="#FFF4CE" BorderBrush="#FFCC00" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,10"
                                     Visibility="{Binding SelectedTool.IsImportedUnsaved, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Imported (unsaved). " FontWeight="SemiBold" />
@@ -116,188 +116,210 @@
                                 </StackPanel>
                             </Border>
 
-                            <StackPanel Margin="0,12,0,0">
-                                <TextBlock Text="Tool Name" />
-                                <TextBox Text="{Binding SelectedTool.ToolName, UpdateSourceTrigger=PropertyChanged}" />
-                            </StackPanel>
-
-                            <StackPanel Margin="0,12,0,0">
-                                <TextBlock Text="Description" />
-                                <TextBox Text="{Binding SelectedTool.ToolDescription, UpdateSourceTrigger=PropertyChanged}" />
-                            </StackPanel>
-
-                            <StackPanel Margin="0,12,0,0">
-                                <TextBlock Text="Executable Path (optional)" />
-                                <TextBox Text="{Binding SelectedTool.ExecutablePath, UpdateSourceTrigger=PropertyChanged}" />
-                            </StackPanel>
-
-                            <StackPanel Margin="0,12,0,0">
-                                <TextBlock Text="Installed Command Name (optional)" />
-                                <TextBox Text="{Binding SelectedTool.InstalledName, UpdateSourceTrigger=PropertyChanged}" />
-                            </StackPanel>
-
-                            <Expander Header="Actions" IsExpanded="True" Margin="0,12,0,0">
-                                <StackPanel Margin="0,6,0,0">
-                                    <DataGrid ItemsSource="{Binding SelectedTool.Actions}"
-                                              SelectedItem="{Binding SelectedActionForEdit}"
-                                              AutoGenerateColumns="False"
-                                              CanUserAddRows="False"
-                                              CanUserDeleteRows="False"
-                                              HeadersVisibility="Column"
-                                              MaxHeight="180"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                              ScrollViewer.VerticalScrollBarVisibility="Auto">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="*" />
-                                            <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="2*" />
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                        <Button Content="Add Action" Width="110" Click="OnAddActionClicked" />
-                                        <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveActionClicked" />
+                            <!-- Basic info card -->
+                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4"
+                                    Background="{StaticResource SurfaceBrush}" Padding="14,12" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Tool Name" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Medium" />
+                                        <TextBox Text="{Binding SelectedTool.ToolName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,12,0,0">
+                                        <TextBlock Text="Description" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Medium" />
+                                        <TextBox Text="{Binding SelectedTool.ToolDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,12,0,0">
+                                        <TextBlock Text="Executable Path (optional)" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Medium" />
+                                        <TextBox Text="{Binding SelectedTool.ExecutablePath, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,12,0,0">
+                                        <TextBlock Text="Installed Command Name (optional)" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Medium" />
+                                        <TextBox Text="{Binding SelectedTool.InstalledName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
                                     </StackPanel>
                                 </StackPanel>
-                            </Expander>
+                            </Border>
 
-                            <Expander Header="Arguments" IsExpanded="True" Margin="0,12,0,0">
-                                <StackPanel Margin="0,6,0,0">
-                                    <DataGrid ItemsSource="{Binding SelectedTool.Schema.Arguments}"
-                                              SelectedItem="{Binding SelectedArgumentForEdit}"
-                                              AutoGenerateColumns="False"
-                                              CanUserAddRows="False"
-                                              CanUserDeleteRows="False"
-                                              HeadersVisibility="Column"
-                                              MaxHeight="220"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                              ScrollViewer.VerticalScrollBarVisibility="Auto">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Flag" Binding="{Binding Flag, UpdateSourceTrigger=PropertyChanged}" Width="*" />
-                                            <DataGridTextColumn Header="Long" Binding="{Binding Long, UpdateSourceTrigger=PropertyChanged}" Width="*" />
-                                            <DataGridTextColumn Header="Type" Binding="{Binding Type, UpdateSourceTrigger=PropertyChanged}" Width="*" />
-                                            <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="2*" />
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                        <Button Content="Add Argument" Width="120" Click="OnAddArgumentClicked" />
-                                        <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveArgumentClicked" />
+                            <!-- Actions card -->
+                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4"
+                                    Background="{StaticResource SurfaceBrush}" Margin="0,0,0,10">
+                                <Expander Header="Actions" IsExpanded="True">
+                                    <StackPanel Margin="14,4,14,12">
+                                        <DataGrid ItemsSource="{Binding SelectedTool.Actions}"
+                                                  SelectedItem="{Binding SelectedActionForEdit}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  HeadersVisibility="Column"
+                                                  MaxHeight="180"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                                <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="2*" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                            <Button Content="Add Action" Width="110" Click="OnAddActionClicked" />
+                                            <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveActionClicked" />
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-                            </Expander>
+                                </Expander>
+                            </Border>
 
-                            <Expander Header="Parameters" IsExpanded="True" Margin="0,12,0,0">
-                                <StackPanel Margin="0,6,0,0">
-                                    <DataGrid ItemsSource="{Binding SelectedTool.Schema.Parameters}"
-                                              SelectedItem="{Binding SelectedParameterForEdit}"
-                                              AutoGenerateColumns="False"
-                                              CanUserAddRows="False"
-                                              CanUserDeleteRows="False"
-                                              HeadersVisibility="Column"
-                                              MaxHeight="180"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                              ScrollViewer.VerticalScrollBarVisibility="Auto">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="*" />
-                                            <DataGridTextColumn Header="Type" Binding="{Binding Type, UpdateSourceTrigger=PropertyChanged}" Width="*" />
-                                            <DataGridCheckBoxColumn Header="Required" Binding="{Binding Required, UpdateSourceTrigger=PropertyChanged}" Width="Auto" />
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                        <Button Content="Add Parameter" Width="120" Click="OnAddParameterClicked" />
-                                        <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveParameterClicked" />
+                            <!-- Arguments card -->
+                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4"
+                                    Background="{StaticResource SurfaceBrush}" Margin="0,0,0,10">
+                                <Expander Header="Arguments" IsExpanded="True">
+                                    <StackPanel Margin="14,4,14,12">
+                                        <DataGrid ItemsSource="{Binding SelectedTool.Schema.Arguments}"
+                                                  SelectedItem="{Binding SelectedArgumentForEdit}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  HeadersVisibility="Column"
+                                                  MaxHeight="220"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Flag" Binding="{Binding Flag, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                                <DataGridTextColumn Header="Long" Binding="{Binding Long, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                                <DataGridTextColumn Header="Type" Binding="{Binding Type, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                                <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="2*" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                            <Button Content="Add Argument" Width="120" Click="OnAddArgumentClicked" />
+                                            <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveArgumentClicked" />
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-                            </Expander>
+                                </Expander>
+                            </Border>
 
-                            <Expander Header="Tags" IsExpanded="True" Margin="0,12,0,0">
-                                <StackPanel Margin="0,6,0,0">
-                                    <!-- Tag list: name editable, color shown as a dot -->
-                                    <DataGrid ItemsSource="{Binding SelectedTool.Tags}"
-                                              SelectedItem="{Binding SelectedTagForEdit}"
-                                              AutoGenerateColumns="False"
-                                              CanUserAddRows="False"
-                                              CanUserDeleteRows="False"
-                                              HeadersVisibility="Column"
-                                              MaxHeight="160"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                              ScrollViewer.VerticalScrollBarVisibility="Auto">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name"
-                                                                Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
-                                                                Width="*" />
-                                            <DataGridTemplateColumn Header="" Width="36">
-                                                <DataGridTemplateColumn.CellTemplate>
+                            <!-- Parameters card -->
+                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4"
+                                    Background="{StaticResource SurfaceBrush}" Margin="0,0,0,10">
+                                <Expander Header="Parameters" IsExpanded="True">
+                                    <StackPanel Margin="14,4,14,12">
+                                        <DataGrid ItemsSource="{Binding SelectedTool.Schema.Parameters}"
+                                                  SelectedItem="{Binding SelectedParameterForEdit}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  HeadersVisibility="Column"
+                                                  MaxHeight="180"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                                <DataGridTextColumn Header="Type" Binding="{Binding Type, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                                <DataGridCheckBoxColumn Header="Required" Binding="{Binding Required, UpdateSourceTrigger=PropertyChanged}" Width="Auto" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                            <Button Content="Add Parameter" Width="120" Click="OnAddParameterClicked" />
+                                            <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveParameterClicked" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Expander>
+                            </Border>
+
+                            <!-- Tags card -->
+                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4"
+                                    Background="{StaticResource SurfaceBrush}" Margin="0,0,0,10">
+                                <Expander Header="Tags" IsExpanded="True">
+                                    <StackPanel Margin="14,4,14,12">
+                                        <DataGrid ItemsSource="{Binding SelectedTool.Tags}"
+                                                  SelectedItem="{Binding SelectedTagForEdit}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  HeadersVisibility="Column"
+                                                  MaxHeight="160"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name"
+                                                                    Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Width="*" />
+                                                <DataGridTemplateColumn Header="" Width="36">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Ellipse Width="16" Height="16"
+                                                                     Fill="{Binding ColorBrush}"
+                                                                     HorizontalAlignment="Center"
+                                                                     VerticalAlignment="Center" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+
+                                        <StackPanel Margin="0,10,0,0">
+                                            <TextBlock Text="Pick color for selected tag"
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource TextMutedBrush}"
+                                                       Margin="0,0,0,6"/>
+                                            <ItemsControl ItemsSource="{Binding TagPresets}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Ellipse Width="16" Height="16"
-                                                                 Fill="{Binding ColorBrush}"
-                                                                 HorizontalAlignment="Center"
-                                                                 VerticalAlignment="Center" />
+                                                        <Button Width="28" Height="28" Margin="0,0,6,0"
+                                                                ToolTip="{Binding Name}"
+                                                                Tag="{Binding Color}"
+                                                                Click="OnTagColorSwatchClicked">
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Grid>
+                                                                        <Ellipse Width="22" Height="22"
+                                                                                 Fill="{Binding Brush}"
+                                                                                 Stroke="{StaticResource BorderBrush}"
+                                                                                 StrokeThickness="2"/>
+                                                                        <Ellipse x:Name="Hover" Width="22" Height="22"
+                                                                                 Fill="White" Opacity="0"/>
+                                                                    </Grid>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter TargetName="Hover" Property="Opacity" Value="0.15"/>
+                                                                        </Trigger>
+                                                                        <Trigger Property="IsPressed" Value="True">
+                                                                            <Setter TargetName="Hover" Property="Opacity" Value="0.3"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
                                                     </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
 
-                                    <!-- Color swatch picker: click to apply to selected tag -->
-                                    <StackPanel Margin="0,8,0,0">
-                                        <TextBlock Text="Pick color for selected tag"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource TextMutedBrush}"
-                                                   Margin="0,0,0,6"/>
-                                        <ItemsControl ItemsSource="{Binding TagPresets}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <WrapPanel />
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Button Width="28" Height="28" Margin="0,0,6,0"
-                                                            ToolTip="{Binding Name}"
-                                                            Tag="{Binding Color}"
-                                                            Click="OnTagColorSwatchClicked">
-                                                        <Button.Template>
-                                                            <ControlTemplate TargetType="Button">
-                                                                <Grid>
-                                                                    <Ellipse Width="22" Height="22"
-                                                                             Fill="{Binding Brush}"
-                                                                             Stroke="{StaticResource BorderBrush}"
-                                                                             StrokeThickness="2"/>
-                                                                    <Ellipse x:Name="Hover" Width="22" Height="22"
-                                                                             Fill="White" Opacity="0"/>
-                                                                </Grid>
-                                                                <ControlTemplate.Triggers>
-                                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                                        <Setter TargetName="Hover" Property="Opacity" Value="0.15"/>
-                                                                    </Trigger>
-                                                                    <Trigger Property="IsPressed" Value="True">
-                                                                        <Setter TargetName="Hover" Property="Opacity" Value="0.3"/>
-                                                                    </Trigger>
-                                                                </ControlTemplate.Triggers>
-                                                            </ControlTemplate>
-                                                        </Button.Template>
-                                                    </Button>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
+                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                            <Button Content="Add Tag" Width="100" Click="OnAddTagClicked" />
+                                            <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveTagClicked" />
+                                        </StackPanel>
                                     </StackPanel>
+                                </Expander>
+                            </Border>
 
-                                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                        <Button Content="Add Tag" Width="100" Click="OnAddTagClicked" />
-                                        <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveTagClicked" />
-                                    </StackPanel>
+                            <!-- Notes card -->
+                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4"
+                                    Background="{StaticResource SurfaceBrush}" Padding="14,12" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <TextBlock Text="Notes" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Medium" />
+                                    <TextBox Text="{Binding SelectedTool.Notes, UpdateSourceTrigger=PropertyChanged}"
+                                             AcceptsReturn="True"
+                                             Height="120"
+                                             TextWrapping="Wrap"
+                                             VerticalScrollBarVisibility="Auto"
+                                             Margin="0,4,0,0" />
                                 </StackPanel>
-                            </Expander>
+                            </Border>
 
-                            <StackPanel Margin="0,12,0,0">
-                                <TextBlock Text="Notes" />
-                                <TextBox Text="{Binding SelectedTool.Notes, UpdateSourceTrigger=PropertyChanged}"
-                                         AcceptsReturn="True"
-                                         Height="120"
-                                         TextWrapping="Wrap"
-                                         VerticalScrollBarVisibility="Auto" />
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,12">
                                 <Button Content="Save Schema" Width="120" Click="OnSaveSchemaClicked" />
                                 <Button Content="Discard Imported Schema" Width="170" Margin="8,0,0,0"
                                         Visibility="{Binding SelectedTool.IsImportedUnsaved, Converter={StaticResource BooleanToVisibilityConverter}}"
