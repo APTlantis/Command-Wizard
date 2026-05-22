@@ -60,10 +60,12 @@ namespace CommandWizard.Models
                 _color = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ColorBrush));
+                OnPropertyChanged(nameof(TextBrush));
             }
         }
 
         public Brush ColorBrush => TryGetBrush(Color) ?? Brushes.Gray;
+        public Brush TextBrush => GetReadableTextBrush(Color);
 
         private static Brush? TryGetBrush(string color)
         {
@@ -74,6 +76,34 @@ namespace CommandWizard.Models
                 if (converted is Color parsed)
                 {
                     return new SolidColorBrush(parsed);
+                }
+            }
+            catch
+            {
+            }
+
+            return null;
+        }
+
+        private static Brush GetReadableTextBrush(string color)
+        {
+            var parsed = TryGetColor(color);
+            if (parsed == null) return Brushes.White;
+
+            var c = parsed.Value;
+            var luminance = (0.299 * c.R + 0.587 * c.G + 0.114 * c.B) / 255;
+            return luminance > 0.58 ? Brushes.Black : Brushes.White;
+        }
+
+        private static Color? TryGetColor(string color)
+        {
+            if (string.IsNullOrWhiteSpace(color)) return null;
+            try
+            {
+                var converted = ColorConverter.ConvertFromString(color);
+                if (converted is Color parsed)
+                {
+                    return parsed;
                 }
             }
             catch

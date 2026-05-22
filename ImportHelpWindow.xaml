@@ -3,97 +3,238 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="Import From Help" Height="520" Width="620" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="Import From Help" Height="760" Width="1180" MinHeight="620" MinWidth="960"
+        ResizeMode="CanResize" WindowStartupLocation="CenterOwner">
     <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />  <!-- 0: import mode -->
-            <RowDefinition Height="Auto" />  <!-- 1: advanced sources checkbox -->
-            <RowDefinition Height="Auto" />  <!-- 2: run command panel -->
-            <RowDefinition Height="Auto" />  <!-- 3: paste text panel -->
-            <RowDefinition Height="*"    />  <!-- 4: preview / flag exclusion -->
-            <RowDefinition Height="Auto" />  <!-- 5: dialog buttons -->
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="140" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Import Mode" VerticalAlignment="Center" />
-        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,6">
-            <RadioButton Content="Run help command" GroupName="ImportMode" IsChecked="True" Checked="OnRunModeChecked" />
-            <RadioButton Content="Paste help text" GroupName="ImportMode" Margin="12,0,0,0" Checked="OnPasteModeChecked" />
-        </StackPanel>
-
-        <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                  Content="Use advanced import sources (completions)"
-                  IsChecked="{Binding UseAdvancedSources}"
-                  Margin="0,2,0,10" />
-
-        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="RunCommandPanel">
+        <Border Grid.Row="0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                CornerRadius="4" Background="{StaticResource SurfaceBrush}" Padding="12" Margin="0,0,0,12">
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="120" />
                     <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Command" VerticalAlignment="Center" />
-                <TextBox Grid.Column="1" Text="{Binding CommandText, UpdateSourceTrigger=PropertyChanged}" />
-            </Grid>
-
-            <Grid Margin="0,12,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="120" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Help Args" VerticalAlignment="Center" />
-                <TextBox Grid.Column="1" Text="{Binding HelpArgs, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Import Mode" VerticalAlignment="Center" />
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                    <RadioButton Content="Run help command" GroupName="ImportMode" IsChecked="True" Checked="OnRunModeChecked" />
+                    <RadioButton Content="Paste help text" GroupName="ImportMode" Margin="14,0,0,0" Checked="OnPasteModeChecked" />
+                </StackPanel>
+
+                <CheckBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"
+                          Content="Use advanced import sources (completions)"
+                          IsChecked="{Binding UseAdvancedSources, UpdateSourceTrigger=PropertyChanged}"
+                          VerticalAlignment="Center" />
+
+                <Button Grid.Row="0" Grid.Column="4" Width="130" Margin="12,0,0,0"
+                        Content="Load Draft" Style="{StaticResource PrimaryButtonStyle}"
+                        Click="OnLoadDraftClicked" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Command" VerticalAlignment="Center" Margin="0,12,0,0" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CommandText, UpdateSourceTrigger=PropertyChanged}" Margin="0,12,12,0" />
+
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="Help Args" VerticalAlignment="Center" Margin="0,12,0,0" />
+                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding HelpArgs, UpdateSourceTrigger=PropertyChanged}" Margin="0,12,0,0"
+                         IsEnabled="{Binding IsRunMode}" />
             </Grid>
-        </StackPanel>
+        </Border>
 
-        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="PasteTextPanel" Visibility="Collapsed">
-            <TextBlock Text="Command" />
-            <TextBox Text="{Binding CommandText, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBlock Text="Help Text" Margin="0,12,0,0" />
-        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="360" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="1.25*" MinWidth="480" />
+            </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+            <Border Grid.Column="0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                    CornerRadius="4" Background="{StaticResource SurfaceBrush}" Padding="12">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Raw Help Output" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <TextBlock Text="  edit or paste here before refreshing the draft" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBox Grid.Row="1"
+                             AcceptsReturn="True"
+                             AcceptsTab="True"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto"
+                             TextWrapping="NoWrap"
+                             FontFamily="Consolas"
+                             Text="{Binding Draft.RawHelpText, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+            </Border>
 
-            <TextBox Grid.Row="0" x:Name="HelpTextBox"
-                     Visibility="Collapsed"
-                     AcceptsReturn="True"
-                     VerticalScrollBarVisibility="Auto"
-                     HorizontalScrollBarVisibility="Auto"
-                     TextWrapping="NoWrap"
-                     Height="120"
-                     Text="{Binding HelpText, UpdateSourceTrigger=PropertyChanged}" />
+            <GridSplitter Grid.Column="1" Width="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8" HorizontalAlignment="Right">
-                <Button Width="110" Content="Preview Flags" Click="OnPreviewFlagsClicked" />
-            </StackPanel>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-            <GroupBox Grid.Row="2" Header="Exclude Flags (uncheck to skip)">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding FlagOptions}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding IsIncluded, UpdateSourceTrigger=PropertyChanged}"
-                                          Content="{Binding Display}"
-                                          Margin="0,4,0,0" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </GroupBox>
+                <Border Grid.Row="0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="4" Background="{StaticResource SurfaceBrush}" Padding="12" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="Tool Name" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Medium" />
+                            <TextBox Text="{Binding Draft.ToolName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="0" Grid.Column="1">
+                            <TextBlock Text="Description" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Medium" />
+                            <TextBox Text="{Binding Draft.Description, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,10,8,0">
+                            <TextBlock Text="Installed Command Name" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Medium" />
+                            <TextBox Text="{Binding Draft.InstalledName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,10,0,0">
+                            <TextBlock Text="Executable Path" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Medium" />
+                            <TextBox Text="{Binding Draft.ExecutablePath, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <TabControl Grid.Row="1">
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBox MinWidth="110" Text="{Binding Draft.SectionLabels.Actions, UpdateSourceTrigger=PropertyChanged}" />
+                        </TabItem.Header>
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <DataGrid Grid.Row="0"
+                                      ItemsSource="{Binding Draft.StagedActions}"
+                                      SelectedItem="{Binding SelectedAction}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="True"
+                                      CanUserDeleteRows="True"
+                                      HeadersVisibility="Column"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                    <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="2*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                <Button Content="Paste Lines" Width="100" Click="OnPasteActionLinesClicked" />
+                                <Button Content="Add Row" Width="90" Margin="8,0,0,0" Click="OnAddActionClicked" />
+                                <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveActionClicked" />
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBox MinWidth="110" Text="{Binding Draft.SectionLabels.Arguments, UpdateSourceTrigger=PropertyChanged}" />
+                        </TabItem.Header>
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <DataGrid Grid.Row="0"
+                                      ItemsSource="{Binding Draft.StagedArguments}"
+                                      SelectedItem="{Binding SelectedArgument}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="True"
+                                      CanUserDeleteRows="True"
+                                      HeadersVisibility="Column"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Flag" Binding="{Binding Flag, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                    <DataGridTextColumn Header="Long" Binding="{Binding Long, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                    <DataGridTextColumn Header="Type" Binding="{Binding Type, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                    <DataGridTextColumn Header="Value Style" Binding="{Binding ValueStyleText, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                    <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="2*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                <Button Content="Paste Lines" Width="100" Click="OnPasteArgumentLinesClicked" />
+                                <Button Content="Add Row" Width="90" Margin="8,0,0,0" Click="OnAddArgumentClicked" />
+                                <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveArgumentClicked" />
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBox MinWidth="110" Text="{Binding Draft.SectionLabels.Parameters, UpdateSourceTrigger=PropertyChanged}" />
+                        </TabItem.Header>
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <DataGrid Grid.Row="0"
+                                      ItemsSource="{Binding Draft.StagedParameters}"
+                                      SelectedItem="{Binding SelectedParameter}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="True"
+                                      CanUserDeleteRows="True"
+                                      HeadersVisibility="Column"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                    <DataGridTextColumn Header="Type" Binding="{Binding Type, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                    <DataGridCheckBoxColumn Header="Required" Binding="{Binding Required, UpdateSourceTrigger=PropertyChanged}" Width="Auto" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                <Button Content="Paste Lines" Width="100" Click="OnPasteParameterLinesClicked" />
+                                <Button Content="Add Row" Width="90" Margin="8,0,0,0" Click="OnAddParameterClicked" />
+                                <Button Content="Remove" Width="90" Margin="8,0,0,0" Click="OnRemoveParameterClicked" />
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+
+                <ItemsControl Grid.Row="2" ItemsSource="{Binding Draft.ParseWarnings}" Margin="0,8,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Foreground="#B26A00" TextWrapping="Wrap" Margin="0,2,0,0" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
         </Grid>
 
-        <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
-                    Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
             <Button Width="90" Margin="0,0,8,0" Content="Cancel" Click="OnCancelClicked" />
-            <Button Width="90" Content="Import" Style="{StaticResource PrimaryButtonStyle}" Click="OnImportClicked" />
+            <Button Width="145" Content="Import Reviewed" Style="{StaticResource PrimaryButtonStyle}" Click="OnImportClicked" />
         </StackPanel>
     </Grid>
 </Window>

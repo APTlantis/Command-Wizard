@@ -95,9 +95,7 @@ namespace CommandWizard
                     return;
                 }
 
-                var imported = dialog.UsePasteText
-                    ? _viewModel.ImportSchemaFromHelpText(dialog.CommandText, dialog.HelpText, dialog.UseAdvancedSources, dialog.ExcludedFlags)
-                    : _viewModel.ImportSchemaFromHelp(dialog.CommandText, dialog.HelpArgs, dialog.UseAdvancedSources, dialog.ExcludedFlags);
+                var imported = _viewModel.ImportSchemaFromDraft(dialog.Draft);
 
                 if (imported)
                 {

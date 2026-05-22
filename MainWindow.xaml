@@ -89,7 +89,7 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Border Background="{Binding ColorBrush}" CornerRadius="10" Padding="6,2" Margin="0,0,6,6">
-                                                        <TextBlock Text="{Binding Name}" Foreground="White" FontSize="11" />
+                                                        <TextBlock Text="{Binding Name}" Foreground="{Binding TextBrush}" FontSize="11" />
                                                     </Border>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
@@ -260,42 +260,46 @@
                                                        FontSize="11"
                                                        Foreground="{StaticResource TextMutedBrush}"
                                                        Margin="0,0,0,6"/>
-                                            <ItemsControl ItemsSource="{Binding TagPresets}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Button Width="28" Height="28" Margin="0,0,6,0"
-                                                                ToolTip="{Binding Name}"
-                                                                Tag="{Binding Color}"
-                                                                Click="OnTagColorSwatchClicked">
-                                                            <Button.Template>
-                                                                <ControlTemplate TargetType="Button">
-                                                                    <Grid>
-                                                                        <Ellipse Width="22" Height="22"
-                                                                                 Fill="{Binding Brush}"
-                                                                                 Stroke="{StaticResource BorderBrush}"
-                                                                                 StrokeThickness="2"/>
-                                                                        <Ellipse x:Name="Hover" Width="22" Height="22"
-                                                                                 Fill="White" Opacity="0"/>
-                                                                    </Grid>
-                                                                    <ControlTemplate.Triggers>
-                                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter TargetName="Hover" Property="Opacity" Value="0.15"/>
-                                                                        </Trigger>
-                                                                        <Trigger Property="IsPressed" Value="True">
-                                                                            <Setter TargetName="Hover" Property="Opacity" Value="0.3"/>
-                                                                        </Trigger>
-                                                                    </ControlTemplate.Triggers>
-                                                                </ControlTemplate>
-                                                            </Button.Template>
-                                                        </Button>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
+                                            <ScrollViewer MaxHeight="150"
+                                                          VerticalScrollBarVisibility="Auto"
+                                                          HorizontalScrollBarVisibility="Disabled">
+                                                <ItemsControl ItemsSource="{Binding TagPresets}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Button Width="22" Height="22" Margin="0,0,4,4"
+                                                                    ToolTip="{Binding Name}"
+                                                                    Tag="{Binding Color}"
+                                                                    Click="OnTagColorSwatchClicked">
+                                                                <Button.Template>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Grid>
+                                                                            <Rectangle Width="18" Height="18"
+                                                                                       Fill="{Binding Brush}"
+                                                                                       Stroke="{StaticResource BorderBrush}"
+                                                                                       StrokeThickness="1"/>
+                                                                            <Rectangle x:Name="Hover" Width="18" Height="18"
+                                                                                       Fill="White" Opacity="0"/>
+                                                                        </Grid>
+                                                                        <ControlTemplate.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter TargetName="Hover" Property="Opacity" Value="0.18"/>
+                                                                            </Trigger>
+                                                                            <Trigger Property="IsPressed" Value="True">
+                                                                                <Setter TargetName="Hover" Property="Opacity" Value="0.35"/>
+                                                                            </Trigger>
+                                                                        </ControlTemplate.Triggers>
+                                                                    </ControlTemplate>
+                                                                </Button.Template>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </ScrollViewer>
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
@@ -387,7 +391,7 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Border Background="{Binding ColorBrush}" CornerRadius="10" Padding="6,2" Margin="0,0,6,6">
-                                                    <TextBlock Text="{Binding Name}" Foreground="White" FontSize="11" />
+                                                    <TextBlock Text="{Binding Name}" Foreground="{Binding TextBrush}" FontSize="11" />
                                                 </Border>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -648,7 +652,7 @@
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <Border Background="{Binding ColorBrush}" CornerRadius="10" Padding="6,2" Margin="0,0,6,6">
-                                                            <TextBlock Text="{Binding Name}" Foreground="White" FontSize="11" />
+                                                            <TextBlock Text="{Binding Name}" Foreground="{Binding TextBrush}" FontSize="11" />
                                                         </Border>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>

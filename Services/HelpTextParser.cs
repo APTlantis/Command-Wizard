@@ -8,7 +8,8 @@ namespace CommandWizard.Services
 {
     public static class HelpTextParser
     {
-        private static readonly Regex FlagLine = new(@"^\s*(?<flags>(?:[-/][^\s]+(?:\s*,\s*[-/][^\s]+)*)(?:\s+[-/][^\s]+(?:\s*,\s*[-/][^\s]+)*)*)\s+(?<desc>.+)$", RegexOptions.Compiled);
+        private static readonly Regex FlagLine = new(@"^\s*(?<flags>(?:[-/][^\s]*(?:\s*,\s*[-/][^\s]*)*)(?:\s+[-/][^\s]*(?:\s*,\s*[-/][^\s]*)*)*)\s+(?<desc>.+)$", RegexOptions.Compiled);
+        private static readonly Regex FlagOnlyLine = new(@"^\s*(?<flags>(?:[-/][^\s]*(?:\s*,\s*[-/][^\s]*)*)(?:\s+[-/][^\s]*(?:\s*,\s*[-/][^\s]*)*)*)\s*$", RegexOptions.Compiled);
         private static readonly Regex SectionHeader = new(@"^\s*(?<header>[\w\s]+):\s*$", RegexOptions.Compiled);
         private static readonly Regex ActionLine = new(@"^\s*(?<cmds>[\w-]+(?:\s*,\s*[\w-]+)*)\s+(?<desc>.+)$", RegexOptions.Compiled);
         private static readonly Regex GitCommandsIntro = new(@"common\s+git\s+commands", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -23,7 +24,12 @@ namespace CommandWizard.Services
             "global options",
             "flags",
             "global flags",
-            "arguments"
+            "arguments",
+            "cache options",
+            "python options",
+            "general options",
+            "connection options",
+            "ssl options"
         };
 
         public static ToolSchema Parse(string commandName, string helpText)
@@ -37,7 +43,7 @@ namespace CommandWizard.Services
 
             var lines = helpText
                 .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
-                .Select(line => line.TrimEnd())
+                .Select(line => NormalizeHelpLine(line.TrimEnd()))
                 .ToList();
 
             schema.Description = InferDescription(lines);
@@ -112,13 +118,13 @@ namespace CommandWizard.Services
                 if (section.Success)
                 {
                     var header = section.Groups["header"].Value.Trim().ToLowerInvariant();
-                    if (CommandSectionHeaders.Contains(header))
+                    if (IsCommandSectionHeader(header))
                     {
                         inCommands = true;
                         continue;
                     }
 
-                    if (inCommands && OptionSectionHeaders.Contains(header))
+                    if (inCommands)
                     {
                         inCommands = false;
                     }
@@ -127,54 +133,72 @@ namespace CommandWizard.Services
 
                 if (!inCommands) continue;
 
-                var trimmed = line.Trim();
+                var wasIndented = IsIndented(line);
+                var trimmed = CleanActionLine(line.Trim());
                 if (trimmed.StartsWith("-", StringComparison.Ordinal)) continue;
                 if (trimmed.StartsWith("usage:", StringComparison.OrdinalIgnoreCase)) continue;
+                if (IsLikelyDecorativeSectionLine(trimmed, wasIndented)) continue;
 
-                var actionMatch = ActionLine.Match(trimmed);
-                if (!actionMatch.Success)
+                var multiColumnActions = ParseMultiColumnActions(trimmed);
+                if (multiColumnActions.Count > 1)
                 {
-                    AppLogger.Warn($"Unparsed command line: '{trimmed}'");
-                    var parts = trimmed.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length == 0) continue;
-
-                    var fallbackName = parts[0].Trim().TrimEnd(',');
-                    if (string.IsNullOrWhiteSpace(fallbackName)) continue;
-
-                    var fallbackDescription = trimmed.Length > fallbackName.Length
-                        ? trimmed.Substring(fallbackName.Length).Trim()
-                        : string.Empty;
-
-                    actions.Add(new SchemaAction
-                    {
-                        Name = fallbackName,
-                        Description = fallbackDescription
-                    });
+                    actions.AddRange(multiColumnActions.Select(name => new SchemaAction { Name = name }));
                     continue;
                 }
 
-                var cmds = actionMatch.Groups["cmds"].Value;
-                var description = actionMatch.Groups["desc"].Value.Trim();
-                var aliases = cmds.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
-                if (aliases.Count == 0) continue;
-
-                var name = aliases[0];
-                if (aliases.Count > 1)
+                var actionMatch = ActionLine.Match(trimmed);
+                if (actionMatch.Success)
                 {
-                    var aliasText = string.Join(", ", aliases.Skip(1));
-                    description = string.IsNullOrWhiteSpace(description)
-                        ? $"Aliases: {aliasText}"
-                        : $"{description} (Aliases: {aliasText})";
+                    AddActionFromMatch(actions, actionMatch);
+                    continue;
                 }
+
+                AppLogger.Warn($"Unparsed command line: '{trimmed}'");
+                var parts = trimmed.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 0) continue;
+
+                var fallbackName = parts[0].Trim().TrimEnd(',');
+                if (string.IsNullOrWhiteSpace(fallbackName)) continue;
+
+                var fallbackDescription = trimmed.Length > fallbackName.Length
+                    ? trimmed.Substring(fallbackName.Length).Trim()
+                    : string.Empty;
+
+                if (IsLikelyActionNoise(fallbackName, fallbackDescription)) continue;
 
                 actions.Add(new SchemaAction
                 {
-                    Name = name,
-                    Description = description
+                    Name = fallbackName,
+                    Description = fallbackDescription
                 });
             }
 
             return actions;
+        }
+
+        private static void AddActionFromMatch(ICollection<SchemaAction> actions, Match actionMatch)
+        {
+            var cmds = actionMatch.Groups["cmds"].Value;
+            var description = actionMatch.Groups["desc"].Value.Trim();
+            var aliases = cmds.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+            if (aliases.Count == 0) return;
+
+            var name = aliases[0];
+            if (IsLikelyActionNoise(name, description)) return;
+
+            if (aliases.Count > 1)
+            {
+                var aliasText = string.Join(", ", aliases.Skip(1));
+                description = string.IsNullOrWhiteSpace(description)
+                    ? $"Aliases: {aliasText}"
+                    : $"{description} (Aliases: {aliasText})";
+            }
+
+            actions.Add(new SchemaAction
+            {
+                Name = name,
+                Description = description
+            });
         }
 
         private static bool IsCommandsIntro(string line)
@@ -182,7 +206,24 @@ namespace CommandWizard.Services
             var trimmed = line.Trim();
             return trimmed.Contains("commands are available", StringComparison.OrdinalIgnoreCase) ||
                    trimmed.Contains("available commands", StringComparison.OrdinalIgnoreCase) ||
-                   trimmed.StartsWith("Commands:", StringComparison.OrdinalIgnoreCase);
+                   trimmed.StartsWith("Commands:", StringComparison.OrdinalIgnoreCase) ||
+                   IsBareCommandsHeader(trimmed) ||
+                   trimmed.Contains("<command> --help", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsBareCommandsHeader(string trimmed)
+        {
+            if (!trimmed.EndsWith("commands", StringComparison.OrdinalIgnoreCase)) return false;
+            if (trimmed.Contains("  ", StringComparison.Ordinal)) return false;
+            var words = trimmed.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            return words.Length <= 3;
+        }
+
+        private static bool IsCommandSectionHeader(string header)
+        {
+            return CommandSectionHeaders.Contains(header) ||
+                   header.EndsWith("commands", StringComparison.OrdinalIgnoreCase) ||
+                   header.EndsWith("subcommands", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsOptionsIntro(string line)
@@ -191,7 +232,87 @@ namespace CommandWizard.Services
             return trimmed.Contains("options are available", StringComparison.OrdinalIgnoreCase) ||
                    trimmed.StartsWith("Options:", StringComparison.OrdinalIgnoreCase) ||
                    trimmed.StartsWith("Global Options:", StringComparison.OrdinalIgnoreCase) ||
-                   trimmed.StartsWith("Flags:", StringComparison.OrdinalIgnoreCase);
+                   trimmed.StartsWith("Flags:", StringComparison.OrdinalIgnoreCase) ||
+                   trimmed.EndsWith("options:", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string NormalizeHelpLine(string line)
+        {
+            if (string.IsNullOrEmpty(line)) return line;
+            var chars = line.Select(ch => ch <= 127 ? ch : ' ').ToArray();
+            return new string(chars);
+        }
+
+        private static string CleanActionLine(string line)
+        {
+            return line.Trim().Trim(',', '|', '"', '\'').Trim();
+        }
+
+        private static bool IsLikelyDecorativeSectionLine(string line, bool wasIndented)
+        {
+            if (string.IsNullOrWhiteSpace(line)) return true;
+            if (line.EndsWith(":", StringComparison.Ordinal)) return true;
+            if (!wasIndented && line.Contains("(see also:", StringComparison.OrdinalIgnoreCase)) return true;
+            if (!wasIndented && line.Contains(", ", StringComparison.Ordinal) && !line.Contains("  ", StringComparison.Ordinal)) return true;
+            if (line.Contains("help", StringComparison.OrdinalIgnoreCase) &&
+                line.Contains("command", StringComparison.OrdinalIgnoreCase) &&
+                line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length > 3)
+            {
+                return true;
+            }
+
+            if (line.Contains("commands (", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsLikelyActionNoise(string name, string description)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return true;
+            if (!IsLikelyActionName(name)) return true;
+
+            if (description.StartsWith("& ", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            var hasUppercase = name.Any(char.IsUpper);
+            if (hasUppercase && !name.Contains('-', StringComparison.Ordinal) && !name.Contains('_', StringComparison.Ordinal))
+            {
+                var descriptionWords = description.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                if (descriptionWords.Length <= 3)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static List<string> ParseMultiColumnActions(string line)
+        {
+            var columns = Regex.Split(line.Trim(), @"\s{2,}")
+                .Select(column => column.Trim())
+                .Where(column => !string.IsNullOrWhiteSpace(column))
+                .ToList();
+
+            if (columns.Count <= 1 || columns.Any(column => !IsLikelyActionName(column)))
+            {
+                return new List<string>();
+            }
+
+            return columns.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private static bool IsLikelyActionName(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token)) return false;
+            if (token.StartsWith("-", StringComparison.Ordinal) || token.StartsWith("/", StringComparison.Ordinal)) return false;
+            if (token.Any(ch => !char.IsLetterOrDigit(ch) && ch != '-' && ch != '_' && ch != '.')) return false;
+            return true;
         }
 
         private static IEnumerable<SchemaArgument> ParseArguments(IReadOnlyList<string> lines)
@@ -217,7 +338,19 @@ namespace CommandWizard.Services
                 var match = FlagLine.Match(line);
                 if (!match.Success)
                 {
-                    if (lastArgument != null && IsIndented(line))
+                    var flagOnlyArgument = ParseFlagOnlyArgument(line);
+                    if (flagOnlyArgument != null)
+                    {
+                        var flagOnlyKey = GetArgumentKey(flagOnlyArgument);
+                        if (!byKey.ContainsKey(flagOnlyKey))
+                        {
+                            byKey[flagOnlyKey] = flagOnlyArgument;
+                            arguments.Add(flagOnlyArgument);
+                        }
+
+                        lastArgument = byKey[flagOnlyKey];
+                    }
+                    else if (lastArgument != null && IsIndented(line))
                     {
                         var continuation = line.Trim();
                         if (!string.IsNullOrWhiteSpace(continuation))
@@ -239,10 +372,13 @@ namespace CommandWizard.Services
                 var flagTokens = flagsPart
                     .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                     .SelectMany(token => token.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                    .SelectMany(token => token.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                     .Select(f => f.Trim())
                     .Where(f => !string.IsNullOrWhiteSpace(f))
                     .ToList();
 
+                PromoteLeadingDescriptionFlag(flagTokens, ref description);
+                NormalizeValuePlaceholder(flagTokens, ref description, out var valueStyleFromDescription);
                 var shortFlag = flagTokens.FirstOrDefault(f => f.StartsWith("-", StringComparison.Ordinal) && !f.StartsWith("--", StringComparison.Ordinal));
                 var longFlag = flagTokens.FirstOrDefault(f => f.StartsWith("--", StringComparison.Ordinal));
 
@@ -250,6 +386,11 @@ namespace CommandWizard.Services
                 if (string.IsNullOrWhiteSpace(primary)) continue;
 
                 var type = InferArgumentType(flagTokens);
+                if (valueStyleFromDescription || HasLooseValueToken(flagTokens))
+                {
+                    type = "string";
+                }
+
                 var key = longFlag ?? primary;
 
                 if (byKey.TryGetValue(key, out var existing))
@@ -279,7 +420,10 @@ namespace CommandWizard.Services
                     Flag = shortFlag ?? longFlag ?? primary,
                     Long = shortFlag != null && longFlag != null ? longFlag : "",
                     Description = description,
-                    Type = type
+                    Type = type,
+                    ValueStyle = flagTokens.Any(token => token.Contains("=", StringComparison.Ordinal) || token.Contains(":", StringComparison.Ordinal))
+                        ? ArgumentValueStyle.EqualsSeparated
+                        : ArgumentValueStyle.SpaceSeparated
                 };
 
                 byKey[key] = argument;
@@ -288,6 +432,99 @@ namespace CommandWizard.Services
             }
 
             return arguments;
+        }
+
+        private static string GetArgumentKey(SchemaArgument argument)
+        {
+            if (!string.IsNullOrWhiteSpace(argument.Long)) return argument.Long;
+            return argument.Flag;
+        }
+
+        private static SchemaArgument? ParseFlagOnlyArgument(string line)
+        {
+            var match = FlagOnlyLine.Match(line);
+            if (!match.Success) return null;
+
+            var flagTokens = match.Groups["flags"].Value
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .SelectMany(token => token.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                .SelectMany(token => token.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                .Select(token => token.Trim())
+                .Where(token => token.StartsWith("-", StringComparison.Ordinal) || token.StartsWith("/", StringComparison.Ordinal))
+                .ToList();
+
+            if (flagTokens.Count == 0) return null;
+
+            var shortFlag = flagTokens.FirstOrDefault(f => f.StartsWith("-", StringComparison.Ordinal) && !f.StartsWith("--", StringComparison.Ordinal));
+            var longFlag = flagTokens.FirstOrDefault(f => f.StartsWith("--", StringComparison.Ordinal));
+            var primary = longFlag ?? shortFlag ?? flagTokens.First();
+
+            return new SchemaArgument
+            {
+                Flag = shortFlag ?? primary,
+                Long = shortFlag != null && longFlag != null ? longFlag : "",
+                Type = InferArgumentType(flagTokens)
+            };
+        }
+
+        private static void NormalizeValuePlaceholder(IList<string> flagTokens, ref string description, out bool foundValuePlaceholder)
+        {
+            foundValuePlaceholder = false;
+            if (flagTokens.Count == 0 || string.IsNullOrWhiteSpace(description)) return;
+
+            var parts = description.Split(new[] { ' ', '\t' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) return;
+
+            var first = parts[0].Trim();
+            if (!IsLooseValueToken(first)) return;
+
+            foundValuePlaceholder = true;
+            description = parts.Length > 1 ? parts[1].Trim() : string.Empty;
+        }
+
+        private static void PromoteLeadingDescriptionFlag(ICollection<string> flagTokens, ref string description)
+        {
+            if (string.IsNullOrWhiteSpace(description)) return;
+
+            var parts = description.Split(new[] { ' ', '\t' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) return;
+
+            var maybeFlag = parts[0].Trim().TrimEnd(',');
+            if (!maybeFlag.StartsWith("-", StringComparison.Ordinal) && !maybeFlag.StartsWith("/", StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            flagTokens.Add(maybeFlag);
+            description = parts.Length > 1 ? parts[1].Trim() : string.Empty;
+        }
+
+        private static bool HasLooseValueToken(IEnumerable<string> flagTokens)
+        {
+            return flagTokens.Any(token =>
+            {
+                var parts = token.Split(':', 2);
+                return parts.Length == 2 && IsLooseValueToken(parts[1]);
+            });
+        }
+
+        private static bool IsLooseValueToken(string token)
+        {
+            var cleaned = token.Trim().Trim(',', ';', ')', '(');
+            if (string.IsNullOrWhiteSpace(cleaned)) return false;
+            if (cleaned.StartsWith("<", StringComparison.Ordinal) || cleaned.StartsWith("[", StringComparison.Ordinal)) return true;
+
+            return cleaned.Equals("value", StringComparison.OrdinalIgnoreCase) ||
+                   cleaned.Equals("file", StringComparison.OrdinalIgnoreCase) ||
+                   cleaned.Equals("filename", StringComparison.OrdinalIgnoreCase) ||
+                   cleaned.Equals("path", StringComparison.OrdinalIgnoreCase) ||
+                   cleaned.Equals("dir", StringComparison.OrdinalIgnoreCase) ||
+                   cleaned.Equals("directory", StringComparison.OrdinalIgnoreCase) ||
+                   cleaned.Equals("port", StringComparison.OrdinalIgnoreCase) ||
+                   cleaned.Equals("level", StringComparison.OrdinalIgnoreCase) ||
+                   cleaned.Equals("format", StringComparison.OrdinalIgnoreCase) ||
+                   cleaned.Equals("name", StringComparison.OrdinalIgnoreCase) ||
+                   cleaned.Equals("string", StringComparison.OrdinalIgnoreCase);
         }
 
         private static string InferArgumentType(IEnumerable<string> flags)
@@ -350,7 +587,9 @@ namespace CommandWizard.Services
                 if (string.IsNullOrWhiteSpace(name)) continue;
                 if (name.StartsWith("-", StringComparison.Ordinal)) continue;
                 if (string.Equals(name, "options", StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(name, "option", StringComparison.OrdinalIgnoreCase))
+                    string.Equals(name, "option", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(name, "sdk-options", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(name, "command-options", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -385,6 +624,7 @@ namespace CommandWizard.Services
 
             var current = string.Empty;
             var bracketDepth = 0;
+            var angleDepth = 0;
 
             void FlushToken(bool? optionalOverride = null)
             {
@@ -403,7 +643,7 @@ namespace CommandWizard.Services
 
             foreach (var ch in usageText)
             {
-                if (char.IsWhiteSpace(ch))
+                if (char.IsWhiteSpace(ch) && bracketDepth == 0 && angleDepth == 0)
                 {
                     FlushToken();
                     continue;
@@ -422,6 +662,20 @@ namespace CommandWizard.Services
                         FlushToken(true);
                     }
                     bracketDepth = Math.Max(0, bracketDepth - 1);
+                    continue;
+                }
+
+                if (ch == '<')
+                {
+                    angleDepth++;
+                    current += ch;
+                    continue;
+                }
+
+                if (ch == '>')
+                {
+                    current += ch;
+                    angleDepth = Math.Max(0, angleDepth - 1);
                     continue;
                 }
 
