@@ -193,6 +193,11 @@ namespace CommandWizard
             _viewModel.DiscardImportedSchema();
         }
 
+        private void OnDeleteSchemaClicked(object sender, RoutedEventArgs e)
+        {
+            _viewModel.DeleteSelectedSchema();
+        }
+
         private void OnCopyToolClicked(object sender, RoutedEventArgs e)
         {
             _viewModel.CopyToolToAppDirectory();

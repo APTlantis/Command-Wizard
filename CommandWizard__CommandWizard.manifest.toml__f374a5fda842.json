@@ -1,0 +1,125 @@
+{
+  "project": "CommandWizard",
+  "source_path": "D:\\DRS\\CommandWizard",
+  "summary": "Schema-driven WinUI/.NET desktop application that lets a single operator build, edit, and run CLI command workflows via a guided wizard. Stores TOML tool schemas and a local history, can import help text or completion data, and ships as a locally-signed MSIX for Windows 10+.",
+  "ecosystem_role": "local-first, operator-centric desktop utility for schema-driven CLI command construction and management",
+  "status": "Paused",
+  "lifecycle": "paused",
+  "percentage_complete": 95,
+  "operational_completeness": 100,
+  "product_completeness": 80,
+  "complexity": "Medium",
+  "strategic_relevance": "High",
+  "maintenance_burden": "Medium",
+  "canonical_sources_used": [
+    "CommandWizard.manifest.toml",
+    "README.md",
+    "Project-README.md",
+    "AGENTS.md",
+    "RELEASE-v1.0.0.md",
+    "appxmanifest.xml",
+    "CommandWizard.Tests",
+    "src/*.cs (services, viewmodels, models)"
+  ],
+  "capabilities": [
+    "schema-driven command generation",
+    "guided wizard UI for constructing commands",
+    "import help text and completion scripts to generate schemas",
+    "edit and persist tool TOML schemas",
+    "history and favorites management",
+    "local-signed MSIX packaging (dev cert)"
+  ],
+  "interfaces": [
+    "WinUI 3 desktop UI (WinAppSDK/.NET 10)",
+    "MSIX installer for Windows packaging",
+    "file system for schema and history storage (LocalAppData Aptlantis/CommandWizard)",
+    "Process invocation for capturing CLI help/completions"
+  ],
+  "produces": [
+    "CLI command strings",
+    "tool schema TOML files",
+    "history JSON",
+    "dist\\CommandWizard-1.0.0.0.msix (local-signed)"
+  ],
+  "consumes": [
+    "TOML tool schemas",
+    "pasted or captured CLI help text",
+    "completion script output",
+    "operator input via wizard UI"
+  ],
+  "depends_on": [
+    ".NET 10",
+    "WinUI 3",
+    "Windows App SDK",
+    "Tomlyn (TOML parser)",
+    "Windows (win-x64)"
+  ],
+  "used_by": [],
+  "missing_pieces": [
+    "Release document missing SHA-256 hash for the MSIX artifact (RELEASE-v1.0.0.md lists package and signing but no SHA-256)",
+    "Project manifest lacks per-release installer sha256 and release.verified fields populated (manifest.release.* installer fields not present / verification flags false)",
+    "Release note does not include required Design Boundaries section or explicit theme name per DRS template",
+    "Release note does not include a Built With section listing all notable dependencies in the DRS-prescribed format",
+    "Evidence folder (release-evidence/v1.0.0/) with filehash.txt, build.log, test.log is not present or not referenced in the manifest",
+    "Project-README lists governance reconciliation but build/test/package commands need confirmation (known_gaps documented in manifest/Project-README.md)"
+  ],
+  "next_steps": [
+    "Compute SHA-256 (and optional BLAKE3) of dist\\CommandWizard-1.0.0.0.msix and record it in RELEASE-v1.0.0.md and CommandWizard.manifest.toml under release.installer.sha256",
+    "Run a verified clean build, record build.log and test.log, populate manifest.release.verified and append a per-version verification block to the release checklist (include test count, install/uninstall check, data safety)",
+    "Create a release-evidence/v1.0.0/ bundle with filehash.txt, build.log, test.log, install-check.txt and reference it from the manifest",
+    "Add DRS-required fields to the release note: explicit theme name, Design Boundaries (≥2 entries), Built With list, and Signing status statement",
+    "Confirm and update project lifecycle state (paused vs active) after review with maintainer Herb and reconcile legacy manifest fields into the canonical manifest"
+  ],
+  "potential_improvements": [
+    "Include an in-installer docs/ folder with the release note and trust/security notes so documentation travels with the install",
+    "Add automated UI smoke tests or headless verification steps to the release checklist to make verification reproducible",
+    "Provide optional SBOM generation when preparing a public release (CycloneDX/JSON) and store alongside artifacts",
+    "Expose a small CLI mode for headless schema import or command generation to integrate with other Aptlantis pipelines",
+    "Add export/import and sync primitives for sharing schemas between Aptlantis tools (local git or duckdb-backed index)"
+  ],
+  "documentation_outputs": [
+    "README.md",
+    "Project-README.md",
+    "AGENTS.md",
+    "RELEASE-v1.0.0.md",
+    "appxmanifest.xml",
+    "Unit tests and test output (CommandWizard.Tests)"
+  ],
+  "creative_enhancements": [
+    "Add a 'share schema bundle' feature that exports a verified schema + sample commands + metadata as a single signed archive for safe exchange between operators",
+    "Generate shell-specific command snippets (bash, powershell, fish) and optional completion files automatically from the schema to bootstrap shell integration",
+    "Integrate a local 'schema catalog' service (DuckDB) to query and index installed schemas and favorites across Aptlantis tools",
+    "Provide a contextual 'task-to-command' assistant that maps natural-language tasks to templated command sequences using existing schema metadata",
+    "Offer a reproducible packaging mode that records build input hashes and emits a small provenance.json to support later artifact verification"
+  ],
+  "tags": [
+    "winui",
+    "dotnet",
+    "c#",
+    "desktop",
+    "msix",
+    "schema-driven",
+    "toml",
+    "local-first",
+    "command-generation",
+    "wizard"
+  ],
+  "confidence": "high",
+  "notes": [
+    "A local-signed MSIX (CN=Administrator) is documented in RELEASE-v1.0.0.md; this is intended for local testing only and is noted in release notes.",
+    "Manifest verification flags (build_verified, tests_verified, artifact_verified, release_verified) are false; governance reconciliation documented this gap.",
+    "Project contains unit tests (11/11 reported in release verification) and a repeatable packaging script scripts\\package-msix.ps1 referenced in release notes.",
+    "Do not treat paused lifecycle as evidence of inactive code; repository contains production-stage artifacts and should be reconciled with maintainer before lifecycle changes."
+  ],
+  "manifest_path": "D:\\DRS\\CommandWizard\\CommandWizard.manifest.toml",
+  "project_group": "DRS",
+  "governing_standard": "D:\\.library\\aptlantis_core\\DRS\\Desktop Application Release Standard.md",
+  "repository_url": "https://github.com/APTlantis/CommandWizard",
+  "sampling": {
+    "sampled_files": 31,
+    "sampled_characters": 54912,
+    "max_files": 60,
+    "max_characters": 90000,
+    "content_is_sampled": true
+  }
+}

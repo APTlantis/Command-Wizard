@@ -1,0 +1,91 @@
+{
+  "project": "CommandWizard",
+  "source_path": "D:\\zypper\\CommandWizard",
+  "summary": "CommandWizard is a schema-driven WinUI desktop application that enables a single operator to construct CLI commands through a guided wizard interface. It supports command generation, history tracking, schema editing, and importing help text or command output to build tool schemas. It operates locally on Windows 10+ using .NET 10 and WinUI 3.",
+  "ecosystem_role": "local-first operator-centric desktop utility for CLI command construction and schema management",
+  "status": "Production",
+  "lifecycle": "active-core",
+  "percentage_complete": 100,
+  "operational_completeness": 100,
+  "product_completeness": 80,
+  "complexity": "Medium",
+  "strategic_relevance": "High",
+  "maintenance_burden": "Medium",
+  "canonical_sources_used": [
+    "command-wizard.manifest.toml",
+    "README.md",
+    "RELEASE-v1.0.0.md",
+    "appxmanifest.xml",
+    "source code files"
+  ],
+  "capabilities": [
+    "schema-driven command generation",
+    "wizard interface for command construction",
+    "history tracking of commands",
+    "tool schema editing and management",
+    "importing schemas from help text or command output",
+    "local signed MSIX packaging"
+  ],
+  "interfaces": [
+    "WinUI 3 desktop UI",
+    "command line for capturing help text",
+    "file system for schema and history storage"
+  ],
+  "produces": [
+    "CLI commands as strings",
+    "schema TOML files",
+    "history JSON files",
+    "local signed MSIX installer"
+  ],
+  "consumes": [
+    "TOML tool schemas",
+    "help text from CLI tools",
+    "user input via wizard UI"
+  ],
+  "depends_on": [
+    ".NET 10",
+    "WinUI 3",
+    "Windows App SDK",
+    "Tomlyn TOML parser"
+  ],
+  "used_by": [],
+  "missing_pieces": [],
+  "next_steps": [
+    "Enhance schema import robustness with additional CLI help formats",
+    "Improve UI responsiveness and usability based on operator feedback",
+    "Automate schema validation and error reporting",
+    "Expand support for more complex CLI schema features",
+    "Document advanced usage scenarios for operator reference"
+  ],
+  "potential_improvements": [
+    "Add optional automated tests for UI components",
+    "Implement incremental schema updates and merges",
+    "Provide export/import of command history",
+    "Integrate with other Aptlantis tools for schema sharing",
+    "Refine packaging scripts for easier local deployment"
+  ],
+  "documentation_outputs": [
+    "README.md",
+    "RELEASE-v1.0.0.md",
+    "LICENSE"
+  ],
+  "tags": [
+    "schema-driven",
+    "winui",
+    "desktop",
+    "c#",
+    "toml",
+    "local-first",
+    "cli",
+    "command-generation",
+    "wizard-interface"
+  ],
+  "confidence": "High",
+  "notes": [
+    "Project is fully operational and meets intended scope for a single operator.",
+    "MSIX packaging is local signed for internal distribution, not public store.",
+    "No missing features explicitly indicated in manifest or docs.",
+    "Product completeness is slightly lower due to limited external user polish and documentation.",
+    "Complexity is medium due to schema parsing, UI, and integration with CLI tools."
+  ]
+}

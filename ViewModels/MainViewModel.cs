@@ -817,6 +817,54 @@ namespace CommandWizard.ViewModels
             RefreshFavoriteTagFilters();
         }
 
+        public void DeleteSelectedSchema()
+        {
+            if (SelectedTool == null)
+            {
+                MessageBox.Show("Select a schema to delete.", "Command Wizard", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var name = SelectedTool.ToolName;
+            var result = MessageBox.Show(
+                $"Permanently delete schema '{name}'? This cannot be undone.",
+                "Delete Schema",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            var filePath = SelectedTool.SourcePath;
+            var toRemove = SelectedTool;
+            Tools.Remove(toRemove);
+            SelectedTool = Tools.FirstOrDefault();
+            RefreshTagFilters();
+            RefreshFavoriteTagFilters();
+
+            if (!string.IsNullOrWhiteSpace(filePath) && File.Exists(filePath))
+            {
+                try
+                {
+                    File.Delete(filePath);
+                    AppLogger.Info($"Schema deleted: {filePath}");
+                    MessageBox.Show($"Schema '{name}' deleted.", "Command Wizard", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    AppLogger.Error($"Schema file delete failed: {filePath}", ex);
+                    MessageBox.Show(
+                        $"Schema removed from list but file could not be deleted: {ex.Message}",
+                        "Command Wizard",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
+            }
+            else
+            {
+                AppLogger.Info($"Schema '{name}' removed (unsaved, no file to delete).");
+            }
+        }
+
         private static void ApplyImportExclusions(ToolSchema schema, System.Collections.Generic.IEnumerable<string>? excludedFlags)
         {
             if (excludedFlags == null) return;

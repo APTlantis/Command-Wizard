@@ -1,0 +1,7 @@
+# CommandWizard v1.0.0 - Release File Hashes
+
+Generated: 2026-07-12
+
+## dist\CommandWizard-1.0.0.0.msix
+
+SHA-256: 995CEE8972C2D086B9148D9F93F3ADC8B55C1F1CED45CE75A39C49BACE7B346D

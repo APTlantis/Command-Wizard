@@ -1,0 +1,27 @@
+# CommandWizard v1.0.0 - Install Check
+
+Date: 2026-07-12
+
+## Install
+
+```powershell
+Add-AppxPackage .\dist\CommandWizard-1.0.0.0.msix
+```
+
+Result: Success. Package version 1.0.0.0 registered under identity Aptlantis.CommandWizard.
+
+## Launch
+
+App launched from Start menu as "Aptlantis Command Wizard". Title bar confirmed.
+
+## Uninstall
+
+```powershell
+Get-AppxPackage *CommandWizard* | Remove-AppxPackage
+```
+
+Result: Package removed cleanly. No leftover shortcuts or registry entries observed.
+
+## Data Safety
+
+Schema files and history.json remain in AppData after uninstall (expected — user data is not removed by MSIX uninstall by design).

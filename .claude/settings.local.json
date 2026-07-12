@@ -5,7 +5,11 @@
       "Bash(dotnet add:*)",
       "Bash(dotnet build:*)",
       "Bash(find A:/AptWeb/zypper-operations/CommandWizard -path */MaterialDesignThemes.Wpf/themes/*.xaml)",
-      "Bash(powershell -Command \"Add-Type -Path ''''MaterialDesignThemes.Wpf.dll''''; $asm = [System.Reflection.Assembly]::LoadFrom\\(''''MaterialDesignThemes.Wpf.dll''''\\); $asm.GetManifestResourceNames\\(\\) | Where-Object { $_-like ''''*.xaml'''' }\")"
+      "Bash(powershell -Command \"Add-Type -Path ''''MaterialDesignThemes.Wpf.dll''''; $asm = [System.Reflection.Assembly]::LoadFrom\\(''''MaterialDesignThemes.Wpf.dll''''\\); $asm.GetManifestResourceNames\\(\\) | Where-Object { $_-like ''''*.xaml'''' }\")",
+      "Bash(Get-FileHash \"D:\\\\DRS\\\\CommandWizard\\\\dist\\\\CommandWizard-1.0.0.0.msix\" -Algorithm SHA256)",
+      "Bash(Select-Object -ExpandProperty Hash)",
+      "PowerShell(dotnet build *)",
+      "PowerShell(dotnet test *)"
     ]
   }
 }

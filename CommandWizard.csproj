@@ -25,6 +25,11 @@
     <Content Include="project-images\\**\\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Remove="project_images\4-26-2026\CommandWizard.png" />
+    <Content Remove="project_images\4-26-2026\CommandWizard2.png" />
+    <Content Remove="project_images\4-26-2026\CommandWizard3.png" />
+    <Content Remove="project_images\4-26-2026\CommandWizard4.png" />
+    <Content Remove="project_images\4-26-2026\Infographic.png" />
   </ItemGroup>
 
   <ItemGroup>

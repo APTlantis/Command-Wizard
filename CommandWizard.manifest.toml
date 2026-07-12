@@ -1,0 +1,126 @@
+[manifest]
+schema = "APTlantis Entity Manifest"
+schema_version = "2.4"
+manifest_type = "project"
+canonical_name = "CommandWizard.manifest.toml"
+last_updated = "2026-07-08"
+maintainer = "Herb"
+
+[entity]
+id = "commandwizard"
+title = "CommandWizard"
+kind = "project"
+class = "project"
+status = "paused"
+description = "WinUI/.NET desktop application for constructing and managing command workflows."
+tags = ["winui", "dotnet", "c#", "desktop", "msix", "schema-driven", "toml", "local-first", "command-generation", "wizard"]
+
+[tag_colors]
+winui = "#0D89C8"
+dotnet = "#9B5DE5"
+"c#" = "#9B5DE5"
+desktop = "#3FB950"
+msix = "#F0B429"
+"schema-driven" = "#29B6F6"
+toml = "#ADB5BD"
+"local-first" = "#3FB950"
+"command-generation" = "#0D89C8"
+wizard = "#29B6F6"
+
+[project]
+type = "desktop-application"
+portfolio_class = "project"
+stage = "production"
+version = "1.0.0"
+
+[governance]
+primary_standard = "DRS"
+primary_standard_path = "D:\\.library\\aptlantis_core\\DRS\\README.md"
+additional_standards = [
+    "WGS",
+    "PPS",
+]
+additional_standard_paths = [
+    "D:\\.library\\aptlantis_core\\WGS\\README.md",
+    "D:\\.library\\aptlantis_core\\PPS\\README.md",
+]
+inherits_from = "..\\DRS.manifest.toml"
+
+[lifecycle]
+state = "paused"
+last_reviewed = "2026-07-08"
+maintainer = "Herb"
+
+[paths]
+root = "D:\\DRS\\CommandWizard"
+
+[documentation]
+project_readme = "Project-README.md"
+readme = "README.md"
+
+[relationships]
+parent = "D:\\DRS"
+child_projects = []
+
+[state]
+stability = "stable"
+active_development = false
+known_gaps = [
+    "Current build, test, artifact, and release posture were not executed during the governance migration.",
+]
+
+[migration]
+archived_manifests = [
+    "D:\\.city_hall\\WGS\\migration-notes\\Legacy-Live-Manifests-20260708\\DRS\\CommandWizard\\CommandWizard.manifest.toml",
+]
+
+[agent]
+read_first = [
+    "AGENTS.md",
+    "CommandWizard.manifest.toml",
+    "Project-README.md",
+]
+authoritative_docs = [
+    "CommandWizard.manifest.toml",
+    "Project-README.md",
+    "AGENTS.md",
+]
+safe_to_modify = true
+notes = "Existing code and artifacts outrank inferred placeholder state; verify before updating lifecycle claims."
+
+[structure]
+required_files = []
+required_child_project_files = [
+    "AGENTS.md",
+    "[EntityName].manifest.toml",
+    "Project-README.md",
+]
+
+[verification]
+level = "release-verified"
+evidence = "README.md, tests, packaged release evidence, legacy manifest, release-evidence/v1.0.0/"
+reviewed = "2026-07-12"
+build_verified = true
+tests_verified = true
+artifact_verified = true
+release_verified = true
+
+[release]
+version = "1.0.0.0"
+date = "2026-07-12"
+
+[release.installer]
+path = "dist/CommandWizard-1.0.0.0.msix"
+sha256 = "995CEE8972C2D086B9148D9F93F3ADC8B55C1F1CED45CE75A39C49BACE7B346D"
+signed = true
+certificate_subject = "CN=Administrator"
+certificate_thumbprint = "C03F83DE2A4964918A6D1D10C0F5D88B39647B11"
+certificate_expires = "2027-03-14"
+signing_type = "local-dev"
+
+[release.verification]
+build_result = "success"
+test_result = "11/11 passed"
+install_check = "pass"
+uninstall_check = "pass"
+evidence_path = "release-evidence/v1.0.0/"
