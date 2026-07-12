@@ -7,8 +7,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- Dark theme, LightBlue primary (more blue than Teal) -->
-                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="LightBlue" SecondaryColor="Cyan" />
+                <!-- Light theme, Blue primary -->
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Blue" SecondaryColor="LightBlue" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
@@ -16,18 +16,18 @@
                 Brand brushes — used in inline layout (Borders, placeholders, etc.)
                 MD handles all control implicit styles, so we don't redefine Button/TextBox/etc.
             -->
-            <SolidColorBrush x:Key="PrimaryBrush"         Color="#0D89C8"/>
-            <SolidColorBrush x:Key="PrimaryDarkBrush"     Color="#096A9B"/>
-            <SolidColorBrush x:Key="AccentBrush"          Color="#29B6F6"/>
-            <SolidColorBrush x:Key="BackgroundBrush"      Color="#1C1B1F"/>
-            <SolidColorBrush x:Key="SurfaceBrush"         Color="#2B2930"/>
-            <SolidColorBrush x:Key="SurfaceElevatedBrush" Color="#322F37"/>
-            <SolidColorBrush x:Key="BorderBrush"          Color="#5C5966"/>
-            <SolidColorBrush x:Key="TextPrimaryBrush"     Color="#E6E1E5"/>
-            <SolidColorBrush x:Key="TextSecondaryBrush"   Color="#CAC4D0"/>
-            <SolidColorBrush x:Key="TextMutedBrush"       Color="#938F99"/>
+            <SolidColorBrush x:Key="PrimaryBrush"         Color="#1565C0"/>
+            <SolidColorBrush x:Key="PrimaryDarkBrush"     Color="#0D47A1"/>
+            <SolidColorBrush x:Key="AccentBrush"          Color="#1E88E5"/>
+            <SolidColorBrush x:Key="BackgroundBrush"      Color="#F5F5F5"/>
+            <SolidColorBrush x:Key="SurfaceBrush"         Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="SurfaceElevatedBrush" Color="#EEEEEE"/>
+            <SolidColorBrush x:Key="BorderBrush"          Color="#BDBDBD"/>
+            <SolidColorBrush x:Key="TextPrimaryBrush"     Color="#212121"/>
+            <SolidColorBrush x:Key="TextSecondaryBrush"   Color="#616161"/>
+            <SolidColorBrush x:Key="TextMutedBrush"       Color="#9E9E9E"/>
 
-            <!-- Primary action button: filled teal -->
+            <!-- Primary action button: filled blue -->
             <Style x:Key="PrimaryButtonStyle" TargetType="Button"
                    BasedOn="{StaticResource MaterialDesignRaisedButton}">
                 <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>

@@ -1,7 +1,7 @@
 param(
     [string]$Configuration = "Release",
     [string]$Runtime = "win-x64",
-    [string]$Version = "1.0.0.0",
+    [string]$Version = "1.0.1.0",
     [string]$Certificate = ".\devcert.pfx",
     [string]$CertificatePassword = "password"
 )
@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
-$publishDir = Join-Path $repoRoot "dist\v1.0.0\$Runtime\publish"
+$publishDir = Join-Path $repoRoot "dist\v1.0.1\$Runtime\publish"
 $packagePath = Join-Path $repoRoot "dist\CommandWizard-$Version.msix"
 $manifestPath = Join-Path $repoRoot "appxmanifest.xml"
 $projectPath = Join-Path $repoRoot "CommandWizard.csproj"

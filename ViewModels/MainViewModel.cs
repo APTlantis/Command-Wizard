@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -28,6 +29,13 @@ namespace CommandWizard.ViewModels
         private string _selectedTagFilter = "All";
         private string _selectedFavoriteTagFilter = "All";
         private string _favoriteSearchText = string.Empty;
+
+        private CommandPartViewModel? _toolPart;
+        private CommandPartViewModel? _actionPart;
+        private readonly Dictionary<OptionItemViewModel, CommandPartViewModel> _optionPartMap = new();
+        private readonly Dictionary<ParameterItemViewModel, CommandPartViewModel> _paramPartMap = new();
+        private bool _suppressOptionSync;
+        private bool _suppressParameterSync;
 
         public MainViewModel()
         {
@@ -79,6 +87,7 @@ namespace CommandWizard.ViewModels
         public ICollectionView FavoritesView { get; }
         public ObservableCollection<string> FavoriteTagFilters { get; } = new();
         public IReadOnlyList<Models.TagPreset> TagPresets { get; } = new List<Models.TagPreset>();
+        public ObservableCollection<CommandPartViewModel> CommandParts { get; } = new();
 
         public ToolSchemaViewModel? SelectedTool
         {
@@ -89,9 +98,10 @@ namespace CommandWizard.ViewModels
                 DetachToolHandlers(_selectedTool);
                 _selectedTool = value;
                 AttachToolHandlers(_selectedTool);
+                ResetCommandParts(_selectedTool);
+                _selectedAction = null;
                 SelectedAction = _selectedTool?.Actions.FirstOrDefault();
                 OnPropertyChanged();
-                UpdateCommandPreview();
             }
         }
 
@@ -103,7 +113,7 @@ namespace CommandWizard.ViewModels
                 if (_selectedAction == value) return;
                 _selectedAction = value;
                 OnPropertyChanged();
-                UpdateCommandPreview();
+                SyncActionPart();
             }
         }
 
@@ -258,13 +268,285 @@ namespace CommandWizard.ViewModels
 
         public void UpdateCommandPreview()
         {
-            if (SelectedTool == null)
+            RebuildPreview();
+        }
+
+        public void MoveCommandPart(int fromIndex, int toIndex)
+        {
+            if (fromIndex == toIndex) return;
+            if (fromIndex < 0 || toIndex < 0) return;
+            if (fromIndex >= CommandParts.Count || toIndex >= CommandParts.Count) return;
+            CommandParts.Move(fromIndex, toIndex);
+            RebuildPreview();
+        }
+
+        public void RemoveCommandPart(CommandPartViewModel part)
+        {
+            if (part.IsFixed) return;
+
+            switch (part.Role)
             {
-                CommandPreview = string.Empty;
-                return;
+                case CommandPartRole.Action:
+                    part.ValueChanged -= OnCommandPartValueChanged;
+                    CommandParts.Remove(part);
+                    _actionPart = null;
+                    _suppressOptionSync = true;
+                    try { SelectedAction = null; }
+                    finally { _suppressOptionSync = false; }
+                    break;
+
+                case CommandPartRole.Argument:
+                    PurgeOptionPart(part);
+                    break;
+
+                case CommandPartRole.Parameter:
+                    PurgeParameterPart(part);
+                    break;
             }
 
-            CommandPreview = CommandBuilder.BuildCommand(SelectedTool, SelectedAction);
+            RebuildPreview();
+        }
+
+        private void ResetCommandParts(ToolSchemaViewModel? tool)
+        {
+            _suppressOptionSync = true;
+            _suppressParameterSync = true;
+            try
+            {
+                foreach (var vm in CommandParts)
+                    vm.ValueChanged -= OnCommandPartValueChanged;
+                CommandParts.Clear();
+                _optionPartMap.Clear();
+                _paramPartMap.Clear();
+                _toolPart = null;
+                _actionPart = null;
+
+                if (tool == null)
+                {
+                    CommandPreview = string.Empty;
+                    return;
+                }
+
+                var part = new CommandPart { Role = CommandPartRole.Tool, Token = tool.CommandName, IsFixed = true };
+                _toolPart = new CommandPartViewModel(part, RemoveCommandPart);
+                _toolPart.ValueChanged += OnCommandPartValueChanged;
+                CommandParts.Add(_toolPart);
+            }
+            finally
+            {
+                _suppressOptionSync = false;
+                _suppressParameterSync = false;
+            }
+            RebuildPreview();
+        }
+
+        private void SyncActionPart()
+        {
+            if (_actionPart != null)
+            {
+                _actionPart.ValueChanged -= OnCommandPartValueChanged;
+                CommandParts.Remove(_actionPart);
+                _actionPart = null;
+            }
+
+            if (_selectedAction != null && !string.IsNullOrWhiteSpace(_selectedAction.Name))
+            {
+                var part = new CommandPart { Role = CommandPartRole.Action, Token = _selectedAction.Name };
+                _actionPart = new CommandPartViewModel(part, RemoveCommandPart);
+                _actionPart.ValueChanged += OnCommandPartValueChanged;
+                var insertIdx = _toolPart != null ? CommandParts.IndexOf(_toolPart) + 1 : 0;
+                CommandParts.Insert(Math.Min(insertIdx, CommandParts.Count), _actionPart);
+            }
+
+            RebuildPreview();
+        }
+
+        private void SyncOptionPart(OptionItemViewModel option)
+        {
+            if (_suppressOptionSync) return;
+
+            if (option.IsBoolean)
+            {
+                if (option.IsSelected)
+                {
+                    if (!_optionPartMap.ContainsKey(option) && !string.IsNullOrWhiteSpace(option.DisplayName))
+                    {
+                        var part = new CommandPart
+                        {
+                            Role = CommandPartRole.Argument,
+                            Token = option.DisplayName,
+                            SourceArgument = option.Argument
+                        };
+                        var vm = new CommandPartViewModel(part, RemoveCommandPart);
+                        CommandParts.Add(vm);
+                        _optionPartMap[option] = vm;
+                    }
+                }
+                else
+                {
+                    if (_optionPartMap.TryGetValue(option, out var flagVm))
+                    {
+                        flagVm.ValueChanged -= OnCommandPartValueChanged;
+                        CommandParts.Remove(flagVm);
+                        _optionPartMap.Remove(option);
+                    }
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(option.Value))
+                {
+                    if (_optionPartMap.TryGetValue(option, out var flagVm))
+                    {
+                        // Update value chip
+                        var valueVm = CommandParts.FirstOrDefault(p => flagVm.Part.LinkedValueId.HasValue && p.Id == flagVm.Part.LinkedValueId.Value);
+                        if (valueVm != null)
+                            valueVm.Value = option.Value.Trim();
+                    }
+                    else if (!string.IsNullOrWhiteSpace(option.DisplayName))
+                    {
+                        var newFlagPart = new CommandPart
+                        {
+                            Role = CommandPartRole.Argument,
+                            Token = option.DisplayName,
+                            SourceArgument = option.Argument
+                        };
+                        var newValuePart = new CommandPart
+                        {
+                            Role = CommandPartRole.ArgumentValue,
+                            Token = option.Value.Trim(),
+                            SourceArgument = option.Argument,
+                            LinkedValueId = newFlagPart.Id
+                        };
+                        newFlagPart.LinkedValueId = newValuePart.Id;
+
+                        var newFlagVm = new CommandPartViewModel(newFlagPart, RemoveCommandPart);
+                        var newValueVm = new CommandPartViewModel(newValuePart, RemoveCommandPart);
+                        newValueVm.ValueChanged += OnCommandPartValueChanged;
+
+                        CommandParts.Add(newFlagVm);
+                        CommandParts.Add(newValueVm);
+                        _optionPartMap[option] = newFlagVm;
+                    }
+                }
+                else
+                {
+                    if (_optionPartMap.TryGetValue(option, out var flagVm))
+                    {
+                        var valueVm = CommandParts.FirstOrDefault(p => flagVm.Part.LinkedValueId.HasValue && p.Id == flagVm.Part.LinkedValueId.Value);
+                        if (valueVm != null)
+                        {
+                            valueVm.ValueChanged -= OnCommandPartValueChanged;
+                            CommandParts.Remove(valueVm);
+                        }
+                        flagVm.ValueChanged -= OnCommandPartValueChanged;
+                        CommandParts.Remove(flagVm);
+                        _optionPartMap.Remove(option);
+                    }
+                }
+            }
+
+            RebuildPreview();
+        }
+
+        private void SyncParameterPart(ParameterItemViewModel param)
+        {
+            if (_suppressParameterSync) return;
+
+            if (!string.IsNullOrWhiteSpace(param.Value))
+            {
+                if (_paramPartMap.TryGetValue(param, out var existing))
+                {
+                    existing.Value = param.Value.Trim();
+                }
+                else
+                {
+                    var part = new CommandPart
+                    {
+                        Role = CommandPartRole.Parameter,
+                        Token = param.Value.Trim(),
+                        SourceParameter = param.Parameter
+                    };
+                    var vm = new CommandPartViewModel(part, RemoveCommandPart);
+                    vm.ValueChanged += OnCommandPartValueChanged;
+                    CommandParts.Add(vm);
+                    _paramPartMap[param] = vm;
+                }
+            }
+            else
+            {
+                if (_paramPartMap.TryGetValue(param, out var existing))
+                {
+                    existing.ValueChanged -= OnCommandPartValueChanged;
+                    CommandParts.Remove(existing);
+                    _paramPartMap.Remove(param);
+                }
+            }
+
+            RebuildPreview();
+        }
+
+        private void PurgeOptionPart(CommandPartViewModel flagVm)
+        {
+            var option = _optionPartMap.Keys.FirstOrDefault(o => _optionPartMap[o] == flagVm);
+            if (option == null) return;
+
+            var valueVm = flagVm.Part.LinkedValueId.HasValue
+                ? CommandParts.FirstOrDefault(p => p.Id == flagVm.Part.LinkedValueId.Value)
+                : null;
+
+            if (valueVm != null)
+            {
+                valueVm.ValueChanged -= OnCommandPartValueChanged;
+                CommandParts.Remove(valueVm);
+            }
+            flagVm.ValueChanged -= OnCommandPartValueChanged;
+            CommandParts.Remove(flagVm);
+            _optionPartMap.Remove(option);
+
+            _suppressOptionSync = true;
+            try
+            {
+                if (option.IsBoolean) option.IsSelected = false;
+                else option.Value = string.Empty;
+            }
+            finally { _suppressOptionSync = false; }
+        }
+
+        private void PurgeParameterPart(CommandPartViewModel vm)
+        {
+            var param = _paramPartMap.Keys.FirstOrDefault(p => _paramPartMap[p] == vm);
+            if (param == null) return;
+
+            vm.ValueChanged -= OnCommandPartValueChanged;
+            CommandParts.Remove(vm);
+            _paramPartMap.Remove(param);
+
+            _suppressParameterSync = true;
+            try { param.Value = string.Empty; }
+            finally { _suppressParameterSync = false; }
+        }
+
+        public void PurgeCommandPartForOption(OptionItemViewModel option)
+        {
+            if (_optionPartMap.TryGetValue(option, out var flagVm))
+                PurgeOptionPart(flagVm);
+        }
+
+        public void PurgeCommandPartForParam(ParameterItemViewModel param)
+        {
+            if (_paramPartMap.TryGetValue(param, out var vm))
+                PurgeParameterPart(vm);
+        }
+
+        private void RebuildPreview()
+        {
+            CommandPreview = CommandBuilder.TokensFromParts(CommandParts);
+        }
+
+        private void OnCommandPartValueChanged(object? sender, EventArgs e)
+        {
+            RebuildPreview();
         }
 
         public void AddNewSchema()
@@ -350,6 +632,36 @@ namespace CommandWizard.ViewModels
             return true;
         }
 
+        public bool ImportSchemaFromDraft(HelpImportDraft draft)
+        {
+            if (draft == null)
+            {
+                MessageBox.Show("No reviewed import draft is available.", "Import Schema", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            var schema = HelpImportPipeline.BuildSchemaFromDraft(draft);
+            if (string.IsNullOrWhiteSpace(schema.Name))
+            {
+                MessageBox.Show("Tool name is required.", "Import Schema", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            schema.SourcePath = string.Empty;
+            var vm = new ToolSchemaViewModel(schema);
+            vm.IsImportedUnsaved = true;
+            RegisterTool(vm);
+            Tools.Add(vm);
+            SelectedTool = vm;
+            AppLogger.Info($"Import success (reviewed draft): {schema.Name} | {vm.ImportSummary}");
+            MessageBox.Show(
+                $"Schema imported. {vm.ImportSummary}. Review and save when ready.",
+                "Import Schema",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return true;
+        }
+
         public void AddAction()
         {
             if (SelectedTool == null) return;
@@ -394,11 +706,12 @@ namespace CommandWizard.ViewModels
             var optionVm = SelectedTool.Options.FirstOrDefault(o => o.Argument == SelectedArgumentForEdit);
             if (optionVm != null)
             {
+                PurgeCommandPartForOption(optionVm);
                 optionVm.PropertyChanged -= OptionOnPropertyChanged;
                 SelectedTool.Options.Remove(optionVm);
             }
             SelectedArgumentForEdit = null;
-            UpdateCommandPreview();
+            RebuildPreview();
         }
 
         public void AddParameter()
@@ -415,7 +728,9 @@ namespace CommandWizard.ViewModels
         public void AddTag()
         {
             if (SelectedTool == null) return;
-            var defaultColor = TagPresets.FirstOrDefault()?.Color ?? "#7A7A7A";
+            var defaultColor = TagPresets.FirstOrDefault(p => p.Name == "Blue 500")?.Color ??
+                               TagPresets.FirstOrDefault()?.Color ??
+                               "#7A7A7A";
             var tag = new SchemaTag { Name = "tag", Color = defaultColor };
             SelectedTool.Schema.Tags.Add(tag);
             SelectedTagForEdit = tag;
@@ -441,11 +756,12 @@ namespace CommandWizard.ViewModels
             var paramVm = SelectedTool.Parameters.FirstOrDefault(p => p.Parameter == SelectedParameterForEdit);
             if (paramVm != null)
             {
+                PurgeCommandPartForParam(paramVm);
                 paramVm.PropertyChanged -= ParameterOnPropertyChanged;
                 SelectedTool.Parameters.Remove(paramVm);
             }
             SelectedParameterForEdit = null;
-            UpdateCommandPreview();
+            RebuildPreview();
         }
 
         public void SaveSelectedSchema()
@@ -908,13 +1224,88 @@ namespace CommandWizard.ViewModels
         {
             var presets = (List<Models.TagPreset>)TagPresets;
             presets.Clear();
-            presets.Add(new("Blue",   "#0D89C8"));
-            presets.Add(new("Cyan",   "#29B6F6"));
-            presets.Add(new("Green",  "#3FB950"));
-            presets.Add(new("Yellow", "#F0B429"));
-            presets.Add(new("Red",    "#F76C6C"));
-            presets.Add(new("Purple", "#9B5DE5"));
-            presets.Add(new("Gray",   "#ADB5BD"));
+
+            var neutralShades = new[]
+            {
+                "#F8F9FA", "#E9ECEF", "#DEE2E6", "#CED4DA", "#ADB5BD",
+                "#868E96", "#6C757D", "#495057", "#343A40", "#212529"
+            };
+
+            for (var i = 0; i < neutralShades.Length; i++)
+            {
+                presets.Add(new($"Gray {i + 1}", neutralShades[i]));
+            }
+
+            var hues = new (string Name, double Hue, double Saturation)[]
+            {
+                ("Red", 0, 0.82),
+                ("Rose", 340, 0.82),
+                ("Pink", 320, 0.76),
+                ("Purple", 280, 0.72),
+                ("Indigo", 245, 0.70),
+                ("Blue", 210, 0.78),
+                ("Sky", 195, 0.78),
+                ("Cyan", 185, 0.76),
+                ("Teal", 170, 0.72),
+                ("Green", 130, 0.62),
+                ("Lime", 85, 0.66),
+                ("Yellow", 60, 0.82),
+                ("Amber", 42, 0.86),
+                ("Orange", 28, 0.86),
+                ("Coral", 14, 0.82),
+                ("Brown", 20, 0.42),
+                ("Slate", 200, 0.22)
+            };
+
+            var shades = new (string Name, double Lightness)[]
+            {
+                ("100", 0.90),
+                ("200", 0.80),
+                ("300", 0.70),
+                ("400", 0.60),
+                ("500", 0.50),
+                ("600", 0.40),
+                ("700", 0.32),
+                ("800", 0.24)
+            };
+
+            foreach (var hue in hues)
+            {
+                foreach (var shade in shades)
+                {
+                    presets.Add(new($"{hue.Name} {shade.Name}", HslToHex(hue.Hue, hue.Saturation, shade.Lightness)));
+                }
+            }
+        }
+
+        private static string HslToHex(double hue, double saturation, double lightness)
+        {
+            hue = ((hue % 360) + 360) % 360 / 360;
+            var q = lightness < 0.5
+                ? lightness * (1 + saturation)
+                : lightness + saturation - lightness * saturation;
+            var p = 2 * lightness - q;
+
+            byte Convert(double t)
+            {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+
+                var channel = t switch
+                {
+                    < 1.0 / 6.0 => p + (q - p) * 6 * t,
+                    < 1.0 / 2.0 => q,
+                    < 2.0 / 3.0 => p + (q - p) * (2.0 / 3.0 - t) * 6,
+                    _ => p
+                };
+
+                return (byte)Math.Round(Math.Clamp(channel, 0, 1) * 255);
+            }
+
+            var r = Convert(hue + 1.0 / 3.0);
+            var g = Convert(hue);
+            var b = Convert(hue - 1.0 / 3.0);
+            return $"#{r:X2}{g:X2}{b:X2}";
         }
 
         private void TagOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -1081,17 +1472,21 @@ namespace CommandWizard.ViewModels
 
         private void OptionOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            UpdateCommandPreview();
+            if (sender is OptionItemViewModel option)
+                SyncOptionPart(option);
         }
 
         private void ParameterOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            UpdateCommandPreview();
+            if (sender is ParameterItemViewModel param)
+                SyncParameterPart(param);
         }
 
         private void ToolOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            UpdateCommandPreview();
+            if (_toolPart != null && _selectedTool != null)
+                _toolPart.Value = _selectedTool.CommandName;
+            RebuildPreview();
             ToolsView.Refresh();
             UpdateFavoriteTagsForAll();
         }

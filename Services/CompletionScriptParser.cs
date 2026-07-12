@@ -17,6 +17,7 @@ namespace CommandWizard.Services
         private static readonly Regex LongFlagRegex = new(@"(?<!\w)--[A-Za-z0-9][A-Za-z0-9_-]*", RegexOptions.Compiled);
         private static readonly Regex ShortFlagRegex = new(@"(?<!-)-[A-Za-z0-9](?![A-Za-z0-9_-])", RegexOptions.Compiled);
         private static readonly Regex QuotedTokenRegex = new(@"['""](?<token>[A-Za-z0-9][A-Za-z0-9_-]*)['""]", RegexOptions.Compiled);
+        private static readonly Regex CommandAssignmentRegex = new(@"\b(?:commands|subcommands)\b\s*=\s*['""]?(?<tokens>[A-Za-z0-9_\-\s]+)['""]?", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly Regex ShortLongPairRegex = new(@"(?<short>-[A-Za-z0-9])\s*,?\s*(?<long>--[A-Za-z0-9][A-Za-z0-9_-]*)", RegexOptions.Compiled);
         private static readonly Regex LongShortPairRegex = new(@"(?<long>--[A-Za-z0-9][A-Za-z0-9_-]*)\s*,?\s*(?<short>-[A-Za-z0-9])", RegexOptions.Compiled);
 
@@ -110,42 +111,46 @@ namespace CommandWizard.Services
                 return Array.Empty<string>();
             }
 
+            if (LooksLikeRuntimeError(line))
+            {
+                return Array.Empty<string>();
+            }
+
+            var lower = line.ToLowerInvariant();
+            var actionishLine = lower.Contains("$commands") ||
+                                lower.Contains(" commands=") ||
+                                lower.Contains("commands =") ||
+                                lower.Contains("local commands") ||
+                                lower.Contains("$subcommands") ||
+                                lower.Contains("subcommands =");
+
+            if (!actionishLine)
+            {
+                return Array.Empty<string>();
+            }
+
             var quoted = QuotedTokenRegex.Matches(line).Select(m => m.Groups["token"].Value).ToList();
             if (quoted.Count > 0)
             {
                 return quoted;
             }
 
-            var lower = line.ToLowerInvariant();
-            var keywordIndex = lower.IndexOf("command", StringComparison.OrdinalIgnoreCase);
-            if (keywordIndex < 0)
+            var assignment = CommandAssignmentRegex.Match(line);
+            if (assignment.Success)
             {
-                keywordIndex = lower.IndexOf("subcommand", StringComparison.OrdinalIgnoreCase);
+                return assignment.Groups["tokens"].Value
+                    .Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             }
 
-            if (keywordIndex < 0)
-            {
-                return Array.Empty<string>();
-            }
+            return Array.Empty<string>();
+        }
 
-            var slice = line;
-            var equalsIndex = line.IndexOf('=', keywordIndex);
-            if (equalsIndex >= 0 && equalsIndex + 1 < line.Length)
-            {
-                slice = line.Substring(equalsIndex + 1);
-            }
-
-            var tokens = Regex.Matches(slice, @"\b[A-Za-z0-9][A-Za-z0-9_-]*\b")
-                .Select(m => m.Value)
-                .Where(token => !token.Equals("command", StringComparison.OrdinalIgnoreCase)
-                                && !token.Equals("commands", StringComparison.OrdinalIgnoreCase)
-                                && !token.Equals("subcommand", StringComparison.OrdinalIgnoreCase)
-                                && !token.Equals("subcommands", StringComparison.OrdinalIgnoreCase)
-                                && !token.Equals("complete", StringComparison.OrdinalIgnoreCase)
-                                && !token.Equals("compgen", StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            return tokens;
+        private static bool LooksLikeRuntimeError(string line)
+        {
+            return line.Contains("error", StringComparison.OrdinalIgnoreCase) ||
+                   line.Contains("cannot find", StringComparison.OrdinalIgnoreCase) ||
+                   line.Contains("did not specify", StringComparison.OrdinalIgnoreCase) ||
+                   line.Contains("stack trace", StringComparison.OrdinalIgnoreCase);
         }
 
         private static IEnumerable<(string ShortFlag, string LongFlag)> ExtractPairs(string line)

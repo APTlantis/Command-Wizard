@@ -40,6 +40,26 @@ namespace CommandWizard.Services
                         Name = actionTable.TryGetValue("name", out var nameObj) ? nameObj?.ToString() ?? "" : "",
                         Description = actionTable.TryGetValue("description", out var descObj) ? descObj?.ToString() ?? "" : ""
                     };
+
+                    if (actionTable.TryGetValue("arguments", out var actionArgsObj) && actionArgsObj is TomlTableArray actionArgsArray)
+                    {
+                        foreach (TomlTable argTable in actionArgsArray)
+                        {
+                            var argument = ParseArgument(argTable);
+                            action.Arguments.Add(argument);
+                        }
+                    }
+
+                    if (actionTable.TryGetValue("parameters", out var actionParamsObj) && actionParamsObj is TomlTableArray actionParamsArray)
+                    {
+                        foreach (TomlTable paramTable in actionParamsArray)
+                        {
+                            var parameter = ParseParameter(paramTable);
+                            if (!string.IsNullOrWhiteSpace(parameter.Name))
+                                action.Parameters.Add(parameter);
+                        }
+                    }
+
                     if (!string.IsNullOrWhiteSpace(action.Name))
                     {
                         schema.Actions.Add(action);
@@ -51,14 +71,7 @@ namespace CommandWizard.Services
             {
                 foreach (TomlTable argTable in argsArray)
                 {
-                    var argument = new SchemaArgument
-                    {
-                        Flag = argTable.TryGetValue("flag", out var flagObj) ? flagObj?.ToString() ?? "" : "",
-                        Long = argTable.TryGetValue("long", out var longObj) ? longObj?.ToString() ?? "" : "",
-                        Description = argTable.TryGetValue("description", out var descObj) ? descObj?.ToString() ?? "" : "",
-                        Type = argTable.TryGetValue("type", out var typeObj) ? typeObj?.ToString() ?? "boolean" : "boolean"
-                    };
-                    schema.Arguments.Add(argument);
+                    schema.Arguments.Add(ParseArgument(argTable));
                 }
             }
 
@@ -66,19 +79,7 @@ namespace CommandWizard.Services
             {
                 foreach (TomlTable paramTable in paramsArray)
                 {
-                    var required = true;
-                    if (paramTable.TryGetValue("required", out var reqObj) && bool.TryParse(reqObj?.ToString(), out var req))
-                    {
-                        required = req;
-                    }
-
-                    var parameter = new SchemaParameter
-                    {
-                        Name = paramTable.TryGetValue("name", out var nameObj) ? nameObj?.ToString() ?? "" : "",
-                        Type = paramTable.TryGetValue("type", out var typeObj) ? typeObj?.ToString() ?? "string" : "string",
-                        Required = required
-                    };
-
+                    var parameter = ParseParameter(paramTable);
                     if (!string.IsNullOrWhiteSpace(parameter.Name))
                     {
                         schema.Parameters.Add(parameter);
@@ -110,6 +111,39 @@ namespace CommandWizard.Services
             return schema;
         }
 
+        private static SchemaArgument ParseArgument(TomlTable argTable)
+        {
+            var styleText = argTable.TryGetValue("value_style", out var vsObj) ? vsObj?.ToString() ?? "" : "";
+            return new SchemaArgument
+            {
+                Flag = argTable.TryGetValue("flag", out var flagObj) ? flagObj?.ToString() ?? "" : "",
+                Long = argTable.TryGetValue("long", out var longObj) ? longObj?.ToString() ?? "" : "",
+                Description = argTable.TryGetValue("description", out var descObj) ? descObj?.ToString() ?? "" : "",
+                Type = argTable.TryGetValue("type", out var typeObj) ? typeObj?.ToString() ?? "boolean" : "boolean",
+                ValueStyle = ParseValueStyle(styleText)
+            };
+        }
+
+        private static SchemaParameter ParseParameter(TomlTable paramTable)
+        {
+            var required = true;
+            if (paramTable.TryGetValue("required", out var reqObj) && bool.TryParse(reqObj?.ToString(), out var req))
+                required = req;
+            return new SchemaParameter
+            {
+                Name = paramTable.TryGetValue("name", out var nameObj) ? nameObj?.ToString() ?? "" : "",
+                Type = paramTable.TryGetValue("type", out var typeObj) ? typeObj?.ToString() ?? "string" : "string",
+                Required = required
+            };
+        }
+
+        private static ArgumentValueStyle ParseValueStyle(string s) => s.ToLowerInvariant() switch
+        {
+            "equals" or "equals_separated" => ArgumentValueStyle.EqualsSeparated,
+            "attached" => ArgumentValueStyle.Attached,
+            _ => ArgumentValueStyle.SpaceSeparated
+        };
+
         public static string Serialize(ToolSchema schema)
         {
             var root = new TomlTable();
@@ -137,11 +171,26 @@ namespace CommandWizard.Services
                 var actions = new TomlTableArray();
                 foreach (var action in schema.Actions)
                 {
-                    actions.Add(new TomlTable
+                    var actionEntry = new TomlTable
                     {
                         ["name"] = action.Name,
                         ["description"] = action.Description
-                    });
+                    };
+                    if (action.Arguments.Count > 0)
+                    {
+                        var actionArgs = new TomlTableArray();
+                        foreach (var arg in action.Arguments)
+                            actionArgs.Add(SerializeArgument(arg));
+                        actionEntry["arguments"] = actionArgs;
+                    }
+                    if (action.Parameters.Count > 0)
+                    {
+                        var actionParams = new TomlTableArray();
+                        foreach (var param in action.Parameters)
+                            actionParams.Add(new TomlTable { ["name"] = param.Name, ["type"] = param.Type, ["required"] = param.Required });
+                        actionEntry["parameters"] = actionParams;
+                    }
+                    actions.Add(actionEntry);
                 }
                 root["actions"] = actions;
             }
@@ -150,19 +199,7 @@ namespace CommandWizard.Services
             {
                 var args = new TomlTableArray();
                 foreach (var arg in schema.Arguments)
-                {
-                    var entry = new TomlTable
-                    {
-                        ["flag"] = arg.Flag,
-                        ["description"] = arg.Description,
-                        ["type"] = arg.Type
-                    };
-                    if (!string.IsNullOrWhiteSpace(arg.Long))
-                    {
-                        entry["long"] = arg.Long;
-                    }
-                    args.Add(entry);
-                }
+                    args.Add(SerializeArgument(arg));
                 root["arguments"] = args;
             }
 
@@ -197,6 +234,28 @@ namespace CommandWizard.Services
             }
 
             return Toml.FromModel(root);
+        }
+
+        private static TomlTable SerializeArgument(SchemaArgument arg)
+        {
+            var entry = new TomlTable
+            {
+                ["flag"] = arg.Flag,
+                ["description"] = arg.Description,
+                ["type"] = arg.Type
+            };
+            if (!string.IsNullOrWhiteSpace(arg.Long))
+                entry["long"] = arg.Long;
+            if (arg.ValueStyle != ArgumentValueStyle.SpaceSeparated)
+            {
+                entry["value_style"] = arg.ValueStyle switch
+                {
+                    ArgumentValueStyle.EqualsSeparated => "equals",
+                    ArgumentValueStyle.Attached => "attached",
+                    _ => "space"
+                };
+            }
+            return entry;
         }
     }
 }
