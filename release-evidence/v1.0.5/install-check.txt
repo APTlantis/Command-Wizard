@@ -1,0 +1,64 @@
+# CommandWizard v1.0.5 - Install Check
+
+Date: 2026-07-12
+
+## Package
+
+```text
+dist\CommandWizard-1.0.5.0.msix
+```
+
+Built from git HEAD (post Value-Style-column restore) via
+`scripts\package-msix.ps1`, which invokes makeappx.exe 10.0.28000.2270 and
+signtool.exe directly from the cached Microsoft.Windows.SDK.BuildTools NuGet
+package. This was necessary because winapp CLI's `package`/`sign` subcommands
+(confirmed on both v0.3.2 and v0.4.0) hit an internal bug that misreports real
+makeappx/signtool errors as "Could not install or find Windows SDK Build
+Tools" regardless of the actual cause -- the script was updated accordingly.
+Packaging also required fixing appxmanifest.xml, which still had the
+Visual-Studio-only placeholder `Executable="$targetnametoken$.exe"` -- changed
+to `Executable="CommandWizard.exe"` since packaging is done via CLI, not an
+MSIX packaging project's MSBuild substitution.
+
+## Signature
+
+```powershell
+Get-AuthenticodeSignature .\dist\CommandWizard-1.0.5.0.msix
+```
+
+Result: `Valid` / "Signature verified." Signed with `CN=Administrator`,
+thumbprint `C03F83DE2A4964918A6D1D10C0F5D88B39647B11`, expires 2027-03-14
+(same local dev certificate as prior releases).
+
+## Install
+
+```powershell
+Add-AppxPackage .\dist\CommandWizard-1.0.5.0.msix
+```
+
+Result: Success. Registered as `commandwizard_1.0.5.0_neutral__75cr2b68sm664`,
+version `1.0.5.0`.
+
+## Launch
+
+Launched via `shell:AppsFolder\commandwizard_75cr2b68sm664!commandwizard`.
+Window title confirmed: "Aptlantis Command Wizard". Visually confirmed against
+the target reference screenshot: light theme, Schema Editor tab selected,
+Delete Schema button present, Arguments grid includes the Value Style column.
+
+## Uninstall
+
+```powershell
+Get-AppxPackage *CommandWizard* | Remove-AppxPackage
+```
+
+Result: Package removed cleanly. No leftover entry under
+`%LOCALAPPDATA%\Packages\commandwizard*`.
+
+## Data Safety
+
+Not exercised in this pass (no schema edits/saves were performed during the
+install check), so AppData persistence after uninstall was not re-verified for
+this specific build. Prior v1.0.0 evidence documented that schema files and
+history.json are retained in AppData after uninstall by design; no change was
+made to that data-handling code path in this release.

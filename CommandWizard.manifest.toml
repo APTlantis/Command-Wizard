@@ -3,7 +3,7 @@ schema = "APTlantis Entity Manifest"
 schema_version = "2.4"
 manifest_type = "project"
 canonical_name = "CommandWizard.manifest.toml"
-last_updated = "2026-07-08"
+last_updated = "2026-07-12"
 maintainer = "Herb"
 
 [entity]
@@ -31,7 +31,7 @@ wizard = "#29B6F6"
 type = "desktop-application"
 portfolio_class = "project"
 stage = "production"
-version = "1.0.0"
+version = "1.0.5"
 
 [governance]
 primary_standard = "DRS"
@@ -65,9 +65,7 @@ child_projects = []
 [state]
 stability = "stable"
 active_development = false
-known_gaps = [
-    "Current build, test, artifact, and release posture were not executed during the governance migration.",
-]
+known_gaps = []
 
 [migration]
 archived_manifests = [
@@ -106,12 +104,14 @@ artifact_verified = true
 release_verified = true
 
 [release]
-version = "1.0.0.0"
+version = "1.0.5.0"
 date = "2026-07-12"
+supersedes = "1.0.0.0"
+supersedes_reason = "1.0.0.0 was packaged from a stale pre-theme-change build (dark theme, missing Delete Schema button, missing Value Style column) and is no longer distributed."
 
 [release.installer]
-path = "dist/CommandWizard-1.0.0.0.msix"
-sha256 = "995CEE8972C2D086B9148D9F93F3ADC8B55C1F1CED45CE75A39C49BACE7B346D"
+path = "dist/CommandWizard-1.0.5.0.msix"
+sha256 = "24557f08aed5524bbd396d60323a28bc2fa82b9f5969404844693d20e6fc6733"
 signed = true
 certificate_subject = "CN=Administrator"
 certificate_thumbprint = "C03F83DE2A4964918A6D1D10C0F5D88B39647B11"
@@ -120,7 +120,7 @@ signing_type = "local-dev"
 
 [release.verification]
 build_result = "success"
-test_result = "11/11 passed"
+test_result = "26/26 passed"
 install_check = "pass"
 uninstall_check = "pass"
-evidence_path = "release-evidence/v1.0.0/"
+evidence_path = "release-evidence/v1.0.5/"

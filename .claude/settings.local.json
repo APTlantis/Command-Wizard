@@ -9,7 +9,18 @@
       "Bash(Get-FileHash \"D:\\\\DRS\\\\CommandWizard\\\\dist\\\\CommandWizard-1.0.0.0.msix\" -Algorithm SHA256)",
       "Bash(Select-Object -ExpandProperty Hash)",
       "PowerShell(dotnet build *)",
-      "PowerShell(dotnet test *)"
+      "PowerShell(dotnet test *)",
+      "Bash(git log *)",
+      "Bash(rm -rf \"bin/Debug/net10.0-windows\")",
+      "Bash(rm -rf \"bin/Release\")",
+      "Bash(rm -rf \"bin/Win32\")",
+      "Bash(rm -rf \"obj/Debug/net10.0-windows\")",
+      "Bash(rm -rf \"obj/Release\")",
+      "Bash(dotnet test *)",
+      "PowerShell(Tee-Object *)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(winget *)",
+      "PowerShell(winapp *)"
     ]
   }
 }

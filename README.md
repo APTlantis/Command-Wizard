@@ -7,11 +7,11 @@
 
 CommandWizard is a schema-driven WPF desktop application that builds CLI command strings through a guided wizard interface. Schemas are defined in TOML files stored locally in AppData — no cloud sync, no telemetry.
 
-v1.0.0 shipped as a locally-signed MSIX; 11/11 tests pass on .NET 10.
+v1.0.5 shipped as a locally-signed MSIX; 26/26 tests pass on .NET 10.
 
-![CommandWizard screenshot](project_images/Screenshot%202026-05-21%20203515.png)
+![CommandWizard screenshot](project_images/Screenshot%202026-06-25%20092449.png)
 
-Quick links: [Project README](Project-README.md) | [Release Notes](RELEASE-v1.0.0.md) | [Manifest](CommandWizard.manifest.toml)
+Quick links: [Project README](Project-README.md) | [Release Notes](RELEASE-v1.0.5.md) | [Manifest](CommandWizard.manifest.toml)
 
 ---
 
@@ -33,13 +33,13 @@ Quick links: [Project README](Project-README.md) | [Release Notes](RELEASE-v1.0.
 | Metric | Value |
 |--------|-------|
 | Build | `dotnet build -c Release` |
-| Test suite | `11/11 passed` |
+| Test suite | `26/26 passed` |
 | MSIX signature | `Valid` |
-| Installed version | `1.0.0.0` |
+| Installed version | `1.0.5.0` |
 | Date verified | `2026-07-12` |
 | Result | Release build, all tests green, MSIX installs and launches |
 
-Evidence bundle at `release-evidence/v1.0.0/` (build.log, test.log, filehash.txt, install-check.txt).
+Evidence bundle at `release-evidence/v1.0.5/` (build.log, test.log, filehash.txt, install-check.txt).
 
 ---
 
@@ -112,8 +112,8 @@ Import pipeline that produces a `ToolSchema` from a live command or pasted help 
 |----------|---------|
 | `AppData/.../schemas/*.toml` | One TOML file per tool schema; read on startup, written on save, deleted on delete |
 | `AppData/.../history.json` | JSON array of saved favorite commands with tool, action, task, and timestamp |
-| `dist/CommandWizard-1.0.0.0.msix` | Signed MSIX installer; SHA-256 `995CEE...346D` |
-| `release-evidence/v1.0.0/` | Build log, test log, file hash, and install check for the v1.0.0 release |
+| `dist/CommandWizard-1.0.5.0.msix` | Signed MSIX installer; SHA-256 `24557F...C6733` |
+| `release-evidence/v1.0.5/` | Build log, test log, file hash, and install check for the v1.0.5 release |
 
 All user data lives under `%LOCALAPPDATA%\Aptlantis\CommandWizard\` (resolved by `AppPaths.ResolveDataRoot()`). The AppData folder is not removed by MSIX uninstall — user schemas and favorites persist.
 
@@ -153,7 +153,7 @@ Important signals:
 - Log lines beginning `Import failed:` indicate the help importer could not parse the command output
 - `Schema saved:` / `Schema deleted:` lines confirm file operations succeeded
 - A missing `AppData/.../schemas/` directory on first launch is normal — the app creates it and shows a guidance message
-- `Passed! - Failed: 0, Passed: 11` in `release-evidence/v1.0.0/test.log` is the passing baseline
+- `Passed! - Failed: 0, Passed: 26` in `release-evidence/v1.0.5/test.log` is the passing baseline
 
 ---
 
@@ -172,7 +172,7 @@ Important signals:
 Import-Certificate -FilePath .\devcert.cer -CertStoreLocation Cert:\LocalMachine\TrustedPeople
 
 # Install the MSIX
-Add-AppxPackage .\dist\CommandWizard-1.0.0.0.msix
+Add-AppxPackage .\dist\CommandWizard-1.0.5.0.msix
 ```
 
 ### Build
@@ -193,7 +193,7 @@ dotnet build .\CommandWizard.csproj -c Release
 
 ```powershell
 dotnet test .\CommandWizard.Tests\CommandWizard.Tests.csproj -c Release
-Get-AuthenticodeSignature .\dist\CommandWizard-1.0.0.0.msix
+Get-AuthenticodeSignature .\dist\CommandWizard-1.0.5.0.msix
 ```
 
 ---
@@ -252,7 +252,7 @@ Package MSIX:
 .\scripts\package-msix.ps1
 ```
 
-Current automated coverage includes 11 xUnit tests covering schema serialization round-trips, command builder output, help text parsing, and import pipeline logic.
+Current automated coverage includes 26 xUnit tests covering schema serialization round-trips, command builder output, help text parsing, and import pipeline logic.
 
 ---
 
@@ -262,7 +262,7 @@ Current automated coverage includes 11 xUnit tests covering schema serialization
 |------|---------|
 | [README.md](README.md) | This file — project overview and quick start |
 | [Project-README.md](Project-README.md) | Governance entry point — build commands, known gaps, manifest links |
-| [RELEASE-v1.0.0.md](RELEASE-v1.0.0.md) | v1.0.0 release notes — installer, SHA-256, theme, design boundaries, built with |
+| [RELEASE-v1.0.5.md](RELEASE-v1.0.5.md) | v1.0.5 release notes — installer, SHA-256, theme, design boundaries, built with |
 | [AGENTS.md](AGENTS.md) | Agent modification instructions |
 | [CommandWizard.manifest.toml](CommandWizard.manifest.toml) | Machine-readable project manifest |
 

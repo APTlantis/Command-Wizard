@@ -250,6 +250,10 @@
                                                 Binding="{Binding Type, UpdateSourceTrigger=PropertyChanged}"
                                                 Header="Type" />
                                             <DataGridTextColumn
+                                                Width="*"
+                                                Binding="{Binding ValueStyleText, UpdateSourceTrigger=PropertyChanged}"
+                                                Header="Value Style" />
+                                            <DataGridTextColumn
                                                 Width="2*"
                                                 Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
                                                 Header="Description" />

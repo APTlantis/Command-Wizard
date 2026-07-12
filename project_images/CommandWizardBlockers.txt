@@ -1,0 +1,24 @@
+CommandWizard
+Path: D:\DRS\CommandWizard
+
+Status: Paused | Completion: 95% | Complexity: Medium
+
+Tags: winui, dotnet, c#, desktop, msix, schema-driven, toml, local-first, command-generation, wizard
+
+Summary: Schema-driven WinUI/.NET desktop application that lets a single operator build, edit, and run CLI command workflows via a guided wizard. Stores TOML tool schemas and a local history, can import help text or completion data, and ships as a locally-signed MSIX for Windows 10+.
+
+Missing Pieces:
+
+Release document missing SHA-256 hash for the MSIX artifact (RELEASE-v1.0.0.md lists package and signing but no SHA-256)
+Project manifest lacks per-release installer sha256 and release.verified fields populated (manifest.release.* installer fields not present / verification flags false)
+Release note does not include required Design Boundaries section or explicit theme name per DRS template
+Release note does not include a Built With section listing all notable dependencies in the DRS-prescribed format
+Evidence folder (release-evidence/v1.0.0/) with filehash.txt, build.log, test.log is not present or not referenced in the manifest
+Project-README lists governance reconciliation but build/test/package commands need confirmation (known_gaps documented in manifest/Project-README.md)
+Next Steps:
+
+Compute SHA-256 (and optional BLAKE3) of dist\CommandWizard-1.0.0.0.msix and record it in RELEASE-v1.0.0.md and CommandWizard.manifest.toml under release.installer.sha256
+Run a verified clean build, record build.log and test.log, populate manifest.release.verified and append a per-version verification block to the release checklist (include test count, install/uninstall check, data safety)
+Create a release-evidence/v1.0.0/ bundle with filehash.txt, build.log, test.log, install-check.txt and reference it from the manifest
+Add DRS-required fields to the release note: explicit theme name, Design Boundaries (≥2 entries), Built With list, and Signing status statement
+Confirm and update project lifecycle state (paused vs active) after review with maintainer Herb and reconcile legacy manifest fields into the canonical manifest

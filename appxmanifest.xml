@@ -14,7 +14,7 @@
   <Identity
     Name="commandwizard"
     Publisher="CN=Administrator"
-    Version="1.0.2.0" />
+    Version="1.0.5.0" />
 
   <Properties>
     <DisplayName>CommandWizard</DisplayName>
@@ -32,7 +32,7 @@
 
   <Applications>
     <Application Id="commandwizard"
-      Executable="$targetnametoken$.exe"
+      Executable="CommandWizard.exe"
       EntryPoint="Windows.FullTrustApplication"
       uap10:TrustLevel="mediumIL"
       uap10:RuntimeBehavior="packagedClassicApp">
