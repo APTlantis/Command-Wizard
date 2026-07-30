@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open, save } from "@tauri-apps/plugin-dialog";
-import type { AppSnapshot, CliInstallResult, FavoriteCommand, RuntimeApi, ToolSchema } from "../types";
+import type { AppSnapshot, CliInstallResult, ExecutableHealth, FavoriteCommand, RuntimeApi, ToolSchema } from "../types";
 import { exportFavoritesText } from "./favorites";
 
 const sampleSchema: ToolSchema = {
@@ -10,6 +10,15 @@ const sampleSchema: ToolSchema = {
   sourcePath: "",
   executablePath: "",
   installedName: "",
+  metadata: {
+    version: "",
+    author: "",
+    source: "browser sample",
+    importedFrom: "",
+    homepage: "",
+    executableVersion: "",
+    lastValidated: ""
+  },
   actions: [],
   arguments: [
     { flag: "-a", long: "--archive", description: "archive mode", type: "boolean", valueStyle: "space" },
@@ -83,6 +92,20 @@ export const runtime: RuntimeApi = {
   async captureCompletion(commandName) {
     if (!isTauriRuntime()) return null;
     return invoke<string | null>("capture_completion", { commandName });
+  },
+  async checkExecutables(schemas) {
+    if (!isTauriRuntime()) {
+      return schemas.map(
+        (schema) =>
+          ({
+            schemaName: schema.name,
+            status: "unknown",
+            message: "Executable checks need the Tauri desktop app.",
+            checkedAt: ""
+          }) satisfies ExecutableHealth
+      );
+    }
+    return invoke<ExecutableHealth[]>("check_executables", { schemas });
   },
   async selectScriptPath() {
     if (!isTauriRuntime()) return null;

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type {
   CliInstallResult,
+  ExecutableHealth,
   FavoriteCommand,
   HelpImportDraft,
   OptionState,
@@ -21,6 +22,7 @@ import {
   createImportDraft
 } from "../lib/helpImport";
 import { emptySchema, serializeSchemaToml, validateSchema } from "../lib/schema";
+import { schemaHealth } from "../lib/schemaHealth";
 import { runtime } from "../lib/runtime";
 
 type View = "builder" | "import" | "cli" | "schema" | "library" | "settings";
@@ -29,6 +31,7 @@ interface StoreState {
   view: View;
   dataRoot: string;
   schemas: ToolSchema[];
+  executableHealth: Record<string, ExecutableHealth>;
   favorites: FavoriteCommand[];
   selectedSchemaName: string;
   selectedActionName: string;
@@ -128,6 +131,7 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
   view: "builder",
   dataRoot: "",
   schemas: [],
+  executableHealth: {},
   favorites: [],
   selectedSchemaName: "",
   selectedActionName: "",
@@ -161,9 +165,11 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     set({ isLoading: true, status: "Loading local workspace..." });
     try {
       const snapshot = await runtime.loadSnapshot();
+      const executableHealth = Object.fromEntries((await runtime.checkExecutables(snapshot.schemas)).map((health) => [health.schemaName, health]));
       set({
         dataRoot: snapshot.dataRoot,
         schemas: snapshot.schemas,
+        executableHealth,
         favorites: snapshot.favorites,
         logText: snapshot.logText,
         status: `${snapshot.schemas.length} schemas loaded`,
@@ -305,9 +311,15 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     const issues = validateSchema(schema);
     if (issues.length) return set({ status: issues[0] });
     const saved = await runtime.saveSchema(schema);
+    const executableHealth = await runtime.checkExecutables([saved]);
     set((state) => {
       const schemas = state.schemas.map((item) => (item.name === state.selectedSchemaName ? saved : item));
-      return { schemas, status: "Schema saved.", ...syncSelection(schemas, saved.name) };
+      return {
+        schemas,
+        executableHealth: { ...state.executableHealth, [saved.name]: executableHealth[0] },
+        status: "Schema saved.",
+        ...syncSelection(schemas, saved.name)
+      };
     });
   },
   async deleteSelectedSchema() {
@@ -360,9 +372,17 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     const draft = get().importDraft;
     if (!draft) return;
     const schema = await runtime.saveSchema(buildSchemaFromDraft(draft));
+    const executableHealth = await runtime.checkExecutables([schema]);
     const withoutOld = get().schemas.filter((item) => item.name !== schema.name);
     const schemas = [...withoutOld, schema].sort((a, b) => a.name.localeCompare(b.name));
-    set({ schemas, view: "builder", importDraft: null, status: "Imported schema saved.", ...syncSelection(schemas, schema.name) });
+    set((state) => ({
+      schemas,
+      executableHealth: { ...state.executableHealth, [schema.name]: executableHealth[0] },
+      view: "builder",
+      importDraft: null,
+      status: "Imported schema saved.",
+      ...syncSelection(schemas, schema.name)
+    }));
   },
   setCliField: (field, value) => set({ [field]: value }),
   async chooseCliScript() {
@@ -378,7 +398,7 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     try {
       set({ status: "Importing script and capturing help..." });
       const install = await runtime.installCliScript(state.cliScriptPath, state.cliCommandName, state.cliHelpArgs || "--help");
-      const draft = createImportDraft(install.commandName, install.helpText, "", install.shimPath);
+      const draft = createImportDraft(install.commandName, install.helpText, "", install.shimPath, "cli import", install.sourcePath);
       set({
         cliLastInstall: install,
         cliDraft: draft,
@@ -393,9 +413,17 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     const draft = get().cliDraft;
     if (!draft) return set({ status: "Import a CLI script before saving its schema." });
     const schema = await runtime.saveSchema(buildSchemaFromDraft(draft));
+    const executableHealth = await runtime.checkExecutables([schema]);
     const withoutOld = get().schemas.filter((item) => item.name !== schema.name);
     const schemas = [...withoutOld, schema].sort((a, b) => a.name.localeCompare(b.name));
-    set({ schemas, view: "builder", cliDraft: null, status: "CLI schema saved.", ...syncSelection(schemas, schema.name) });
+    set((state) => ({
+      schemas,
+      executableHealth: { ...state.executableHealth, [schema.name]: executableHealth[0] },
+      view: "builder",
+      cliDraft: null,
+      status: "CLI schema saved.",
+      ...syncSelection(schemas, schema.name)
+    }));
   },
   updateCliDraft: (patch) => set((state) => ({ cliDraft: state.cliDraft ? { ...state.cliDraft, ...patch } : null })),
   async refreshLog() {
@@ -407,13 +435,28 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
 export const selectFilteredSchemas = (state: StoreState) => {
   const search = state.toolSearch.trim().toLowerCase();
   if (!search) return state.schemas;
-  return state.schemas.filter(
-    (schema) =>
-      schema.name.toLowerCase().includes(search) ||
-      schema.description.toLowerCase().includes(search) ||
-      schema.tags.some((tag) => tag.name.toLowerCase().includes(search))
-  );
+  return state.schemas.filter((schema) => schemaSearchText(schema).includes(search));
 };
+
+export const schemaSearchText = (schema: ToolSchema) =>
+  [
+    schema.name,
+    schema.installedName,
+    schema.description,
+    schema.notes,
+    ...Object.values(schema.metadata),
+    ...schema.tags.map((tag) => tag.name),
+    ...schema.actions.flatMap((action) => [
+      action.name,
+      action.description,
+      ...action.arguments.flatMap((argument) => [argument.flag, argument.long, argument.description, argument.type]),
+      ...action.parameters.flatMap((parameter) => [parameter.name, parameter.type])
+    ]),
+    ...schema.arguments.flatMap((argument) => [argument.flag, argument.long, argument.description, argument.type]),
+    ...schema.parameters.flatMap((parameter) => [parameter.name, parameter.type])
+  ]
+    .join(" ")
+    .toLowerCase();
 
 export const selectFavoriteTags = (favorites: FavoriteCommand[]) =>
   ["All", ...Array.from(new Set(favorites.flatMap((favorite) => favorite.tags.map((tag) => tag.name)))).sort((a, b) => a.localeCompare(b))];
@@ -430,3 +473,9 @@ export const selectSchemaIssues = (state: StoreState) => {
   const schema = selectedSchema(state);
   return schema ? validateSchema(schema) : [];
 };
+export const selectSchemaHealth = (state: StoreState) => {
+  const schema = selectedSchema(state);
+  return schemaHealth(schema, state.parameters, schema ? state.executableHealth[schema.name] : undefined);
+};
+export const selectRailSchemaHealth = (state: StoreState, schema: ToolSchema) =>
+  schemaHealth(schema, [], state.executableHealth[schema.name]);

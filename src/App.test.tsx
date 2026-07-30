@@ -26,6 +26,31 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Choose Script" })).toBeInTheDocument();
   });
 
+  it("shows schema health in the rail and command panel", async () => {
+    render(<App />);
+
+    expect(await screen.findByText("Valid")).toBeInTheDocument();
+    expect(screen.getAllByText("Schema").length).toBeGreaterThan(0);
+    expect(screen.getByText("Executable")).toBeInTheDocument();
+    expect(screen.getByText("Arguments")).toBeInTheDocument();
+    expect(screen.getByText("Required Parameters")).toBeInTheDocument();
+    expect(screen.getByText("Command")).toBeInTheDocument();
+  });
+
+  it("edits provenance metadata in Schema Studio", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await screen.findByText("CommandWizard");
+    await user.click(screen.getByRole("button", { name: "Schema" }));
+    await user.type(screen.getByLabelText("Version"), "2.1");
+    await user.type(screen.getByLabelText("Author"), "Herb");
+
+    expect(document.body.textContent).toContain("[metadata]");
+    expect(document.body.textContent).toContain('version = "2.1"');
+    expect(document.body.textContent).toContain('author = "Herb"');
+  });
+
   it("clears pasted import help text", async () => {
     const user = userEvent.setup();
     render(<App />);

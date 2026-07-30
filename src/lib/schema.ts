@@ -2,10 +2,21 @@ import type {
   ArgumentValueStyle,
   SchemaAction,
   SchemaArgument,
+  SchemaMetadata,
   SchemaParameter,
   SchemaTag,
   ToolSchema
 } from "../types";
+
+export const emptyMetadata = (): SchemaMetadata => ({
+  version: "",
+  author: "",
+  source: "",
+  importedFrom: "",
+  homepage: "",
+  executableVersion: "",
+  lastValidated: ""
+});
 
 export const emptySchema = (): ToolSchema => ({
   name: "tool",
@@ -14,6 +25,7 @@ export const emptySchema = (): ToolSchema => ({
   sourcePath: "",
   executablePath: "",
   installedName: "",
+  metadata: emptyMetadata(),
   actions: [],
   arguments: [],
   parameters: [],
@@ -49,6 +61,7 @@ const stringifyValueStyle = (style: ArgumentValueStyle): string | null => {
 type TomlTable = Record<string, string | boolean>;
 type Section =
   | { kind: "tool"; table: TomlTable }
+  | { kind: "metadata"; table: TomlTable }
   | { kind: "action"; table: TomlTable; action: SchemaAction }
   | { kind: "argument"; table: TomlTable; target: SchemaArgument[] }
   | { kind: "parameter"; table: TomlTable; target: SchemaParameter[] }
@@ -58,6 +71,7 @@ const applyTable = (section: Section | null) => {
   if (!section) return;
   const table = section.table;
   if (section.kind === "tool") return;
+  if (section.kind === "metadata") return;
   if (section.kind === "action") {
     section.action.name = String(table.name ?? "");
     section.action.description = String(table.description ?? "");
@@ -91,6 +105,7 @@ export const parseSchemaToml = (tomlText: string, sourcePath = ""): ToolSchema =
   const schema = emptySchema();
   schema.sourcePath = sourcePath;
   const toolTable: TomlTable = {};
+  const metadataTable: TomlTable = {};
   let current: Section | null = null;
   let currentAction: SchemaAction | null = null;
 
@@ -103,6 +118,8 @@ export const parseSchemaToml = (tomlText: string, sourcePath = ""): ToolSchema =
       const header = line.slice(1, -1).trim();
       if (header === "tool") {
         current = { kind: "tool", table: toolTable };
+      } else if (header === "metadata") {
+        current = { kind: "metadata", table: metadataTable };
       } else if (header === "[actions]") {
         currentAction = { name: "", description: "", arguments: [], parameters: [] };
         schema.actions.push(currentAction);
@@ -136,6 +153,15 @@ export const parseSchemaToml = (tomlText: string, sourcePath = ""): ToolSchema =
   schema.notes = String(toolTable.notes ?? "");
   schema.executablePath = String(toolTable.executable_path ?? "");
   schema.installedName = String(toolTable.installed_name ?? "");
+  schema.metadata = {
+    version: String(metadataTable.version ?? ""),
+    author: String(metadataTable.author ?? ""),
+    source: String(metadataTable.source ?? ""),
+    importedFrom: String(metadataTable.imported_from ?? ""),
+    homepage: String(metadataTable.homepage ?? ""),
+    executableVersion: String(metadataTable.executable_version ?? ""),
+    lastValidated: String(metadataTable.last_validated ?? "")
+  };
   if (!schema.name) {
     throw new Error("Schema is missing tool.name.");
   }
@@ -160,6 +186,19 @@ const serializeParameter = (parameter: SchemaParameter): string[] => [
   `required = ${parameter.required ? "true" : "false"}`
 ];
 
+const metadataLines = (metadata: SchemaMetadata): string[] => {
+  const lines = [
+    metadata.version.trim() ? `version = ${quote(metadata.version)}` : "",
+    metadata.author.trim() ? `author = ${quote(metadata.author)}` : "",
+    metadata.source.trim() ? `source = ${quote(metadata.source)}` : "",
+    metadata.importedFrom.trim() ? `imported_from = ${quote(metadata.importedFrom)}` : "",
+    metadata.homepage.trim() ? `homepage = ${quote(metadata.homepage)}` : "",
+    metadata.executableVersion.trim() ? `executable_version = ${quote(metadata.executableVersion)}` : "",
+    metadata.lastValidated.trim() ? `last_validated = ${quote(metadata.lastValidated)}` : ""
+  ].filter(Boolean);
+  return lines.length ? ["", "[metadata]", ...lines] : [];
+};
+
 export const serializeSchemaToml = (schema: ToolSchema): string => {
   const lines: string[] = [
     "[tool]",
@@ -170,6 +209,8 @@ export const serializeSchemaToml = (schema: ToolSchema): string => {
   if (schema.notes.trim()) lines.push(`notes = ${quote(schema.notes)}`);
   if (schema.executablePath.trim()) lines.push(`executable_path = ${quote(schema.executablePath)}`);
   if (schema.installedName.trim()) lines.push(`installed_name = ${quote(schema.installedName)}`);
+
+  lines.push(...metadataLines(schema.metadata));
 
   for (const action of schema.actions) {
     lines.push("", "[[actions]]", `name = ${quote(action.name)}`, `description = ${quote(action.description)}`);

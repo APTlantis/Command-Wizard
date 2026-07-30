@@ -4,7 +4,7 @@ use std::{
     io::Write,
     path::{Path, PathBuf},
     process::{Command, Stdio},
-    time::{Duration, Instant},
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 use tauri::Manager;
 use thiserror::Error;
@@ -40,6 +40,25 @@ type Result<T> = std::result::Result<T, CommandWizardError>;
 struct SchemaTag {
     name: String,
     color: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+#[serde(rename_all = "camelCase")]
+struct SchemaMetadata {
+    #[serde(default)]
+    version: String,
+    #[serde(default)]
+    author: String,
+    #[serde(default)]
+    source: String,
+    #[serde(default)]
+    imported_from: String,
+    #[serde(default)]
+    homepage: String,
+    #[serde(default)]
+    executable_version: String,
+    #[serde(default)]
+    last_validated: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -92,6 +111,8 @@ struct ToolSchema {
     executable_path: String,
     #[serde(default)]
     installed_name: String,
+    #[serde(default)]
+    metadata: SchemaMetadata,
     #[serde(default)]
     actions: Vec<SchemaAction>,
     #[serde(default)]
@@ -149,6 +170,33 @@ struct TomlTool {
     executable_path: String,
     #[serde(default)]
     installed_name: String,
+}
+
+#[derive(Debug, Deserialize, Default)]
+struct TomlMetadata {
+    #[serde(default)]
+    version: String,
+    #[serde(default)]
+    author: String,
+    #[serde(default)]
+    source: String,
+    #[serde(default)]
+    imported_from: String,
+    #[serde(default)]
+    homepage: String,
+    #[serde(default)]
+    executable_version: String,
+    #[serde(default)]
+    last_validated: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ExecutableHealth {
+    schema_name: String,
+    status: String,
+    message: String,
+    checked_at: String,
 }
 
 fn default_string_type() -> String {
@@ -291,6 +339,11 @@ fn parse_schema_toml(text: &str, source_path: &Path) -> Result<ToolSchema> {
     if tool.name.trim().is_empty() {
         return Err(CommandWizardError::Message("Schema is missing tool.name.".into()));
     }
+    let metadata = root
+        .get("metadata")
+        .map(|value| value.clone().try_into::<TomlMetadata>())
+        .transpose()?
+        .unwrap_or_default();
 
     let mut schema = ToolSchema {
         name: tool.name,
@@ -299,6 +352,15 @@ fn parse_schema_toml(text: &str, source_path: &Path) -> Result<ToolSchema> {
         source_path: source_path.to_string_lossy().to_string(),
         executable_path: tool.executable_path,
         installed_name: tool.installed_name,
+        metadata: SchemaMetadata {
+            version: metadata.version,
+            author: metadata.author,
+            source: metadata.source,
+            imported_from: metadata.imported_from,
+            homepage: metadata.homepage,
+            executable_version: metadata.executable_version,
+            last_validated: metadata.last_validated,
+        },
         ..ToolSchema::default()
     };
 
@@ -364,6 +426,13 @@ fn serialize_schema_toml(schema: &ToolSchema) -> Result<String> {
     }
     if !schema.installed_name.trim().is_empty() {
         lines.push(format!("installed_name = {}", quote_toml(&schema.installed_name)));
+    }
+
+    let metadata_lines = schema_metadata_lines(&schema.metadata);
+    if !metadata_lines.is_empty() {
+        lines.push(String::new());
+        lines.push("[metadata]".to_string());
+        lines.extend(metadata_lines);
     }
 
     for action in &schema.actions {
@@ -435,6 +504,35 @@ fn parameter_lines(parameter: &SchemaParameter) -> Vec<String> {
         format!("type = {}", quote_toml(&parameter.r#type)),
         format!("required = {}", parameter.required),
     ]
+}
+
+fn schema_metadata_lines(metadata: &SchemaMetadata) -> Vec<String> {
+    let mut lines = vec![];
+    if !metadata.version.trim().is_empty() {
+        lines.push(format!("version = {}", quote_toml(&metadata.version)));
+    }
+    if !metadata.author.trim().is_empty() {
+        lines.push(format!("author = {}", quote_toml(&metadata.author)));
+    }
+    if !metadata.source.trim().is_empty() {
+        lines.push(format!("source = {}", quote_toml(&metadata.source)));
+    }
+    if !metadata.imported_from.trim().is_empty() {
+        lines.push(format!("imported_from = {}", quote_toml(&metadata.imported_from)));
+    }
+    if !metadata.homepage.trim().is_empty() {
+        lines.push(format!("homepage = {}", quote_toml(&metadata.homepage)));
+    }
+    if !metadata.executable_version.trim().is_empty() {
+        lines.push(format!(
+            "executable_version = {}",
+            quote_toml(&metadata.executable_version)
+        ));
+    }
+    if !metadata.last_validated.trim().is_empty() {
+        lines.push(format!("last_validated = {}", quote_toml(&metadata.last_validated)));
+    }
+    lines
 }
 
 fn load_schemas() -> Result<Vec<ToolSchema>> {
@@ -561,6 +659,11 @@ fn capture_completion(command_name: String) -> Result<Option<String>> {
         }
     }
     Ok(None)
+}
+
+#[tauri::command]
+fn check_executables(schemas: Vec<ToolSchema>) -> Result<Vec<ExecutableHealth>> {
+    Ok(schemas.iter().map(check_schema_executable).collect())
 }
 
 #[tauri::command]
@@ -842,6 +945,83 @@ fn is_likely_completion_script(output: &str) -> bool {
         || lower.contains("shellcompdirective")
 }
 
+fn checked_at() -> String {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_secs().to_string())
+        .unwrap_or_default()
+}
+
+fn check_schema_executable(schema: &ToolSchema) -> ExecutableHealth {
+    let checked_at = checked_at();
+    let explicit_path = schema.executable_path.trim();
+    if !explicit_path.is_empty() {
+        let path = PathBuf::from(explicit_path);
+        if path.exists() {
+            return ExecutableHealth {
+                schema_name: schema.name.clone(),
+                status: "available".to_string(),
+                message: format!("Executable path exists: {}", path.display()),
+                checked_at,
+            };
+        }
+        return ExecutableHealth {
+            schema_name: schema.name.clone(),
+            status: "missing".to_string(),
+            message: format!("Executable path not found: {}", path.display()),
+            checked_at,
+        };
+    }
+
+    let command_name = if schema.installed_name.trim().is_empty() {
+        schema.name.trim()
+    } else {
+        schema.installed_name.trim()
+    };
+    if command_name.is_empty() {
+        return ExecutableHealth {
+            schema_name: schema.name.clone(),
+            status: "unknown".to_string(),
+            message: "No executable name configured.".to_string(),
+            checked_at,
+        };
+    }
+
+    match resolve_command(command_name) {
+        Ok(Some(path)) => ExecutableHealth {
+            schema_name: schema.name.clone(),
+            status: "available".to_string(),
+            message: format!("{command_name} resolves to {path}"),
+            checked_at,
+        },
+        Ok(None) => ExecutableHealth {
+            schema_name: schema.name.clone(),
+            status: "missing".to_string(),
+            message: format!("{command_name} was not found on PATH."),
+            checked_at,
+        },
+        Err(err) => ExecutableHealth {
+            schema_name: schema.name.clone(),
+            status: "unknown".to_string(),
+            message: format!("Executable check failed: {err}"),
+            checked_at,
+        },
+    }
+}
+
+fn resolve_command(command_name: &str) -> Result<Option<String>> {
+    #[cfg(target_os = "windows")]
+    let output = Command::new("where").arg(command_name).output()?;
+    #[cfg(not(target_os = "windows"))]
+    let output = Command::new("which").arg(command_name).output()?;
+
+    if output.status.success() {
+        let text = String::from_utf8_lossy(&output.stdout);
+        return Ok(text.lines().next().map(|line| line.trim().to_string()).filter(|line| !line.is_empty()));
+    }
+    Ok(None)
+}
+
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
@@ -853,6 +1033,7 @@ pub fn run() {
             write_export_file,
             capture_help,
             capture_completion,
+            check_executables,
             install_cli_script,
             read_log
         ])
@@ -890,6 +1071,34 @@ type = "path"
         assert_eq!(schema.arguments.len(), 1);
         assert_eq!(schema.parameters.len(), 1);
         assert_eq!(schema.parameters[0].required, true);
+        assert_eq!(schema.metadata, SchemaMetadata::default());
+    }
+
+    #[test]
+    fn round_trips_schema_metadata() {
+        let toml = r#"
+[tool]
+name = "yt-dlp"
+description = "Video downloader"
+installed_name = "yt-dlp"
+
+[metadata]
+version = "1"
+author = "Herb"
+source = "help import; completion imported"
+imported_from = "yt-dlp --help"
+homepage = "https://example.com/yt-dlp"
+executable_version = "2026.07.01"
+last_validated = "2026-07-30T12:00:00.000Z"
+"#;
+        let schema = parse_schema_toml(toml, Path::new("yt-dlp.toml")).unwrap();
+        assert_eq!(schema.metadata.source, "help import; completion imported");
+        assert_eq!(schema.metadata.imported_from, "yt-dlp --help");
+        assert_eq!(schema.metadata.executable_version, "2026.07.01");
+
+        let serialized = serialize_schema_toml(&schema).unwrap();
+        assert!(serialized.contains("[metadata]"));
+        assert!(serialized.contains("imported_from = \"yt-dlp --help\""));
     }
 
     #[test]

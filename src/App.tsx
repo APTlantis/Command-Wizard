@@ -1,6 +1,8 @@
 import {
+  AlertTriangle,
   BookMarked,
   Braces,
+  CheckCircle2,
   Clipboard,
   Cog,
   Database,
@@ -14,7 +16,9 @@ import {
   Save,
   Search,
   Trash2,
-  Wand2
+  Wand2,
+  XCircle,
+  Zap
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { IconButton } from "./components/IconButton";
@@ -23,7 +27,8 @@ import {
   selectFavoriteTags,
   selectFilteredFavorites,
   selectFilteredSchemas,
-  selectSchemaIssues,
+  selectRailSchemaHealth,
+  selectSchemaHealth,
   selectSelectedSchema,
   selectTomlPreview,
   useCommandWizardStore
@@ -134,6 +139,21 @@ function ToolRail() {
       </div>
       <div className="mt-3 min-h-0 flex-1 space-y-2 overflow-auto pr-1">
         {schemas.map((schema) => (
+          (() => {
+            const health = selectRailSchemaHealth(state, schema);
+            const StatusIcon =
+              health.railLabel === "Missing Executable"
+                ? XCircle
+                : health.railLabel === "Needs Review"
+                  ? AlertTriangle
+                  : health.railLabel === "Completion Imported"
+                    ? Zap
+                    : CheckCircle2;
+            const chipClass =
+              health.railLabel === "Missing Executable" || health.railLabel === "Needs Review"
+                ? "atl-chip-warning"
+                : "atl-chip atl-chip-active";
+            return (
           <button
             key={schema.name}
             className={`w-full rounded-lg border p-3 text-left transition ${
@@ -145,7 +165,10 @@ function ToolRail() {
           >
             <div className="flex items-center justify-between gap-2">
               <span className="truncate font-semibold">{schema.name}</span>
-              <span className="atl-chip">{schema.arguments.length + schema.parameters.length}</span>
+              <span className={`${chipClass} max-w-[8.75rem] shrink-0 whitespace-nowrap`} title={health.railLabel}>
+                <StatusIcon size={12} />
+                <span className="truncate">{health.railLabel}</span>
+              </span>
             </div>
             <p className="mt-1 line-clamp-2 text-xs text-atl-frost">{schema.description || "No description"}</p>
             <div className="mt-2 flex flex-wrap gap-1">
@@ -156,6 +179,8 @@ function ToolRail() {
               ))}
             </div>
           </button>
+            );
+          })()
         ))}
       </div>
       <IconButton icon={Plus} label="New Schema" variant="secondary" className="mt-3 w-full" onClick={state.newSchema} />
@@ -167,7 +192,8 @@ function CommandPanel() {
   const state = useCommandWizardStore();
   const preview = commandPreviewForState(state);
   const schema = selectSelectedSchema(state);
-  const issues = selectSchemaIssues(state);
+  const health = selectSchemaHealth(state);
+  const commandCheck = health.checks.find((check) => check.id === "command");
   return (
     <aside className="atl-panel flex min-h-0 flex-col p-4">
       <div className="flex items-center justify-between gap-3">
@@ -175,7 +201,7 @@ function CommandPanel() {
           <p className="text-xs font-bold uppercase tracking-wide text-atl-frost">Command Preview</p>
           <h2 className="text-lg font-semibold">{schema?.name ?? "No schema"}</h2>
         </div>
-        <span className={issues.length ? "atl-chip-warning" : "atl-chip atl-chip-active"}>{issues.length ? "Needs Review" : "Valid"}</span>
+        <span className={commandCheck?.state === "pass" ? "atl-chip atl-chip-active" : "atl-chip-warning"}>{commandCheck?.message ?? "Not ready."}</span>
       </div>
       <PlainCodeBlock value={preview || "Select a tool and fill fields to assemble a command."} className="mt-4 min-h-32 p-4" />
       <div className="mt-4 grid grid-cols-2 gap-2">
@@ -189,9 +215,19 @@ function CommandPanel() {
       <div className="mt-5 min-h-0 flex-1 overflow-auto">
         <p className="atl-label">Validation</p>
         <div className="space-y-2">
-          {(issues.length ? issues : ["Schema is ready for command building."]).map((issue) => (
-            <div key={issue} className="atl-card-soft p-2 text-sm text-atl-silver">
-              {issue}
+          {health.checks.map((check) => (
+            <div key={check.id} className="atl-card-soft flex items-start gap-2 p-2 text-sm text-atl-silver">
+              {check.state === "pass" ? (
+                <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-atl-green" />
+              ) : check.state === "warn" ? (
+                <AlertTriangle size={15} className="mt-0.5 shrink-0 text-atl-brass" />
+              ) : (
+                <XCircle size={15} className="mt-0.5 shrink-0 text-atl-amber" />
+              )}
+              <div>
+                <p className="font-semibold text-atl-archive">{check.label}</p>
+                <p className="text-xs text-atl-frost">{check.message}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -558,8 +594,74 @@ function SchemaView() {
               <input className="atl-input" value={schema.description} onChange={(event) => state.updateSelectedSchema({ description: event.target.value })} />
             </label>
             <label className="md:col-span-2">
+              <span className="atl-label">Executable Path</span>
+              <input className="atl-input" value={schema.executablePath} onChange={(event) => state.updateSelectedSchema({ executablePath: event.target.value })} />
+            </label>
+            <label className="md:col-span-2">
               <span className="atl-label">Notes</span>
               <textarea className="atl-input" value={schema.notes} onChange={(event) => state.updateSelectedSchema({ notes: event.target.value })} />
+            </label>
+          </div>
+          <div className="atl-card grid gap-3 p-4 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <p className="atl-label mb-1">Provenance Metadata</p>
+              <h2 className="font-semibold">Schema source and validation record</h2>
+            </div>
+            <label>
+              <span className="atl-label">Version</span>
+              <input
+                className="atl-input"
+                value={schema.metadata.version}
+                onChange={(event) => state.updateSelectedSchema({ metadata: { ...schema.metadata, version: event.target.value } })}
+              />
+            </label>
+            <label>
+              <span className="atl-label">Author</span>
+              <input
+                className="atl-input"
+                value={schema.metadata.author}
+                onChange={(event) => state.updateSelectedSchema({ metadata: { ...schema.metadata, author: event.target.value } })}
+              />
+            </label>
+            <label>
+              <span className="atl-label">Source</span>
+              <input
+                className="atl-input"
+                value={schema.metadata.source}
+                onChange={(event) => state.updateSelectedSchema({ metadata: { ...schema.metadata, source: event.target.value } })}
+              />
+            </label>
+            <label>
+              <span className="atl-label">Imported From</span>
+              <input
+                className="atl-input"
+                value={schema.metadata.importedFrom}
+                onChange={(event) => state.updateSelectedSchema({ metadata: { ...schema.metadata, importedFrom: event.target.value } })}
+              />
+            </label>
+            <label>
+              <span className="atl-label">Homepage</span>
+              <input
+                className="atl-input"
+                value={schema.metadata.homepage}
+                onChange={(event) => state.updateSelectedSchema({ metadata: { ...schema.metadata, homepage: event.target.value } })}
+              />
+            </label>
+            <label>
+              <span className="atl-label">Executable Version</span>
+              <input
+                className="atl-input"
+                value={schema.metadata.executableVersion}
+                onChange={(event) => state.updateSelectedSchema({ metadata: { ...schema.metadata, executableVersion: event.target.value } })}
+              />
+            </label>
+            <label className="md:col-span-2">
+              <span className="atl-label">Last Validated</span>
+              <input
+                className="atl-input"
+                value={schema.metadata.lastValidated}
+                onChange={(event) => state.updateSelectedSchema({ metadata: { ...schema.metadata, lastValidated: event.target.value } })}
+              />
             </label>
           </div>
           <Bucket title="Actions" count={schema.actions.length}>

@@ -5,6 +5,16 @@ export interface SchemaTag {
   color: string;
 }
 
+export interface SchemaMetadata {
+  version: string;
+  author: string;
+  source: string;
+  importedFrom: string;
+  homepage: string;
+  executableVersion: string;
+  lastValidated: string;
+}
+
 export interface SchemaParameter {
   name: string;
   type: string;
@@ -33,6 +43,7 @@ export interface ToolSchema {
   sourcePath: string;
   executablePath: string;
   installedName: string;
+  metadata: SchemaMetadata;
   actions: SchemaAction[];
   arguments: SchemaArgument[];
   parameters: SchemaParameter[];
@@ -78,6 +89,9 @@ export interface HelpImportDraft {
   description: string;
   installedName: string;
   executablePath: string;
+  importSource: "help import" | "cli import";
+  importedFrom: string;
+  completionImported: boolean;
   rawHelpText: string;
   stagedActions: SchemaAction[];
   stagedArguments: SchemaArgument[];
@@ -101,6 +115,15 @@ export interface CliInstallResult {
   helpText: string;
 }
 
+export type ExecutableHealthStatus = "available" | "missing" | "unknown";
+
+export interface ExecutableHealth {
+  schemaName: string;
+  status: ExecutableHealthStatus;
+  message: string;
+  checkedAt: string;
+}
+
 export interface RuntimeApi {
   canCaptureHelp: boolean;
   runtimeLabel: string;
@@ -111,6 +134,7 @@ export interface RuntimeApi {
   exportFavorites(favorites: FavoriteCommand[], format: "json" | "text"): Promise<string | null>;
   captureHelp(commandName: string, helpArgs: string): Promise<string>;
   captureCompletion(commandName: string): Promise<string | null>;
+  checkExecutables(schemas: ToolSchema[]): Promise<ExecutableHealth[]>;
   selectScriptPath(): Promise<string | null>;
   installCliScript(scriptPath: string, commandName: string, helpArgs: string): Promise<CliInstallResult>;
   readLog(): Promise<string>;

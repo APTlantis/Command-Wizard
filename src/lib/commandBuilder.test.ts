@@ -9,6 +9,15 @@ const schema: ToolSchema = {
   notes: "",
   sourcePath: "",
   executablePath: "",
+  metadata: {
+    version: "",
+    author: "",
+    source: "",
+    importedFrom: "",
+    homepage: "",
+    executableVersion: "",
+    lastValidated: ""
+  },
   actions: [{ name: "clone", description: "", arguments: [], parameters: [] }],
   arguments: [
     { flag: "--depth", long: "", description: "", type: "string", valueStyle: "space" },

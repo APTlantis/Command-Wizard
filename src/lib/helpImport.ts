@@ -409,7 +409,9 @@ export const createImportDraft = (
   commandName: string,
   helpText: string,
   completionText = "",
-  executablePath = ""
+  executablePath = "",
+  importSource: "help import" | "cli import" = "help import",
+  importedFrom = commandName
 ): HelpImportDraft => {
   const parsed = parseHelpText(commandName, helpText);
   const schema = completionText.trim() ? mergeCompletionData(parsed.schema, completionText) : parsed.schema;
@@ -422,6 +424,9 @@ export const createImportDraft = (
     description: schema.description,
     installedName: schema.installedName,
     executablePath,
+    importSource,
+    importedFrom,
+    completionImported: completionText.trim().length > 0,
     rawHelpText: helpText,
     stagedActions: schema.actions,
     stagedArguments: schema.arguments,
@@ -436,6 +441,12 @@ export const buildSchemaFromDraft = (draft: HelpImportDraft): ToolSchema => ({
   description: draft.description.trim(),
   installedName: draft.installedName.trim(),
   executablePath: draft.executablePath.trim(),
+  metadata: {
+    ...emptySchema().metadata,
+    source: draft.completionImported ? `${draft.importSource}; completion imported` : draft.importSource,
+    importedFrom: draft.importedFrom.trim() || draft.installedName.trim() || draft.toolName.trim(),
+    lastValidated: new Date().toISOString()
+  },
   actions: draft.stagedActions.filter((action) => action.name.trim()).map((action) => ({ ...action, name: action.name.trim() })),
   arguments: draft.stagedArguments.filter((argument) => argument.flag.trim() || argument.long.trim()),
   parameters: draft.stagedParameters.filter((parameter) => parameter.name.trim())

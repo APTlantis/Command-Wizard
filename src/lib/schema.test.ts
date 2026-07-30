@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseSchemaToml, serializeSchemaToml, validateSchema } from "./schema";
+import { emptyMetadata, parseSchemaToml, serializeSchemaToml, validateSchema } from "./schema";
 
 describe("schema toml", () => {
   it("loads the existing CommandWizard schema shape", () => {
@@ -22,6 +22,39 @@ type = "path"
     expect(schema.name).toBe("rsync");
     expect(schema.arguments).toHaveLength(1);
     expect(schema.parameters[0]).toMatchObject({ name: "source", required: true });
+    expect(schema.metadata).toEqual(emptyMetadata());
+  });
+
+  it("round trips optional provenance metadata", () => {
+    const toml = serializeSchemaToml({
+      name: "yt-dlp",
+      description: "Video downloader",
+      notes: "",
+      sourcePath: "",
+      executablePath: "",
+      installedName: "yt-dlp",
+      metadata: {
+        version: "1",
+        author: "Herb",
+        source: "help import; completion imported",
+        importedFrom: "yt-dlp --help",
+        homepage: "https://github.com/yt-dlp/yt-dlp",
+        executableVersion: "2026.07.01",
+        lastValidated: "2026-07-30T12:00:00.000Z"
+      },
+      actions: [],
+      arguments: [],
+      parameters: [],
+      tags: []
+    });
+
+    expect(toml).toContain("[metadata]");
+    expect(toml).toContain('imported_from = "yt-dlp --help"');
+    expect(parseSchemaToml(toml).metadata).toMatchObject({
+      source: "help import; completion imported",
+      importedFrom: "yt-dlp --help",
+      executableVersion: "2026.07.01"
+    });
   });
 
   it("round trips equals and attached value styles", () => {
@@ -32,6 +65,7 @@ type = "path"
       sourcePath: "",
       executablePath: "",
       installedName: "",
+      metadata: emptyMetadata(),
       actions: [],
       arguments: [
         { flag: "--config", long: "", description: "Config", type: "string", valueStyle: "equals" },
@@ -54,6 +88,7 @@ type = "path"
       sourcePath: "",
       executablePath: "",
       installedName: "",
+      metadata: emptyMetadata(),
       actions: [],
       arguments: [
         { flag: "--help", long: "", description: "", type: "boolean", valueStyle: "space" },
