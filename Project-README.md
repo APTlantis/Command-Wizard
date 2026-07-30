@@ -6,6 +6,8 @@ CommandWizard is a local-first Tauri desktop app for constructing and managing c
 
 The app builds command strings for copy/export workflows. It does not execute generated commands.
 
+CLI import can copy a user-selected script into CommandWizard's managed local data area and create a launcher shim in the app's `bin` directory. Users add that directory to PATH themselves; CommandWizard does not edit PATH automatically.
+
 ## Governance
 
 - [Project manifest](CommandWizard.manifest.toml)

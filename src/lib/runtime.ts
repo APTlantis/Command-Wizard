@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { save } from "@tauri-apps/plugin-dialog";
-import type { AppSnapshot, FavoriteCommand, RuntimeApi, ToolSchema } from "../types";
+import { open, save } from "@tauri-apps/plugin-dialog";
+import type { AppSnapshot, CliInstallResult, FavoriteCommand, RuntimeApi, ToolSchema } from "../types";
 import { exportFavoritesText } from "./favorites";
 
 const sampleSchema: ToolSchema = {
@@ -83,6 +83,32 @@ export const runtime: RuntimeApi = {
   async captureCompletion(commandName) {
     if (!isTauriRuntime()) return null;
     return invoke<string | null>("capture_completion", { commandName });
+  },
+  async selectScriptPath() {
+    if (!isTauriRuntime()) return null;
+    const path = await open({
+      title: "Import CLI Script",
+      multiple: false,
+      filters: [
+        { name: "Scripts and Commands", extensions: ["ps1", "bat", "cmd", "py", "js", "mjs", "sh", "exe"] },
+        { name: "All Files", extensions: ["*"] }
+      ]
+    });
+    return typeof path === "string" ? path : null;
+  },
+  async installCliScript(scriptPath, commandName, helpArgs) {
+    if (!isTauriRuntime()) {
+      const name = commandName.trim() || scriptPath.split(/[\\/]/).pop()?.replace(/\.[^.]+$/, "") || "script";
+      return {
+        commandName: name,
+        sourcePath: scriptPath,
+        managedScriptPath: `browser-preview://cli/scripts/${name}`,
+        shimPath: `browser-preview://cli/bin/${name}`,
+        binDir: "browser-preview://cli/bin",
+        helpText: ""
+      } satisfies CliInstallResult;
+    }
+    return invoke<CliInstallResult>("install_cli_script", { scriptPath, commandName, helpArgs });
   },
   async readLog() {
     if (!isTauriRuntime()) return browserSnapshot.logText;

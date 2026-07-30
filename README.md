@@ -16,6 +16,7 @@ Quick links: [Project README](Project-README.md) | [Proposal](Project-Proposal.m
 |------|---------|
 | Builder | Select a tool schema, configure actions, options, and parameters, then copy or favorite the generated command |
 | Import Workbench | Capture or paste help text, review detected actions/arguments/parameters/warnings, optionally merge completion data, then save |
+| CLI Import | Import a local script into a managed command directory, capture its help text, parse a schema, and save the reviewed command surface |
 | Schema Studio | Edit metadata, actions, arguments, parameters, tags, notes, value styles, and highlighted TOML preview |
 | Command Library | Search, tag-filter, copy, remove, clear, and export favorite commands |
 | Settings / Evidence | Show the data root, Blue Slate adoption, safety boundary, schema/favorite counts, runtime label, and logs |
@@ -69,6 +70,8 @@ User data is local:
 | Artifact | Purpose |
 |----------|---------|
 | `schemas/*.toml` | One schema per command-line tool |
+| `bin/*` | Managed launcher shims for imported CLI scripts; add this directory to PATH manually |
+| `cli/scripts/*` | Managed copies of imported script files |
 | `history.json` | Saved favorite commands |
 | `logs/commandwizard.log` | Local runtime log |
 
@@ -78,9 +81,10 @@ On Windows, the app preserves the existing logical data path under `%LOCALAPPDAT
 
 - Generated commands are never executed.
 - Help capture and completion probing are explicit import probes only.
+- CLI import creates launcher shims in a managed local `bin` directory, but does not edit PATH automatically.
 - Browser preview cannot run local command capture; paste help text there instead.
 - Destructive operations, such as deleting a schema or clearing favorites, require confirmation.
-- No cloud sync, accounts, telemetry, or PATH modification are included.
+- No cloud sync, accounts, telemetry, or automatic PATH modification are included.
 
 ## Verification
 

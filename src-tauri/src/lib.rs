@@ -127,6 +127,17 @@ struct AppSnapshot {
     log_text: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct CliInstallResult {
+    command_name: String,
+    source_path: String,
+    managed_script_path: String,
+    shim_path: String,
+    bin_dir: String,
+    help_text: String,
+}
+
 #[derive(Debug, Deserialize)]
 struct TomlTool {
     name: String,
@@ -173,6 +184,14 @@ fn schema_dir() -> Result<PathBuf> {
     Ok(data_root()?.join("schemas"))
 }
 
+fn cli_script_dir() -> Result<PathBuf> {
+    Ok(data_root()?.join("cli").join("scripts"))
+}
+
+fn cli_bin_dir() -> Result<PathBuf> {
+    Ok(data_root()?.join("bin"))
+}
+
 fn history_path() -> Result<PathBuf> {
     Ok(data_root()?.join("history.json"))
 }
@@ -183,6 +202,8 @@ fn log_path() -> Result<PathBuf> {
 
 fn ensure_dirs() -> Result<()> {
     fs::create_dir_all(schema_dir()?)?;
+    fs::create_dir_all(cli_script_dir()?)?;
+    fs::create_dir_all(cli_bin_dir()?)?;
     Ok(())
 }
 
@@ -543,12 +564,118 @@ fn capture_completion(command_name: String) -> Result<Option<String>> {
 }
 
 #[tauri::command]
+fn install_cli_script(script_path: String, command_name: String, help_args: String) -> Result<CliInstallResult> {
+    ensure_dirs()?;
+    let source = PathBuf::from(script_path.trim());
+    if !source.exists() || !source.is_file() {
+        return Err(CommandWizardError::Message("Script path does not point to a file.".into()));
+    }
+
+    let inferred_name = source
+        .file_stem()
+        .and_then(|value| value.to_str())
+        .unwrap_or("script");
+    let command = sanitize_command_name(if command_name.trim().is_empty() {
+        inferred_name
+    } else {
+        command_name.trim()
+    });
+    if command.trim().is_empty() {
+        return Err(CommandWizardError::Message("Command name is required.".into()));
+    }
+
+    let extension = source.extension().and_then(|value| value.to_str()).unwrap_or("");
+    let managed_name = if extension.is_empty() {
+        sanitize_file_name(source.file_name().and_then(|value| value.to_str()).unwrap_or(&command))
+    } else {
+        format!("{}.{}", sanitize_file_name(&command), extension)
+    };
+    let managed_script = cli_script_dir()?.join(managed_name);
+    let help_text = run_script_probe(&source, split_args(if help_args.trim().is_empty() { "--help" } else { &help_args }), Duration::from_secs(6))?;
+    fs::copy(&source, &managed_script)?;
+    let shim = write_cli_shim(&command, &managed_script)?;
+    log_line(&format!(
+        "CLI script imported: {} -> {}",
+        source.display(),
+        shim.display()
+    ));
+
+    Ok(CliInstallResult {
+        command_name: command,
+        source_path: source.to_string_lossy().to_string(),
+        managed_script_path: managed_script.to_string_lossy().to_string(),
+        shim_path: shim.to_string_lossy().to_string(),
+        bin_dir: cli_bin_dir()?.to_string_lossy().to_string(),
+        help_text,
+    })
+}
+
+#[tauri::command]
 fn read_log() -> Result<String> {
     let path = log_path()?;
     if !path.exists() {
         return Ok(String::new());
     }
     Ok(fs::read_to_string(path)?)
+}
+
+fn sanitize_command_name(name: &str) -> String {
+    sanitize_file_name(name).trim_matches('.').to_string()
+}
+
+fn write_cli_shim(command_name: &str, script_path: &Path) -> Result<PathBuf> {
+    let bin_dir = cli_bin_dir()?;
+    #[cfg(target_os = "windows")]
+    {
+        let shim = bin_dir.join(format!("{}.cmd", sanitize_command_name(command_name)));
+        let body = windows_shim_body(script_path);
+        fs::write(&shim, body)?;
+        Ok(shim)
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let shim = bin_dir.join(sanitize_command_name(command_name));
+        let body = unix_shim_body(script_path);
+        fs::write(&shim, body)?;
+        let mut permissions = fs::metadata(&shim)?.permissions();
+        permissions.set_mode(0o755);
+        fs::set_permissions(&shim, permissions)?;
+        Ok(shim)
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn windows_shim_body(script_path: &Path) -> String {
+    let path = script_path.to_string_lossy();
+    match script_path
+        .extension()
+        .and_then(|value| value.to_str())
+        .unwrap_or("")
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "ps1" => format!("@echo off\r\npowershell -NoProfile -ExecutionPolicy Bypass -File \"{path}\" %*\r\n"),
+        "py" => format!("@echo off\r\npython \"{path}\" %*\r\n"),
+        "js" | "mjs" => format!("@echo off\r\nnode \"{path}\" %*\r\n"),
+        _ => format!("@echo off\r\n\"{path}\" %*\r\n"),
+    }
+}
+
+#[cfg(not(target_os = "windows"))]
+fn unix_shim_body(script_path: &Path) -> String {
+    let path = script_path.to_string_lossy();
+    match script_path
+        .extension()
+        .and_then(|value| value.to_str())
+        .unwrap_or("")
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "py" => format!("#!/usr/bin/env sh\nexec python3 \"{path}\" \"$@\"\n"),
+        "js" | "mjs" => format!("#!/usr/bin/env sh\nexec node \"{path}\" \"$@\"\n"),
+        _ => format!("#!/usr/bin/env sh\nexec \"{path}\" \"$@\"\n"),
+    }
 }
 
 fn split_args(args: &str) -> Vec<String> {
@@ -590,6 +717,54 @@ fn split_args(args: &str) -> Vec<String> {
     }
 
     parsed
+}
+
+fn run_script_probe(script_path: &Path, args: Vec<String>, timeout: Duration) -> Result<String> {
+    let mut command_args = args;
+    let executable = script_probe_executable(script_path, &mut command_args);
+    run_command(&executable, command_args, timeout)
+}
+
+fn script_probe_executable(script_path: &Path, args: &mut Vec<String>) -> String {
+    let path = script_path.to_string_lossy().to_string();
+    match script_path
+        .extension()
+        .and_then(|value| value.to_str())
+        .unwrap_or("")
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        #[cfg(target_os = "windows")]
+        "ps1" => {
+            args.splice(
+                0..0,
+                [
+                    "-NoProfile".to_string(),
+                    "-ExecutionPolicy".to_string(),
+                    "Bypass".to_string(),
+                    "-File".to_string(),
+                    path,
+                ],
+            );
+            "powershell".to_string()
+        }
+        "py" => {
+            args.insert(0, path);
+            #[cfg(target_os = "windows")]
+            {
+                "python".to_string()
+            }
+            #[cfg(not(target_os = "windows"))]
+            {
+                "python3".to_string()
+            }
+        }
+        "js" | "mjs" => {
+            args.insert(0, path);
+            "node".to_string()
+        }
+        _ => path,
+    }
 }
 
 fn run_command(command_name: &str, args: Vec<String>, timeout: Duration) -> Result<String> {
@@ -678,6 +853,7 @@ pub fn run() {
             write_export_file,
             capture_help,
             capture_completion,
+            install_cli_script,
             read_log
         ])
         .setup(|app| {
@@ -746,6 +922,16 @@ type = "path"
     fn detects_completion_scripts() {
         assert!(is_likely_completion_script("Register-ArgumentCompleter -CommandName foo"));
         assert!(!is_likely_completion_script("Error: missing module"));
+    }
+
+    #[test]
+    fn creates_windows_shims_for_known_script_types() {
+        #[cfg(target_os = "windows")]
+        {
+            let body = windows_shim_body(Path::new("C:\\tools\\demo.ps1"));
+            assert!(body.contains("powershell -NoProfile"));
+            assert!(body.contains("-File \"C:\\tools\\demo.ps1\""));
+        }
     }
 
     #[test]

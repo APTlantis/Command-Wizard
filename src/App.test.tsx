@@ -10,8 +10,20 @@ describe("App", () => {
     expect(await screen.findByText("CommandWizard")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Builder" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Import" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "CLI" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Schema" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Library" })).toBeInTheDocument();
+  });
+
+  it("opens the CLI import surface", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await screen.findByText("CommandWizard");
+    await user.click(screen.getByRole("button", { name: "CLI" }));
+
+    expect(screen.getByRole("heading", { name: "Managed script commands" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Choose Script" })).toBeInTheDocument();
   });
 
   it("clears pasted import help text", async () => {

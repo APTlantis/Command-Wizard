@@ -92,6 +92,15 @@ export interface AppSnapshot {
   logText: string;
 }
 
+export interface CliInstallResult {
+  commandName: string;
+  sourcePath: string;
+  managedScriptPath: string;
+  shimPath: string;
+  binDir: string;
+  helpText: string;
+}
+
 export interface RuntimeApi {
   canCaptureHelp: boolean;
   runtimeLabel: string;
@@ -102,5 +111,7 @@ export interface RuntimeApi {
   exportFavorites(favorites: FavoriteCommand[], format: "json" | "text"): Promise<string | null>;
   captureHelp(commandName: string, helpArgs: string): Promise<string>;
   captureCompletion(commandName: string): Promise<string | null>;
+  selectScriptPath(): Promise<string | null>;
+  installCliScript(scriptPath: string, commandName: string, helpArgs: string): Promise<CliInstallResult>;
   readLog(): Promise<string>;
 }

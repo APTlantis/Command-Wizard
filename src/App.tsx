@@ -10,6 +10,7 @@ import {
   Library,
   Plus,
   RefreshCw,
+  Route,
   Save,
   Search,
   Trash2,
@@ -32,6 +33,7 @@ import type { ArgumentValueStyle, HelpImportDraft, SchemaArgument, SchemaParamet
 const nav = [
   { id: "builder", label: "Builder", icon: Wand2 },
   { id: "import", label: "Import", icon: Import },
+  { id: "cli", label: "CLI", icon: Route },
   { id: "schema", label: "Schema", icon: Braces },
   { id: "library", label: "Library", icon: Library },
   { id: "settings", label: "Evidence", icon: Database }
@@ -331,7 +333,7 @@ function ImportView() {
         </div>
         <div className="space-y-4">
           {draft ? (
-            <DraftEditor draft={draft} />
+            <DraftEditor draft={draft} onChange={state.updateDraft} />
           ) : (
             <EmptyState
               title="No import draft yet"
@@ -363,8 +365,74 @@ function ImportView() {
   );
 }
 
-function DraftEditor({ draft }: { draft: HelpImportDraft }) {
-  const updateDraft = useCommandWizardStore((state) => state.updateDraft);
+function CliView() {
+  const state = useCommandWizardStore();
+  const draft = state.cliDraft;
+  const install = state.cliLastInstall;
+  return (
+    <section className="atl-panel min-h-0 overflow-auto p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-atl-cyan-bright">CLI Import</p>
+          <h1 className="text-2xl font-semibold">Managed script commands</h1>
+        </div>
+        <div className="flex gap-2">
+          <IconButton icon={FolderOpen} label="Choose Script" variant="secondary" onClick={state.chooseCliScript} />
+          <IconButton icon={FileInput} label="Import CLI" variant="primary" onClick={state.importCliScript} />
+        </div>
+      </div>
+      <div className="mt-5 grid gap-4 xl:grid-cols-[24rem_1fr]">
+        <div className="space-y-4">
+          <div className="atl-card p-4">
+            {!state.canCaptureHelp && (
+              <div className="mb-4 rounded-lg border border-atl-brass/60 bg-atl-brass/10 p-3 text-sm text-atl-silver">
+                CLI import needs the Tauri desktop app. Browser preview can only stage interface changes.
+              </div>
+            )}
+            <label className="atl-label">Script Path</label>
+            <input className="atl-input" value={state.cliScriptPath} onChange={(event) => state.setCliField("cliScriptPath", event.target.value)} placeholder="D:\\tools\\my-script.ps1" />
+            <label className="atl-label mt-3">Command Name</label>
+            <input className="atl-input" value={state.cliCommandName} onChange={(event) => state.setCliField("cliCommandName", event.target.value)} placeholder="my-script" />
+            <label className="atl-label mt-3">Help Arguments</label>
+            <input className="atl-input" value={state.cliHelpArgs} onChange={(event) => state.setCliField("cliHelpArgs", event.target.value)} placeholder="--help" />
+          </div>
+          <div className="atl-card p-4">
+            <p className="atl-label">PATH Directory</p>
+            <p className="break-words font-mono text-sm text-atl-silver">{install?.binDir || (state.dataRoot ? `${state.dataRoot}\\bin` : "Loads after startup")}</p>
+            <p className="mt-3 text-sm text-atl-frost">
+              Add this directory to PATH once. CommandWizard will place imported script launchers there.
+            </p>
+          </div>
+          {install && (
+            <div className="atl-card p-4">
+              <p className="atl-label">Last Import</p>
+              <div className="space-y-2 text-sm text-atl-silver">
+                <p className="break-words">Command: <span className="font-mono">{install.commandName}</span></p>
+                <p className="break-words">Launcher: <span className="font-mono">{install.shimPath}</span></p>
+                <p className="break-words">Managed script: <span className="font-mono">{install.managedScriptPath}</span></p>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="space-y-4">
+          {draft ? (
+            <>
+              <DraftEditor draft={draft} onChange={state.updateCliDraft} />
+              <div className="atl-card p-4">
+                <IconButton icon={Save} label="Save CLI Schema" variant="primary" onClick={state.saveCliDraftAsSchema} />
+              </div>
+            </>
+          ) : (
+            <EmptyState title="No CLI staged yet" body="Choose a script, capture its help, then review the detected actions and flags." />
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DraftEditor({ draft, onChange }: { draft: HelpImportDraft; onChange: (patch: Partial<HelpImportDraft>) => void }) {
+  const updateDraft = onChange;
   const setArray = <T,>(key: "stagedActions" | "stagedArguments" | "stagedParameters", rows: T[]) => updateDraft({ [key]: rows } as Partial<HelpImportDraft>);
   return (
     <div className="space-y-4">
@@ -647,7 +715,6 @@ function SettingsView() {
       <div className="mt-5 grid gap-4 md:grid-cols-3">
         <Evidence label="Data Root" value={state.dataRoot} />
         <Evidence label="Visual System" value="Blue Slate active dependency" />
-        <Evidence label="Safety" value="Copy/export only; generated commands are not executed" />
         <Evidence label="Project" value="Tauri rebuild is the canonical implementation" />
         <Evidence label="Schemas" value={`${state.schemas.length} loaded`} />
         <Evidence label="Favorites" value={`${state.favorites.length} saved`} />
@@ -712,6 +779,7 @@ export default function App() {
         <ToolRail />
         {state.view === "builder" && <BuilderView />}
         {state.view === "import" && <ImportView />}
+        {state.view === "cli" && <CliView />}
         {state.view === "schema" && <SchemaView />}
         {state.view === "library" && <LibraryView />}
         {state.view === "settings" && <SettingsView />}

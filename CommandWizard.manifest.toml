@@ -25,6 +25,7 @@ tags = [
     "toml",
     "local-first",
     "command-generation",
+    "cli-import",
 ]
 
 [tag_colors]
@@ -39,6 +40,7 @@ schema-driven = "#29B6F6"
 toml = "#ADB5BD"
 local-first = "#3FB950"
 command-generation = "#0D89C8"
+cli-import = "#30D58C"
 
 [project]
 type = "desktop-application"
@@ -106,7 +108,7 @@ stack = [
     "Playwright",
 ]
 proposal = "Project-Proposal.md"
-safety_boundary = "Generated commands are copy/export only; help and completion capture are explicit import probes."
+safety_boundary = "Generated commands are copy/export only; help, completion, and CLI script help capture are explicit import probes. CLI import creates managed shims but does not automatically edit PATH."
 previous_implementation_cleanup = "Previous implementation files, old test projects, old packaging assets, project images, and old release evidence removed from this working project after backup confirmation from Herb on 2026-07-30."
 
 [agent]

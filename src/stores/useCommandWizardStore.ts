@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type {
+  CliInstallResult,
   FavoriteCommand,
   HelpImportDraft,
   OptionState,
@@ -22,7 +23,7 @@ import {
 import { emptySchema, serializeSchemaToml, validateSchema } from "../lib/schema";
 import { runtime } from "../lib/runtime";
 
-type View = "builder" | "import" | "schema" | "library" | "settings";
+type View = "builder" | "import" | "cli" | "schema" | "library" | "settings";
 
 interface StoreState {
   view: View;
@@ -45,6 +46,11 @@ interface StoreState {
   importHelpText: string;
   importUseCompletion: boolean;
   importDraft: HelpImportDraft | null;
+  cliScriptPath: string;
+  cliCommandName: string;
+  cliHelpArgs: string;
+  cliLastInstall: CliInstallResult | null;
+  cliDraft: HelpImportDraft | null;
   status: string;
   runtimeLabel: string;
   canCaptureHelp: boolean;
@@ -87,8 +93,13 @@ interface StoreState {
   createDraftFromPaste: () => Promise<void>;
   createDraftFromCommand: () => Promise<void>;
   updateDraft: (patch: Partial<HelpImportDraft>) => void;
+  updateCliDraft: (patch: Partial<HelpImportDraft>) => void;
   addDraftRows: (kind: "actions" | "arguments" | "parameters", lines: string) => void;
   saveDraftAsSchema: () => Promise<void>;
+  setCliField: (field: "cliScriptPath" | "cliCommandName" | "cliHelpArgs", value: string) => void;
+  chooseCliScript: () => Promise<void>;
+  importCliScript: () => Promise<void>;
+  saveCliDraftAsSchema: () => Promise<void>;
   refreshLog: () => Promise<void>;
 }
 
@@ -134,6 +145,11 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
   importHelpText: "",
   importUseCompletion: false,
   importDraft: null,
+  cliScriptPath: "",
+  cliCommandName: "",
+  cliHelpArgs: "--help",
+  cliLastInstall: null,
+  cliDraft: null,
   status: "Ready",
   runtimeLabel: runtime.runtimeLabel,
   canCaptureHelp: runtime.canCaptureHelp,
@@ -348,6 +364,40 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     const schemas = [...withoutOld, schema].sort((a, b) => a.name.localeCompare(b.name));
     set({ schemas, view: "builder", importDraft: null, status: "Imported schema saved.", ...syncSelection(schemas, schema.name) });
   },
+  setCliField: (field, value) => set({ [field]: value }),
+  async chooseCliScript() {
+    const scriptPath = await runtime.selectScriptPath();
+    if (!scriptPath) return;
+    const fileName = scriptPath.split(/[\\/]/).pop() ?? "";
+    const commandName = get().cliCommandName || fileName.replace(/\.[^.]+$/, "");
+    set({ cliScriptPath: scriptPath, cliCommandName: commandName, status: "Script selected." });
+  },
+  async importCliScript() {
+    const state = get();
+    if (!state.cliScriptPath.trim()) return set({ status: "Select a script before importing it." });
+    try {
+      set({ status: "Importing script and capturing help..." });
+      const install = await runtime.installCliScript(state.cliScriptPath, state.cliCommandName, state.cliHelpArgs || "--help");
+      const draft = createImportDraft(install.commandName, install.helpText, "", install.shimPath);
+      set({
+        cliLastInstall: install,
+        cliDraft: draft,
+        view: "cli",
+        status: `CLI staged in ${install.binDir}. Review the detected schema before saving.`
+      });
+    } catch (error) {
+      set({ status: error instanceof Error ? error.message : "CLI import failed." });
+    }
+  },
+  async saveCliDraftAsSchema() {
+    const draft = get().cliDraft;
+    if (!draft) return set({ status: "Import a CLI script before saving its schema." });
+    const schema = await runtime.saveSchema(buildSchemaFromDraft(draft));
+    const withoutOld = get().schemas.filter((item) => item.name !== schema.name);
+    const schemas = [...withoutOld, schema].sort((a, b) => a.name.localeCompare(b.name));
+    set({ schemas, view: "builder", cliDraft: null, status: "CLI schema saved.", ...syncSelection(schemas, schema.name) });
+  },
+  updateCliDraft: (patch) => set((state) => ({ cliDraft: state.cliDraft ? { ...state.cliDraft, ...patch } : null })),
   async refreshLog() {
     const logText = await runtime.readLog();
     set({ logText });
