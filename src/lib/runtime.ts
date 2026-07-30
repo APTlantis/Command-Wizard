@@ -23,7 +23,7 @@ const sampleSchema: ToolSchema = {
   tags: [{ name: "sync", color: "#21C6B8" }]
 };
 
-const isTauri = () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+export const isTauriRuntime = () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
 const browserSnapshot: AppSnapshot = {
   dataRoot: "browser-preview://Aptlantis/CommandWizard",
@@ -43,25 +43,27 @@ const downloadText = (fileName: string, content: string) => {
 };
 
 export const runtime: RuntimeApi = {
+  canCaptureHelp: isTauriRuntime(),
+  runtimeLabel: isTauriRuntime() ? "Tauri desktop" : "Browser preview",
   async loadSnapshot() {
-    if (!isTauri()) return browserSnapshot;
+    if (!isTauriRuntime()) return browserSnapshot;
     return invoke<AppSnapshot>("load_snapshot");
   },
   async saveSchema(schema) {
-    if (!isTauri()) return { ...schema, sourcePath: schema.sourcePath || `browser-preview://${schema.name}.toml` };
+    if (!isTauriRuntime()) return { ...schema, sourcePath: schema.sourcePath || `browser-preview://${schema.name}.toml` };
     return invoke<ToolSchema>("save_schema", { schema });
   },
   async deleteSchema(schema) {
-    if (!isTauri()) return;
+    if (!isTauriRuntime()) return;
     await invoke("delete_schema", { schema });
   },
   async saveFavorites(favorites) {
-    if (!isTauri()) return;
+    if (!isTauriRuntime()) return;
     await invoke("save_favorites", { favorites });
   },
   async exportFavorites(favorites: FavoriteCommand[], format) {
     const content = format === "json" ? JSON.stringify(favorites, null, 2) : exportFavoritesText(favorites);
-    if (!isTauri()) {
+    if (!isTauriRuntime()) {
       downloadText(format === "json" ? "favorites.json" : "favorites.txt", content);
       return null;
     }
@@ -75,15 +77,15 @@ export const runtime: RuntimeApi = {
     return path;
   },
   async captureHelp(commandName, helpArgs) {
-    if (!isTauri()) throw new Error("Help capture requires the Tauri desktop app.");
+    if (!isTauriRuntime()) throw new Error("Help capture is available in the Tauri desktop app. In browser preview, paste help text and use Parse Paste.");
     return invoke<string>("capture_help", { commandName, helpArgs });
   },
   async captureCompletion(commandName) {
-    if (!isTauri()) return null;
+    if (!isTauriRuntime()) return null;
     return invoke<string | null>("capture_completion", { commandName });
   },
   async readLog() {
-    if (!isTauri()) return browserSnapshot.logText;
+    if (!isTauriRuntime()) return browserSnapshot.logText;
     return invoke<string>("read_log");
   }
 };

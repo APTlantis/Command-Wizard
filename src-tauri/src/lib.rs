@@ -552,7 +552,44 @@ fn read_log() -> Result<String> {
 }
 
 fn split_args(args: &str) -> Vec<String> {
-    args.split_whitespace().map(ToString::to_string).collect()
+    let mut parsed = vec![];
+    let mut current = String::new();
+    let mut in_single = false;
+    let mut in_double = false;
+    let mut escaped = false;
+
+    for ch in args.chars() {
+        if escaped {
+            current.push(ch);
+            escaped = false;
+            continue;
+        }
+        if ch == '\\' && in_double {
+            escaped = true;
+            continue;
+        }
+        if ch == '\'' && !in_double {
+            in_single = !in_single;
+            continue;
+        }
+        if ch == '"' && !in_single {
+            in_double = !in_double;
+            continue;
+        }
+        if ch.is_whitespace() && !in_single && !in_double {
+            if !current.is_empty() {
+                parsed.push(std::mem::take(&mut current));
+            }
+            continue;
+        }
+        current.push(ch);
+    }
+
+    if !current.is_empty() {
+        parsed.push(current);
+    }
+
+    parsed
 }
 
 fn run_command(command_name: &str, args: Vec<String>, timeout: Duration) -> Result<String> {
@@ -677,5 +714,12 @@ type = "path"
     fn detects_completion_scripts() {
         assert!(is_likely_completion_script("Register-ArgumentCompleter -CommandName foo"));
         assert!(!is_likely_completion_script("Error: missing module"));
+    }
+
+    #[test]
+    fn splits_quoted_help_arguments() {
+        assert_eq!(split_args("--help"), vec!["--help"]);
+        assert_eq!(split_args("help \"nested command\""), vec!["help", "nested command"]);
+        assert_eq!(split_args("help 'nested command'"), vec!["help", "nested command"]);
     }
 }

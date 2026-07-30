@@ -37,15 +37,21 @@ interface StoreState {
   toolSearch: string;
   favoriteSearch: string;
   favoriteTag: string;
+  manualFavoriteTool: string;
+  manualFavoriteTask: string;
+  manualFavoriteCommand: string;
   importCommandName: string;
   importHelpArgs: string;
   importHelpText: string;
   importUseCompletion: boolean;
   importDraft: HelpImportDraft | null;
   status: string;
+  runtimeLabel: string;
+  canCaptureHelp: boolean;
   logText: string;
   isLoading: boolean;
   setView: (view: View) => void;
+  setStatus: (status: string) => void;
   load: () => Promise<void>;
   selectSchema: (name: string) => void;
   selectAction: (name: string) => void;
@@ -55,6 +61,8 @@ interface StoreState {
   setToolSearch: (search: string) => void;
   setFavoriteSearch: (search: string) => void;
   setFavoriteTag: (tag: string) => void;
+  setManualFavoriteField: (field: "manualFavoriteTool" | "manualFavoriteTask" | "manualFavoriteCommand", value: string) => void;
+  saveManualFavorite: () => Promise<void>;
   copyCommand: () => Promise<void>;
   saveFavorite: () => Promise<void>;
   removeFavorite: (createdAt: string) => Promise<void>;
@@ -74,6 +82,7 @@ interface StoreState {
   saveSelectedSchema: () => Promise<void>;
   deleteSelectedSchema: () => Promise<void>;
   setImportField: (field: "importCommandName" | "importHelpArgs" | "importHelpText", value: string) => void;
+  clearImportHelpText: () => void;
   setImportUseCompletion: (enabled: boolean) => void;
   createDraftFromPaste: () => Promise<void>;
   createDraftFromCommand: () => Promise<void>;
@@ -117,15 +126,21 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
   toolSearch: "",
   favoriteSearch: "",
   favoriteTag: "All",
+  manualFavoriteTool: "",
+  manualFavoriteTask: "",
+  manualFavoriteCommand: "",
   importCommandName: "",
   importHelpArgs: "--help",
   importHelpText: "",
   importUseCompletion: false,
   importDraft: null,
   status: "Ready",
+  runtimeLabel: runtime.runtimeLabel,
+  canCaptureHelp: runtime.canCaptureHelp,
   logText: "",
   isLoading: false,
-  setView: (view) => set({ view }),
+  setView: (view) => set({ view, status: view === "import" && !runtime.canCaptureHelp ? "Browser preview: paste help text and use Parse Paste. Capture Help needs the Tauri desktop app." : "Ready" }),
+  setStatus: (status) => set({ status }),
   async load() {
     set({ isLoading: true, status: "Loading local workspace..." });
     try {
@@ -137,6 +152,7 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
         logText: snapshot.logText,
         status: `${snapshot.schemas.length} schemas loaded`,
         isLoading: false,
+        manualFavoriteTool: snapshot.schemas[0]?.name ?? "",
         ...syncSelection(snapshot.schemas)
       });
     } catch (error) {
@@ -153,6 +169,24 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
   setToolSearch: (toolSearch) => set({ toolSearch }),
   setFavoriteSearch: (favoriteSearch) => set({ favoriteSearch }),
   setFavoriteTag: (favoriteTag) => set({ favoriteTag }),
+  setManualFavoriteField: (field, value) => set({ [field]: value }),
+  async saveManualFavorite() {
+    const state = get();
+    const command = state.manualFavoriteCommand.trim();
+    if (!command) return set({ status: "Enter a command before saving it to the library." });
+    const schema = state.schemas.find((item) => item.name === state.manualFavoriteTool) ?? null;
+    const favorite: FavoriteCommand = {
+      command,
+      tool: schema?.name ?? state.manualFavoriteTool.trim(),
+      action: "",
+      task: state.manualFavoriteTask.trim(),
+      createdAt: new Date().toISOString(),
+      tags: schema?.tags ?? []
+    };
+    const favorites = [...state.favorites, favorite];
+    await runtime.saveFavorites(favorites);
+    set({ favorites, manualFavoriteCommand: "", manualFavoriteTask: "", status: "Manual command saved to library." });
+  },
   async copyCommand() {
     const command = commandPreviewForState(get());
     if (!command) return set({ status: "No command to copy yet." });
@@ -269,21 +303,35 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     set({ schemas, status: "Schema deleted.", ...syncSelection(schemas) });
   },
   setImportField: (field, value) => set({ [field]: value }),
+  clearImportHelpText: () => set({ importHelpText: "", status: "Pasted help text cleared." }),
   setImportUseCompletion: (importUseCompletion) => set({ importUseCompletion }),
   async createDraftFromPaste() {
     const state = get();
-    let completion = "";
-    if (state.importUseCompletion) completion = (await runtime.captureCompletion(state.importCommandName)) ?? "";
-    const draft = createImportDraft(state.importCommandName, state.importHelpText, completion);
-    set({ importDraft: draft, status: `Draft ready: ${draft.stagedActions.length} actions, ${draft.stagedArguments.length} arguments.` });
+    try {
+      let completion = "";
+      if (state.importUseCompletion) completion = (await runtime.captureCompletion(state.importCommandName)) ?? "";
+      const draft = createImportDraft(state.importCommandName, state.importHelpText, completion);
+      set({ importDraft: draft, status: `Draft ready: ${draft.stagedActions.length} actions, ${draft.stagedArguments.length} arguments.` });
+    } catch (error) {
+      set({ status: error instanceof Error ? error.message : "Import draft failed." });
+    }
   },
   async createDraftFromCommand() {
     const state = get();
-    const help = await runtime.captureHelp(state.importCommandName, state.importHelpArgs || "--help");
-    let completion = "";
-    if (state.importUseCompletion) completion = (await runtime.captureCompletion(state.importCommandName)) ?? "";
-    const draft = createImportDraft(state.importCommandName, help, completion);
-    set({ importHelpText: help, importDraft: draft, status: "Help captured and staged." });
+    if (!runtime.canCaptureHelp) {
+      set({ status: "Capture Help needs the Tauri desktop app. In browser preview, paste help text and use Parse Paste." });
+      return;
+    }
+    try {
+      set({ status: `Capturing help from ${state.importCommandName || "command"}...` });
+      const help = await runtime.captureHelp(state.importCommandName, state.importHelpArgs || "--help");
+      let completion = "";
+      if (state.importUseCompletion) completion = (await runtime.captureCompletion(state.importCommandName)) ?? "";
+      const draft = createImportDraft(state.importCommandName, help, completion);
+      set({ importHelpText: help, importDraft: draft, status: "Help captured and staged." });
+    } catch (error) {
+      set({ status: error instanceof Error ? error.message : "Help capture failed." });
+    }
   },
   updateDraft: (patch) => set((state) => ({ importDraft: state.importDraft ? { ...state.importDraft, ...patch } : null })),
   addDraftRows(kind, lines) {

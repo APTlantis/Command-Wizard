@@ -37,6 +37,90 @@ const nav = [
   { id: "settings", label: "Evidence", icon: Database }
 ] as const;
 
+function escapeHtml(value: string) {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function highlightToml(code: string) {
+  if (typeof window === "undefined") return escapeHtml(code);
+  const grammar = window.Prism?.languages?.toml;
+  return grammar && window.Prism ? window.Prism.highlight(code, grammar, "toml") : escapeHtml(code);
+}
+
+function lineNumbersFor(value: string) {
+  return Array.from({ length: Math.max(1, value.split("\n").length) }, (_, index) => index + 1);
+}
+
+function StructuredTextArea({
+  id,
+  label,
+  value,
+  onChange,
+  minLines = 10,
+  placeholder = "",
+  className = ""
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  minLines?: number;
+  placeholder?: string;
+  className?: string;
+}) {
+  const lines = useMemo(() => lineNumbersFor(value), [value]);
+  return (
+    <div className={`atl-structured-field ${className}`}>
+      <div className="atl-structured-gutter" aria-hidden="true">
+        {lines.map((line) => (
+          <div key={line}>{line}</div>
+        ))}
+      </div>
+      <textarea
+        id={id}
+        aria-label={label}
+        className="atl-structured-textarea"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        rows={Math.max(minLines, lines.length)}
+        spellCheck={false}
+      />
+    </div>
+  );
+}
+
+function TomlPreview({ code, className = "" }: { code: string; className?: string }) {
+  const highlighted = useMemo(() => highlightToml(code), [code]);
+  const lines = useMemo(() => lineNumbersFor(code), [code]);
+  return (
+    <div className={`atl-code atl-code-prism atl-code-lines language-toml ${className}`}>
+      <div className="atl-code-gutter" aria-hidden="true">
+        {lines.map((line) => (
+          <div key={line}>{line}</div>
+        ))}
+      </div>
+      <pre>
+        <code className="language-toml" dangerouslySetInnerHTML={{ __html: highlighted }} />
+      </pre>
+    </div>
+  );
+}
+
+function PlainCodeBlock({ value, className = "" }: { value: string; className?: string }) {
+  const lines = useMemo(() => lineNumbersFor(value), [value]);
+  return (
+    <div className={`atl-code atl-code-lines ${className}`}>
+      <div className="atl-code-gutter" aria-hidden="true">
+        {lines.map((line) => (
+          <div key={line}>{line}</div>
+        ))}
+      </div>
+      <pre>{value}</pre>
+    </div>
+  );
+}
+
 function ToolRail() {
   const state = useCommandWizardStore();
   const schemas = selectFilteredSchemas(state);
@@ -91,7 +175,7 @@ function CommandPanel() {
         </div>
         <span className={issues.length ? "atl-chip-warning" : "atl-chip atl-chip-active"}>{issues.length ? "Needs Review" : "Valid"}</span>
       </div>
-      <pre className="atl-code mt-4 min-h-32 p-4">{preview || "Select a tool and fill fields to assemble a command."}</pre>
+      <PlainCodeBlock value={preview || "Select a tool and fill fields to assemble a command."} className="mt-4 min-h-32 p-4" />
       <div className="mt-4 grid grid-cols-2 gap-2">
         <IconButton icon={Clipboard} label="Copy" variant="primary" onClick={state.copyCommand} />
         <IconButton icon={BookMarked} label="Save" variant="secondary" onClick={state.saveFavorite} />
@@ -194,6 +278,9 @@ function ImportView() {
   const state = useCommandWizardStore();
   const [rowText, setRowText] = useState("");
   const draft = state.importDraft;
+  const captureHelpTitle = state.canCaptureHelp
+    ? "Run the command with the selected help arguments and stage the output."
+    : "Capture Help is only available in the Tauri desktop app. Paste help text in browser preview.";
   return (
     <section className="atl-panel min-h-0 overflow-auto p-5">
       <div className="flex items-center justify-between gap-4">
@@ -203,11 +290,22 @@ function ImportView() {
         </div>
         <div className="flex gap-2">
           <IconButton icon={FileInput} label="Parse Paste" variant="secondary" onClick={state.createDraftFromPaste} />
-          <IconButton icon={RefreshCw} label="Capture Help" variant="primary" onClick={state.createDraftFromCommand} />
+          <IconButton
+            icon={RefreshCw}
+            label={state.canCaptureHelp ? "Capture Help" : "Desktop Only"}
+            variant={state.canCaptureHelp ? "primary" : "ghost"}
+            onClick={state.createDraftFromCommand}
+            title={captureHelpTitle}
+          />
         </div>
       </div>
       <div className="mt-5 grid gap-4 xl:grid-cols-[22rem_1fr]">
         <div className="atl-card p-4">
+          {!state.canCaptureHelp && (
+            <div className="mb-4 rounded-lg border border-atl-brass/60 bg-atl-brass/10 p-3 text-sm text-atl-silver">
+              Browser preview cannot run local commands. Paste help output below, or launch the Tauri desktop app to capture help directly.
+            </div>
+          )}
           <label className="atl-label">Command</label>
           <input className="atl-input" value={state.importCommandName} onChange={(event) => state.setImportField("importCommandName", event.target.value)} placeholder="winget" />
           <label className="atl-label mt-3">Help Arguments</label>
@@ -216,15 +314,41 @@ function ImportView() {
             <input type="checkbox" checked={state.importUseCompletion} onChange={(event) => state.setImportUseCompletion(event.target.checked)} />
             Merge completion data
           </label>
-          <label className="atl-label mt-4">Pasted Help Text</label>
-          <textarea className="atl-input min-h-80" value={state.importHelpText} onChange={(event) => state.setImportField("importHelpText", event.target.value)} />
+          <div className="mt-4 flex items-center justify-between gap-2">
+            <label className="atl-label mb-0" htmlFor="import-help-text">
+              Pasted Help Text
+            </label>
+            <IconButton icon={Trash2} label="Clear" variant="ghost" onClick={state.clearImportHelpText} title="Clear pasted help text" />
+          </div>
+          <StructuredTextArea
+            id="import-help-text"
+            label="Pasted Help Text"
+            className="max-h-[28rem]"
+            minLines={16}
+            value={state.importHelpText}
+            onChange={(value) => state.setImportField("importHelpText", value)}
+          />
         </div>
         <div className="space-y-4">
-          {draft ? <DraftEditor draft={draft} /> : <EmptyState title="No import draft yet" body="Capture help or paste help text to stage detected rows." />}
+          {draft ? (
+            <DraftEditor draft={draft} />
+          ) : (
+            <EmptyState
+              title="No import draft yet"
+              body={state.canCaptureHelp ? "Capture help or paste help text to stage detected rows." : "Paste help text and use Parse Paste, or open the Tauri desktop app for live capture."}
+            />
+          )}
           {draft && (
             <div className="atl-card p-4">
               <label className="atl-label">Add Rows</label>
-              <textarea className="atl-input" value={rowText} onChange={(event) => setRowText(event.target.value)} placeholder="Paste action, argument, or parameter rows here." />
+              <StructuredTextArea
+                id="import-extra-rows"
+                label="Add Rows"
+                minLines={6}
+                value={rowText}
+                onChange={setRowText}
+                placeholder="Paste action, argument, or parameter rows here."
+              />
               <div className="mt-2 flex flex-wrap gap-2">
                 <IconButton icon={Plus} label="Actions" onClick={() => state.addDraftRows("actions", rowText)} />
                 <IconButton icon={Plus} label="Arguments" onClick={() => state.addDraftRows("arguments", rowText)} />
@@ -306,16 +430,16 @@ function Bucket({ title, count, children }: { title: string; count: number; chil
 
 function ArgumentRow({ argument, onChange }: { argument: SchemaArgument; onChange: (patch: Partial<SchemaArgument>) => void }) {
   return (
-    <div className="grid gap-2 xl:grid-cols-[7rem_9rem_7rem_8rem_1fr]">
-      <input className="atl-input" value={argument.flag} onChange={(event) => onChange({ flag: event.target.value })} />
-      <input className="atl-input" value={argument.long} onChange={(event) => onChange({ long: event.target.value })} />
-      <input className="atl-input" value={argument.type} onChange={(event) => onChange({ type: event.target.value })} />
+    <div className="grid gap-2 xl:grid-cols-[minmax(9rem,1fr)_minmax(10rem,1fr)_8rem_8rem]">
+      <input className="atl-input min-w-0" value={argument.flag} onChange={(event) => onChange({ flag: event.target.value })} placeholder="flag" />
+      <input className="atl-input min-w-0" value={argument.long} onChange={(event) => onChange({ long: event.target.value })} placeholder="long flag" />
+      <input className="atl-input min-w-0" value={argument.type} onChange={(event) => onChange({ type: event.target.value })} placeholder="type" />
       <select className="atl-input" value={argument.valueStyle} onChange={(event) => onChange({ valueStyle: event.target.value as ArgumentValueStyle })}>
         <option value="space">space</option>
         <option value="equals">equals</option>
         <option value="attached">attached</option>
       </select>
-      <input className="atl-input" value={argument.description} onChange={(event) => onChange({ description: event.target.value })} />
+      <input className="atl-input min-w-0 xl:col-span-4" value={argument.description} onChange={(event) => onChange({ description: event.target.value })} placeholder="description" />
     </div>
   );
 }
@@ -372,9 +496,9 @@ function SchemaView() {
           </div>
           <Bucket title="Actions" count={schema.actions.length}>
             {schema.actions.map((action, index) => (
-              <div className="grid gap-2 md:grid-cols-[12rem_1fr_auto]" key={`${action.name}-${index}`}>
-                <input className="atl-input" value={action.name} onChange={(event) => state.updateAction(index, { name: event.target.value })} />
-                <input className="atl-input" value={action.description} onChange={(event) => state.updateAction(index, { description: event.target.value })} />
+              <div className="grid gap-2 md:grid-cols-[minmax(10rem,16rem)_minmax(16rem,1fr)_auto]" key={`${action.name}-${index}`}>
+                <input className="atl-input min-w-0" value={action.name} onChange={(event) => state.updateAction(index, { name: event.target.value })} placeholder="action" />
+                <input className="atl-input min-w-0" value={action.description} onChange={(event) => state.updateAction(index, { description: event.target.value })} placeholder="description" />
                 <IconButton icon={Trash2} label="Remove" onClick={() => state.removeRow("action", index)} />
               </div>
             ))}
@@ -382,8 +506,8 @@ function SchemaView() {
           </Bucket>
           <Bucket title="Arguments" count={schema.arguments.length}>
             {schema.arguments.map((argument, index) => (
-              <div className="flex gap-2" key={`${argument.flag}-${index}`}>
-                <div className="flex-1">
+              <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_auto]" key={`${argument.flag}-${index}`}>
+                <div className="min-w-0">
                   <ArgumentRow argument={argument} onChange={(patch) => state.updateArgument(index, patch)} />
                 </div>
                 <IconButton icon={Trash2} label="Remove" onClick={() => state.removeRow("argument", index)} />
@@ -393,8 +517,8 @@ function SchemaView() {
           </Bucket>
           <Bucket title="Parameters" count={schema.parameters.length}>
             {schema.parameters.map((parameter, index) => (
-              <div className="flex gap-2" key={`${parameter.name}-${index}`}>
-                <div className="flex-1">
+              <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto]" key={`${parameter.name}-${index}`}>
+                <div className="min-w-0">
                   <ParameterRow parameter={parameter} onChange={(patch) => state.updateParameterDef(index, patch)} />
                 </div>
                 <IconButton icon={Trash2} label="Remove" onClick={() => state.removeRow("parameter", index)} />
@@ -413,7 +537,7 @@ function SchemaView() {
             <IconButton icon={Plus} label="Add Tag" onClick={state.addTag} />
           </Bucket>
         </div>
-        <pre className="atl-code sticky top-4 max-h-[calc(100vh-9rem)] p-4">{toml}</pre>
+        <TomlPreview code={toml} className="sticky top-4 max-h-[calc(100vh-9rem)] p-4" />
       </div>
     </section>
   );
@@ -443,6 +567,50 @@ function LibraryView() {
             <option key={tag}>{tag}</option>
           ))}
         </select>
+      </div>
+      <div className="atl-card mt-5 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="atl-label mb-1">Manual Entry</p>
+            <h2 className="font-semibold">Save a command without building it</h2>
+          </div>
+          <IconButton icon={Save} label="Save Manual" variant="secondary" onClick={state.saveManualFavorite} />
+        </div>
+        <div className="mt-3 grid gap-3 md:grid-cols-[14rem_1fr]">
+          <label>
+            <span className="atl-label">Schema</span>
+            <select className="atl-input" value={state.manualFavoriteTool} onChange={(event) => state.setManualFavoriteField("manualFavoriteTool", event.target.value)}>
+              <option value="">Unassigned</option>
+              {state.schemas.map((schema) => (
+                <option key={schema.name} value={schema.name}>
+                  {schema.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span className="atl-label">Task Label</span>
+            <input
+              className="atl-input"
+              value={state.manualFavoriteTask}
+              onChange={(event) => state.setManualFavoriteField("manualFavoriteTask", event.target.value)}
+              placeholder="optional label"
+            />
+          </label>
+        </div>
+        <div className="mt-3">
+          <label className="atl-label" htmlFor="manual-library-command">
+            Command
+          </label>
+          <StructuredTextArea
+            id="manual-library-command"
+            label="Command"
+            minLines={3}
+            value={state.manualFavoriteCommand}
+            onChange={(value) => state.setManualFavoriteField("manualFavoriteCommand", value)}
+            placeholder="bun run build --watch"
+          />
+        </div>
       </div>
       <div className="mt-5 space-y-3">
         {favorites.map((favorite) => (
@@ -480,7 +648,7 @@ function SettingsView() {
         <Evidence label="Data Root" value={state.dataRoot} />
         <Evidence label="Visual System" value="Blue Slate active dependency" />
         <Evidence label="Safety" value="Copy/export only; generated commands are not executed" />
-        <Evidence label="Legacy" value="WPF source and release evidence preserved" />
+        <Evidence label="Project" value="Tauri rebuild is the canonical implementation" />
         <Evidence label="Schemas" value={`${state.schemas.length} loaded`} />
         <Evidence label="Favorites" value={`${state.favorites.length} saved`} />
       </div>
@@ -551,7 +719,7 @@ export default function App() {
       </div>
       <footer className="mt-3 flex items-center justify-between rounded-lg border border-atl-ridge/70 bg-atl-void/70 px-3 py-2 text-xs text-atl-frost">
         <span>{state.status}</span>
-        <span>{state.isLoading ? "loading" : "ready"}</span>
+        <span>{state.isLoading ? "loading" : state.runtimeLabel}</span>
       </footer>
     </main>
   );

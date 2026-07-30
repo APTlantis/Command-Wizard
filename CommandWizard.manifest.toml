@@ -12,11 +12,8 @@ title = "CommandWizard"
 kind = "project"
 class = "project"
 status = "active"
-description = "Local-first desktop application for constructing and managing command workflows. WPF v1.0.5 remains release-verified; Tauri v2 rebuild is active."
+description = "Local-first Tauri desktop application for constructing and managing command workflows from TOML schemas."
 tags = [
-    "winui",
-    "dotnet",
-    "c#",
     "tauri",
     "react",
     "typescript",
@@ -24,18 +21,13 @@ tags = [
     "tailwind",
     "blue-slate",
     "desktop",
-    "msix",
     "schema-driven",
     "toml",
     "local-first",
     "command-generation",
-    "wizard",
 ]
 
 [tag_colors]
-winui = "#0D89C8"
-dotnet = "#9B5DE5"
-"c#" = "#9B5DE5"
 tauri = "#21C6B8"
 react = "#00D8FF"
 typescript = "#3178C6"
@@ -43,12 +35,10 @@ rust = "#D9A441"
 tailwind = "#38BDF8"
 blue-slate = "#65F2FF"
 desktop = "#3FB950"
-msix = "#F0B429"
 schema-driven = "#29B6F6"
 toml = "#ADB5BD"
 local-first = "#3FB950"
 command-generation = "#0D89C8"
-wizard = "#29B6F6"
 
 [project]
 type = "desktop-application"
@@ -87,11 +77,11 @@ parent = "D:\\DRS"
 child_projects = []
 
 [state]
-stability = "stable"
+stability = "pre-release"
 active_development = true
 known_gaps = [
-    "Tauri v2 rebuild is scaffolded but not release-verified.",
-    "WPF v1.0.5 remains the verified production artifact until a new DRS release gate is completed.",
+    "Tauri package is not yet DRS release-verified.",
+    "macOS and Linux data-path behavior still needs platform verification.",
 ]
 
 [visual_system]
@@ -101,8 +91,8 @@ adoption_level = "active"
 framework_profile = "Tauri / Vite / React"
 token_source = "D:\\.library\\aptlantis_core\\blue.slate\\spec\\tokens\\BlueSlate.Tokens.json"
 
-[rebuild]
-name = "CommandWizard v2 Tauri rebuild"
+[implementation]
+name = "CommandWizard Tauri rebuild"
 status = "active"
 started = "2026-07-30"
 stack = [
@@ -111,15 +101,13 @@ stack = [
     "TypeScript",
     "Tailwind v4",
     "Rust",
+    "Zustand",
+    "Vitest",
+    "Playwright",
 ]
 proposal = "Project-Proposal.md"
 safety_boundary = "Generated commands are copy/export only; help and completion capture are explicit import probes."
-legacy_preservation = "WPF source, v1.0.5 MSIX, release evidence, and legacy documentation are preserved until migration review."
-
-[migration]
-archived_manifests = [
-    "D:\\.city_hall\\WGS\\migration-notes\\Legacy-Live-Manifests-20260708\\DRS\\CommandWizard\\CommandWizard.manifest.toml",
-]
+previous_implementation_cleanup = "Previous implementation files, old test projects, old packaging assets, project images, and old release evidence removed from this working project after backup confirmation from Herb on 2026-07-30."
 
 [agent]
 read_first = [
@@ -135,10 +123,14 @@ authoritative_docs = [
     "AGENTS.md",
 ]
 safe_to_modify = true
-notes = "Existing code and artifacts outrank inferred placeholder state; verify before updating lifecycle claims."
+notes = "Keep implementation, manifest, and documentation aligned with verified Tauri behavior."
 
 [structure]
-required_files = []
+required_files = [
+    "package.json",
+    "src-tauri/Cargo.toml",
+    "src/App.tsx",
+]
 required_child_project_files = [
     "AGENTS.md",
     "[EntityName].manifest.toml",
@@ -146,32 +138,16 @@ required_child_project_files = [
 ]
 
 [verification]
-level = "release-verified"
-evidence = "README.md, tests, packaged release evidence, legacy manifest, release-evidence/v1.0.0/"
-reviewed = "2026-07-12"
+level = "development-verified"
+evidence = "Current local checks: npm run build, npm run test, npm run test:rust, npm run test:ui."
+reviewed = "2026-07-30"
 build_verified = true
 tests_verified = true
-artifact_verified = true
-release_verified = true
+artifact_verified = false
+release_verified = false
 
 [release]
-version = "1.0.5.0"
-date = "2026-07-12"
-supersedes = "1.0.0.0"
-supersedes_reason = "1.0.0.0 was packaged from a stale pre-theme-change build (dark theme, missing Delete Schema button, missing Value Style column) and is no longer distributed."
-
-[release.installer]
-path = "dist/CommandWizard-1.0.5.0.msix"
-sha256 = "24557f08aed5524bbd396d60323a28bc2fa82b9f5969404844693d20e6fc6733"
-signed = true
-certificate_subject = "CN=Administrator"
-certificate_thumbprint = "C03F83DE2A4964918A6D1D10C0F5D88B39647B11"
-certificate_expires = "2027-03-14"
-signing_type = "local-dev"
-
-[release.verification]
-build_result = "success"
-test_result = "26/26 passed"
-install_check = "pass"
-uninstall_check = "pass"
-evidence_path = "release-evidence/v1.0.5/"
+version = "2.0.0"
+date = "2026-07-30"
+status = "pre-release"
+release_verified = false

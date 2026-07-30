@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import App from "./App";
 
@@ -11,5 +12,31 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Import" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Schema" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Library" })).toBeInTheDocument();
+  });
+
+  it("clears pasted import help text", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await screen.findByText("CommandWizard");
+    await user.click(screen.getByRole("button", { name: "Import" }));
+    const helpText = screen.getByRole("textbox", { name: "Pasted Help Text" }) as HTMLTextAreaElement;
+    await user.type(helpText, "Usage: hf OPTIONS");
+
+    expect(helpText.value).toBe("Usage: hf OPTIONS");
+    await user.click(screen.getByRole("button", { name: "Clear" }));
+    expect(helpText.value).toBe("");
+  });
+
+  it("saves a manually entered library command", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await screen.findByText("CommandWizard");
+    await user.click(screen.getByRole("button", { name: "Library" }));
+    await user.type(screen.getByRole("textbox", { name: "Command" }), "rsync --version");
+    await user.click(screen.getByRole("button", { name: "Save Manual" }));
+
+    expect(await screen.findByText("rsync --version")).toBeInTheDocument();
   });
 });

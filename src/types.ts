@@ -93,6 +93,8 @@ export interface AppSnapshot {
 }
 
 export interface RuntimeApi {
+  canCaptureHelp: boolean;
+  runtimeLabel: string;
   loadSnapshot(): Promise<AppSnapshot>;
   saveSchema(schema: ToolSchema): Promise<ToolSchema>;
   deleteSchema(schema: ToolSchema): Promise<void>;

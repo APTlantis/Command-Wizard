@@ -152,6 +152,54 @@
     resize: vertical;
   }
 
+  .atl-structured-field {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.75rem;
+    overflow: auto;
+    border: 1px solid rgb(83 96 106 / 0.58);
+    border-radius: 0.5rem;
+    background: rgb(5 9 19 / 0.64);
+    color: var(--color-atl-archive);
+    padding: 0.65rem 0.75rem;
+    font-family: var(--font-atl-mono);
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .atl-structured-field:focus-within {
+    border-color: var(--color-atl-cyan-bright);
+    box-shadow: 0 0 0 1px rgb(101 242 255 / 0.28);
+  }
+
+  .atl-structured-gutter,
+  .atl-code-gutter {
+    min-width: 2ch;
+    user-select: none;
+    text-align: right;
+    color: rgb(152 162 162 / 0.72);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .atl-structured-textarea {
+    min-width: 0;
+    width: 100%;
+    border: 0;
+    outline: 0;
+    resize: none;
+    overflow: hidden;
+    background: transparent;
+    color: var(--color-atl-archive);
+    padding: 0;
+    font: inherit;
+    line-height: inherit;
+    white-space: pre;
+  }
+
+  .atl-structured-textarea::placeholder {
+    color: rgb(152 162 162 / 0.58);
+  }
+
   .atl-label {
     display: block;
     margin-bottom: 0.25rem;
@@ -196,5 +244,80 @@
     font-size: 0.8rem;
     line-height: 1.55;
     white-space: pre-wrap;
+  }
+
+  .atl-code-lines {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.75rem;
+    white-space: pre;
+  }
+
+  .atl-code-lines pre {
+    min-width: 0;
+    margin: 0;
+    overflow: visible;
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    text-shadow: none;
+    white-space: pre;
+  }
+
+  .atl-code-prism,
+  .atl-code-prism code[class*="language-"] {
+    margin: 0;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-atl-mono);
+    font-size: inherit;
+    line-height: inherit;
+    text-shadow: none;
+    white-space: pre;
+  }
+
+  .atl-code-prism code[class*="language-"] {
+    display: block;
+    padding: 0;
+  }
+
+  .atl-code-prism .token.comment,
+  .atl-code-prism .token.prolog,
+  .atl-code-prism .token.doctype,
+  .atl-code-prism .token.cdata {
+    color: var(--color-atl-frost);
+  }
+
+  .atl-code-prism .token.property,
+  .atl-code-prism .token.tag,
+  .atl-code-prism .token.boolean,
+  .atl-code-prism .token.number,
+  .atl-code-prism .token.constant,
+  .atl-code-prism .token.symbol {
+    color: var(--color-atl-cyan-bright);
+  }
+
+  .atl-code-prism .token.selector,
+  .atl-code-prism .token.attr-name,
+  .atl-code-prism .token.string,
+  .atl-code-prism .token.char,
+  .atl-code-prism .token.builtin {
+    color: var(--color-atl-green);
+  }
+
+  .atl-code-prism .token.operator,
+  .atl-code-prism .token.entity,
+  .atl-code-prism .token.url,
+  .atl-code-prism .language-css .token.string,
+  .atl-code-prism .style .token.string {
+    color: var(--color-atl-silver);
+  }
+
+  .atl-code-prism .token.atrule,
+  .atl-code-prism .token.attr-value,
+  .atl-code-prism .token.keyword {
+    color: var(--color-atl-violet);
   }
 }

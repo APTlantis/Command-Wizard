@@ -11,8 +11,8 @@ Inherit the parent portfolio and [drive instructions](D:/AGENTS.md).
 
 ## Local boundaries
 
-WinUI/.NET desktop application for constructing and managing command workflows.
+Tauri, React, TypeScript, Tailwind, and Rust desktop application for constructing and managing command workflows.
 
-Use CommandWizard.csproj and CommandWizard.Tests; verify build, tests, launch, and packaged behavior where applicable.
+Use the Node/Rust project files and current test suites. Verify with `npm run build`, `npm run test`, `npm run test:rust`, `npm run test:ui`, Tauri launch, and packaged behavior where applicable.
 
-Preserve existing source, generated evidence, and legacy manifests until their migration is reviewed. Keep this project's manifest and documentation aligned with verified behavior.
+Generated commands are copy/export only. Help capture and completion probing are explicit import probes and must remain separate from generated-command execution.
