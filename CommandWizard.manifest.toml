@@ -3,7 +3,7 @@ schema = "APTlantis Entity Manifest"
 schema_version = "2.4"
 manifest_type = "project"
 canonical_name = "CommandWizard.manifest.toml"
-last_updated = "2026-07-12"
+last_updated = "2026-07-30"
 maintainer = "Herb"
 
 [entity]
@@ -11,27 +11,50 @@ id = "commandwizard"
 title = "CommandWizard"
 kind = "project"
 class = "project"
-status = "paused"
-description = "WinUI/.NET desktop application for constructing and managing command workflows."
-tags = ["winui", "dotnet", "c#", "desktop", "msix", "schema-driven", "toml", "local-first", "command-generation", "wizard"]
+status = "active"
+description = "Local-first desktop application for constructing and managing command workflows. WPF v1.0.5 remains release-verified; Tauri v2 rebuild is active."
+tags = [
+    "winui",
+    "dotnet",
+    "c#",
+    "tauri",
+    "react",
+    "typescript",
+    "rust",
+    "tailwind",
+    "blue-slate",
+    "desktop",
+    "msix",
+    "schema-driven",
+    "toml",
+    "local-first",
+    "command-generation",
+    "wizard",
+]
 
 [tag_colors]
 winui = "#0D89C8"
 dotnet = "#9B5DE5"
 "c#" = "#9B5DE5"
+tauri = "#21C6B8"
+react = "#00D8FF"
+typescript = "#3178C6"
+rust = "#D9A441"
+tailwind = "#38BDF8"
+blue-slate = "#65F2FF"
 desktop = "#3FB950"
 msix = "#F0B429"
-"schema-driven" = "#29B6F6"
+schema-driven = "#29B6F6"
 toml = "#ADB5BD"
-"local-first" = "#3FB950"
-"command-generation" = "#0D89C8"
+local-first = "#3FB950"
+command-generation = "#0D89C8"
 wizard = "#29B6F6"
 
 [project]
 type = "desktop-application"
 portfolio_class = "project"
-stage = "production"
-version = "1.0.5"
+stage = "active-rebuild"
+version = "2.0.0"
 
 [governance]
 primary_standard = "DRS"
@@ -47,8 +70,8 @@ additional_standard_paths = [
 inherits_from = "..\\DRS.manifest.toml"
 
 [lifecycle]
-state = "paused"
-last_reviewed = "2026-07-08"
+state = "active"
+last_reviewed = "2026-07-30"
 maintainer = "Herb"
 
 [paths]
@@ -57,6 +80,7 @@ root = "D:\\DRS\\CommandWizard"
 [documentation]
 project_readme = "Project-README.md"
 readme = "README.md"
+proposal = "Project-Proposal.md"
 
 [relationships]
 parent = "D:\\DRS"
@@ -64,8 +88,33 @@ child_projects = []
 
 [state]
 stability = "stable"
-active_development = false
-known_gaps = []
+active_development = true
+known_gaps = [
+    "Tauri v2 rebuild is scaffolded but not release-verified.",
+    "WPF v1.0.5 remains the verified production artifact until a new DRS release gate is completed.",
+]
+
+[visual_system]
+name = "Blue Slate"
+path = "D:\\.library\\aptlantis_core\\blue.slate\\README.md"
+adoption_level = "active"
+framework_profile = "Tauri / Vite / React"
+token_source = "D:\\.library\\aptlantis_core\\blue.slate\\spec\\tokens\\BlueSlate.Tokens.json"
+
+[rebuild]
+name = "CommandWizard v2 Tauri rebuild"
+status = "active"
+started = "2026-07-30"
+stack = [
+    "Tauri v2",
+    "React",
+    "TypeScript",
+    "Tailwind v4",
+    "Rust",
+]
+proposal = "Project-Proposal.md"
+safety_boundary = "Generated commands are copy/export only; help and completion capture are explicit import probes."
+legacy_preservation = "WPF source, v1.0.5 MSIX, release evidence, and legacy documentation are preserved until migration review."
 
 [migration]
 archived_manifests = [
@@ -77,10 +126,12 @@ read_first = [
     "AGENTS.md",
     "CommandWizard.manifest.toml",
     "Project-README.md",
+    "Project-Proposal.md",
 ]
 authoritative_docs = [
     "CommandWizard.manifest.toml",
     "Project-README.md",
+    "Project-Proposal.md",
     "AGENTS.md",
 ]
 safe_to_modify = true

@@ -1,13 +1,17 @@
 # CommandWizard
 
-![status](https://img.shields.io/badge/status-production-brightgreen)
+![status](https://img.shields.io/badge/status-v2%20rebuild%20active-cyan)
 ![license](https://img.shields.io/badge/license-MIT-blue)
-![stage](https://img.shields.io/badge/stage-production-orange)
-![language](https://img.shields.io/badge/language-C%23-lightgrey)
+![stage](https://img.shields.io/badge/wpf%20release-production-orange)
+![language](https://img.shields.io/badge/language-TypeScript%20%2F%20Rust%20%2F%20C%23-lightgrey)
 
-CommandWizard is a schema-driven WPF desktop application that builds CLI command strings through a guided wizard interface. Schemas are defined in TOML files stored locally in AppData — no cloud sync, no telemetry.
+CommandWizard is a schema-driven desktop application that builds CLI command strings through a guided wizard interface. The original verified release is WPF/.NET; the active in-place v2 rebuild is Tauri, React, TypeScript, Tailwind, and Rust.
+
+Schemas are defined in TOML files stored locally — no cloud sync, no telemetry.
 
 v1.0.5 shipped as a locally-signed MSIX; 26/26 tests pass on .NET 10.
+
+The Tauri v2 implementation is present in this repo but is not release-verified yet.
 
 ![CommandWizard screenshot](project_images/Screenshot%202026-06-25%20092449.png)
 
@@ -19,16 +23,16 @@ Quick links: [Project README](Project-README.md) | [Release Notes](RELEASE-v1.0.
 
 | Area | Summary |
 |------|---------|
-| Schema Editor | Create and edit TOML tool schemas — name, description, actions, arguments, parameters, tags |
-| Command Wizard | Select a schema, configure options and parameters, preview and copy the assembled command |
+| Builder | Select a schema, configure options and parameters, preview and copy the assembled command |
+| Import Workbench | Capture or paste help text, stage actions/arguments/parameters, review warnings, merge completion data, then save |
+| Schema Studio | Create and edit TOML tool schemas — name, description, actions, arguments, parameters, tags, notes, value styles |
 | Favorites | Save, search, filter by tag, copy, and export generated commands to JSON or plain text |
-| Help Import | Auto-generate schemas from a command's `--help` output or pasted help text |
 | Schema Storage | Local `.toml` files in the user's AppData folder; fully portable and editable by hand |
-| MSIX Packaging | Locally-signed installer built with `scripts\package-msix.ps1`; installs with a single `Add-AppxPackage` |
+| Legacy WPF Release | Locally-signed MSIX built with `scripts\package-msix.ps1`; preserved as v1.0.5 release evidence |
 
 ---
 
-## Verified Result
+## Verified WPF Result
 
 | Metric | Value |
 |--------|-------|
@@ -47,28 +51,33 @@ Evidence bundle at `release-evidence/v1.0.5/` (build.log, test.log, filehash.txt
 
 ```mermaid
 flowchart LR
-    A["TOML Schema Files\n(AppData/schemas/)"] --> B["MainViewModel\n(schema loader)"]
-    B --> C["Command Wizard UI\n(WPF / MVVM)"]
-    C --> D["Command Preview\n(CommandBuilder)"]
-    C --> E["Favorites\n(history.json)"]
-    C --> F["Schema Editor\n(TOML save/delete)"]
-    F --> A
-    D --> G["Clipboard / Export"]
+    A["TOML Schema Files\n(AppData/schemas/)"] --> B["Tauri Rust Commands\n(file/process boundary)"]
+    B --> C["React Store\n(schema, import, favorites state)"]
+    C --> D["Builder\ncommand preview"]
+    C --> E["Import Workbench\nreview staged rows"]
+    C --> F["Schema Studio\nTOML edit/preview"]
+    C --> G["Command Library\nfavorites/export"]
+    F --> B
+    D --> H["Clipboard / Favorites"]
 ```
 
-The app is a single-process WPF application. The `MainViewModel` owns all state. Schema files are read from and written to the local AppData `schemas/` folder via `SchemaSerialization`. The `HelpSchemaImporter` pipeline runs an external command or parses pasted text to auto-populate a new schema. All data is local-only.
+The v2 app uses Tauri for local filesystem and help/completion capture, while React owns command-building, import review, schema editing, and favorites state. The v1 WPF application remains in the repo as release-verified lineage.
 
 ---
 
 ## Repository Layout
 
 ```text
-CommandWizard.csproj          Main application project
-MainWindow.xaml / .cs         Shell window and event routing
-ViewModels/                   MainViewModel, ToolSchemaViewModel, and item VMs
-Services/                     SchemaSerialization, HelpSchemaImporter, CommandBuilder, AppLogger
+src/                          Tauri v2 React/TypeScript implementation
+src-tauri/                    Rust command layer, app config, native tests
+tests/                        Playwright smoke tests
+Project-Proposal.md           PPS proposal for the v2 rebuild
+CommandWizard.csproj          Legacy WPF application project
+MainWindow.xaml / .cs         Legacy shell window and event routing
+ViewModels/                   Legacy MainViewModel, ToolSchemaViewModel, and item VMs
+Services/                     Legacy SchemaSerialization, HelpSchemaImporter, CommandBuilder, AppLogger
 schemas/                      Bundled starter schema files (e.g. rsync.toml)
-CommandWizard.Tests/          xUnit test project (11 tests)
+CommandWizard.Tests/          Legacy xUnit test project
 scripts/package-msix.ps1      Repeatable MSIX packaging script
 dist/                         Built MSIX artifacts
 release-evidence/             Per-version build, test, and install evidence
@@ -77,7 +86,29 @@ CommandWizard.manifest.toml   Machine-readable project manifest
 
 ---
 
-## Components
+## v2 Components
+
+### Builder
+
+Select a schema, choose an optional action, fill options and parameters, preview the assembled command, copy it, or save it to favorites.
+
+### Import Workbench
+
+Capture live help output or parse pasted help text. The workbench stages detected actions, arguments, and parameters in editable buckets, shows parse warnings, optionally merges completion data, and saves only after review.
+
+### Schema Studio
+
+Edit schema metadata, actions, arguments, parameters, tags, notes, value styles, and preview the TOML output before saving.
+
+### Command Library
+
+Search, tag-filter, copy, remove, clear, and export favorite commands.
+
+### Settings / Evidence
+
+Shows the local data root, Blue Slate adoption, safety boundary, WPF lineage, schema/favorite counts, and runtime log text.
+
+## Legacy WPF Components
 
 ### `MainViewModel`
 
@@ -161,7 +192,8 @@ Important signals:
 
 ### Prerequisites
 
-- Windows 10 or later (Windows App SDK runtime bundled in the MSIX)
+- Node.js/npm and Rust/Tauri prerequisites for v2 development
+- Windows 10 or later for the legacy MSIX (Windows App SDK runtime bundled in the MSIX)
 - Local dev certificate trusted on the machine (required for locally-signed MSIX only)
 - At least one `.toml` schema file in `%LOCALAPPDATA%\Aptlantis\CommandWizard\schemas\`
 
@@ -175,7 +207,17 @@ Import-Certificate -FilePath .\devcert.cer -CertStoreLocation Cert:\LocalMachine
 Add-AppxPackage .\dist\CommandWizard-1.0.5.0.msix
 ```
 
-### Build
+### Build Tauri v2
+
+```powershell
+npm install
+npm run build
+npm run test
+npm run test:rust
+npm run tauri:dev
+```
+
+### Build Legacy WPF
 
 ```powershell
 dotnet build .\CommandWizard.csproj -c Release
@@ -252,7 +294,9 @@ Package MSIX:
 .\scripts\package-msix.ps1
 ```
 
-Current automated coverage includes 26 xUnit tests covering schema serialization round-trips, command builder output, help text parsing, and import pipeline logic.
+Current legacy automated coverage includes 26 xUnit tests covering schema serialization round-trips, command builder output, help text parsing, and import pipeline logic.
+
+The v2 scaffold adds Vitest coverage for schema parsing/serialization, command building, help import, favorites, and shell rendering; Rust tests for schema IO helpers and native safety helpers; and Playwright smoke tests for Builder and Import Workbench.
 
 ---
 
@@ -262,6 +306,7 @@ Current automated coverage includes 26 xUnit tests covering schema serialization
 |------|---------|
 | [README.md](README.md) | This file — project overview and quick start |
 | [Project-README.md](Project-README.md) | Governance entry point — build commands, known gaps, manifest links |
+| [Project-Proposal.md](Project-Proposal.md) | PPS intent record for the Tauri v2 rebuild |
 | [RELEASE-v1.0.5.md](RELEASE-v1.0.5.md) | v1.0.5 release notes — installer, SHA-256, theme, design boundaries, built with |
 | [AGENTS.md](AGENTS.md) | Agent modification instructions |
 | [CommandWizard.manifest.toml](CommandWizard.manifest.toml) | Machine-readable project manifest |
@@ -270,13 +315,13 @@ Current automated coverage includes 26 xUnit tests covering schema serialization
 
 ## Release Posture
 
-CommandWizard is a stable, locally-signed production desktop application. Active development is currently paused.
+CommandWizard has a stable, locally-signed WPF production artifact and an active in-place Tauri v2 rebuild. Do not treat the Tauri app as release-verified until its DRS evidence bundle exists.
 
 | Field | Value |
 |-------|-------|
-| Stage | production |
+| Stage | WPF production, Tauri rebuild |
 | Completion | 95% |
-| Stability | stable |
+| Stability | WPF stable, Tauri pre-release |
 | Technical debt | low |
 | Maintenance burden | low |
 | License | MIT |
@@ -292,8 +337,8 @@ All data — schemas, favorites, logs — lives in the user's AppData folder. No
 **Schema-driven, not code-driven**
 Command structure is described in TOML, not compiled in. Adding a new tool means dropping a `.toml` file, not writing code.
 
-**No command execution**
-The wizard assembles command strings for the clipboard. It does not run commands on behalf of the user. The only system side-effect is an opt-in PATH modification.
+**No generated command execution**
+The wizard assembles command strings for the clipboard and favorites. It does not execute generated commands. Tauri help/completion capture is limited to explicit import probes.
 
 **Transparent artifacts**
 Every release ships with a SHA-256 hash, a signed MSIX, and an evidence bundle (build log, test log, install check) so the release can be independently verified.
@@ -302,8 +347,9 @@ Every release ships with a SHA-256 hash, a signed MSIX, and an evidence bundle (
 
 ## Roadmap
 
-- [ ] Schema delete confirmation — already added in post-v1.0.0 source
-- [ ] In-app docs folder bundled with the MSIX installer
+- [ ] Complete Tauri dependency install and local launch verification
+- [ ] Complete Tauri package verification and DRS evidence bundle
+- [ ] Decide whether the WPF implementation moves to archived lineage after v2 release
 - [ ] Automated UI smoke tests in the release checklist
 - [ ] SBOM (CycloneDX/JSON) generation for public releases
 
