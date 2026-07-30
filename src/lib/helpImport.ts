@@ -7,6 +7,7 @@ const flagOnlyLine = /^\s*(?<flags>(?:[-/][^\s]*(?:\s*,\s*[-/][^\s]*)*)(?:\s+[-/
 const actionLine = /^\s*(?<cmds>[\w-]+(?:\s*,\s*[\w-]+)*)\s+(?<desc>.+)$/;
 const userActionLine = /^\s*(?<name>[A-Za-z0-9][A-Za-z0-9_.-]*)(?:\s+[-–—]\s*|\s{2,})(?<desc>.*)$/;
 const usageToken = /[\[<](?<name>[A-Za-z0-9_.-]+)[>\]]/g;
+const ansiEscape = /\u001b\[[0-?]*[ -/]*[@-~]/g;
 
 const commandSectionHeaders = new Set(["commands", "subcommands"]);
 const optionSectionHeaders = new Set([
@@ -23,7 +24,7 @@ const optionSectionHeaders = new Set([
 ]);
 
 const normalizeHelpLine = (line: string) =>
-  Array.from(line)
+  Array.from(line.replace(ansiEscape, ""))
     .map((ch) => (ch.charCodeAt(0) <= 127 ? ch : " "))
     .join("");
 
@@ -149,13 +150,34 @@ const isLooseValueToken = (token: string) => {
   return (
     cleaned.startsWith("<") ||
     cleaned.startsWith("[") ||
-    ["value", "file", "filename", "path", "dir", "directory", "port", "level", "format", "name", "string"].includes(
+    [
+      "value",
+      "file",
+      "filename",
+      "path",
+      "dir",
+      "directory",
+      "port",
+      "level",
+      "format",
+      "name",
+      "string",
+      "text",
+      "integer",
+      "int",
+      "number",
+      "float",
+      "choice",
+      "command",
+      "url",
+      "uri"
+    ].includes(
       cleaned.toLowerCase()
     )
   );
 };
 
-const inferArgumentType = (tokens: string[]) => (tokens.some((token) => /[<=[\]:]/.test(token)) ? "string" : "boolean");
+const inferArgumentType = (tokens: string[]) => (tokens.some((token) => /[<=[\]:]/.test(token) || isLooseValueToken(token)) ? "string" : "boolean");
 
 const splitFlagTokens = (flags: string) =>
   flags

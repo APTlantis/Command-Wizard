@@ -593,12 +593,7 @@ fn split_args(args: &str) -> Vec<String> {
 }
 
 fn run_command(command_name: &str, args: Vec<String>, timeout: Duration) -> Result<String> {
-    let mut child = Command::new(command_name)
-        .args(args)
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .map_err(|err| CommandWizardError::Message(format!("Failed to start '{command_name}': {err}")))?;
+    let mut child = spawn_probe(command_name, &args)?;
 
     let start = Instant::now();
     loop {
@@ -622,6 +617,43 @@ fn run_command(command_name: &str, args: Vec<String>, timeout: Duration) -> Resu
             return Err(CommandWizardError::Message("Command timed out.".into()));
         }
         std::thread::sleep(Duration::from_millis(50));
+    }
+}
+
+fn spawn_probe(command_name: &str, args: &[String]) -> Result<std::process::Child> {
+    match Command::new(command_name)
+        .args(args)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+    {
+        Ok(child) => Ok(child),
+        Err(direct_err) => {
+            #[cfg(target_os = "windows")]
+            {
+                log_line(&format!(
+                    "Direct help probe failed for '{command_name}', retrying through cmd: {direct_err}"
+                ));
+                Command::new("cmd")
+                    .arg("/C")
+                    .arg(command_name)
+                    .args(args)
+                    .stdout(Stdio::piped())
+                    .stderr(Stdio::piped())
+                    .spawn()
+                    .map_err(|shell_err| {
+                        CommandWizardError::Message(format!(
+                            "Failed to start '{command_name}' directly ({direct_err}) or through cmd ({shell_err})."
+                        ))
+                    })
+            }
+            #[cfg(not(target_os = "windows"))]
+            {
+                Err(CommandWizardError::Message(format!(
+                    "Failed to start '{command_name}': {direct_err}"
+                )))
+            }
+        }
     }
 }
 

@@ -615,7 +615,7 @@ function LibraryView() {
       <div className="mt-5 space-y-3">
         {favorites.map((favorite) => (
           <div className="atl-card p-4" key={favorite.createdAt}>
-            <pre className="font-mono text-sm text-atl-silver">{favorite.command}</pre>
+            <pre className="whitespace-pre-wrap break-words font-mono text-sm text-atl-silver">{favorite.command}</pre>
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-atl-frost">
               <span>
                 {favorite.tool} {favorite.action ? `/ ${favorite.action}` : ""} {favorite.task ? `/ ${favorite.task}` : ""}

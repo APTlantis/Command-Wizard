@@ -31,6 +31,21 @@ Options:
     expect(schema.arguments.some((arg) => arg.flag === "--watch")).toBe(true);
   });
 
+  it("normalizes colored help output and typed option placeholders", () => {
+    const { schema } = parseHelpText(
+      "hf",
+      "\u001b[1mUsage:\u001b[0m hf [OPTIONS] COMMAND [ARGS]...\n\nCommands:\n  auth       Manage authentication\n\nOptions:\n  --token TEXT   Authentication token\n  --endpoint URL Hub endpoint"
+    );
+
+    expect(schema.actions.map((action) => action.name)).toContain("auth");
+    expect(schema.arguments).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ flag: "--token", type: "string", description: "Authentication token" }),
+        expect.objectContaining({ flag: "--endpoint", type: "string", description: "Hub endpoint" })
+      ])
+    );
+  });
+
   it("merges completion data without removing help rows", () => {
     const { schema } = parseHelpText("demo", "Usage: demo [options]\n\nOptions:\n  --help Show help");
     const merged = mergeCompletionData(schema, "Register-ArgumentCompleter -CommandName demo -ScriptBlock { $globalFlags = @('--verbose') }");

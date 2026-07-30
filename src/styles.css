@@ -193,7 +193,8 @@
     padding: 0;
     font: inherit;
     line-height: inherit;
-    white-space: pre;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 
   .atl-structured-textarea::placeholder {
@@ -250,7 +251,7 @@
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     gap: 0.75rem;
-    white-space: pre;
+    white-space: pre-wrap;
   }
 
   .atl-code-lines pre {
@@ -263,7 +264,9 @@
     font: inherit;
     line-height: inherit;
     text-shadow: none;
-    white-space: pre;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .atl-code-prism,
@@ -275,7 +278,9 @@
     font-size: inherit;
     line-height: inherit;
     text-shadow: none;
-    white-space: pre;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .atl-code-prism code[class*="language-"] {
