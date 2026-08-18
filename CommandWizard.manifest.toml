@@ -3,7 +3,7 @@ schema = "APTlantis Entity Manifest"
 schema_version = "2.4"
 manifest_type = "project"
 canonical_name = "CommandWizard.manifest.toml"
-last_updated = "2026-07-30"
+last_updated = "2026-07-31"
 maintainer = "Herb"
 
 [entity]
@@ -43,9 +43,12 @@ command-generation = "#0D89C8"
 cli-import = "#30D58C"
 
 [project]
+id = "commandwizard"
+title = "CommandWizard"
+description = "Local-first Tauri desktop application for constructing and managing command workflows from TOML schemas."
 type = "desktop-application"
 portfolio_class = "project"
-stage = "active-rebuild"
+stage = "production"
 version = "2.0.0"
 
 [governance]
@@ -62,8 +65,8 @@ additional_standard_paths = [
 inherits_from = "..\\DRS.manifest.toml"
 
 [lifecycle]
-state = "active"
-last_reviewed = "2026-07-30"
+state = "maintenance"
+last_reviewed = "2026-07-31"
 maintainer = "Herb"
 
 [paths]
@@ -73,17 +76,48 @@ root = "D:\\DRS\\CommandWizard"
 project_readme = "Project-README.md"
 readme = "README.md"
 proposal = "Project-Proposal.md"
+release_notes = "docs/CommandWizard v2.0.0 - Stable Command Workspace Release.md"
+release_checklist = "docs/CommandWizard - Release Checklist.md"
 
 [relationships]
 parent = "D:\\DRS"
 child_projects = []
 
+[metadata]
+created = "2026-07-30"
+last_updated = "2026-07-31"
+maintainer = "Herb"
+license = "MIT"
+language_primary = "TypeScript"
+languages_used = [
+    "TypeScript",
+    "React",
+    "Rust",
+    "TOML",
+    "Markdown",
+]
+
+[runtime]
+platform = "desktop"
+environment = "Windows x64 Tauri v2 application with React frontend and Rust command layer"
+services = []
+storage = [
+    "%LOCALAPPDATA%\\Aptlantis\\CommandWizard schemas, favorites, logs, managed CLI scripts, and launcher shims",
+]
+
+[artifacts]
+produces = [
+    "artifacts/installer/CommandWizard-2.0.0.0-win-x64.exe",
+    "docs/CommandWizard v2.0.0 - Stable Command Workspace Release.md",
+    "docs/CommandWizard - Release Checklist.md",
+]
+
 [state]
-stability = "pre-release"
-active_development = true
+stability = "stable"
+active_development = false
 known_gaps = [
-    "Tauri package is not yet DRS release-verified.",
-    "macOS and Linux data-path behavior still needs platform verification.",
+    "Full installer install/uninstall was not executed during the 2026-07-31 local verification pass; launch behavior was verified from the packaged release executable.",
+    "macOS and Linux data-path behavior remains future cross-platform verification work and does not block the local Windows stable release.",
 ]
 
 [visual_system]
@@ -95,7 +129,7 @@ token_source = "D:\\.library\\aptlantis_core\\blue.slate\\spec\\tokens\\BlueSlat
 
 [implementation]
 name = "CommandWizard Tauri rebuild"
-status = "active"
+status = "maintenance"
 started = "2026-07-30"
 stack = [
     "Tauri v2",
@@ -140,16 +174,32 @@ required_child_project_files = [
 ]
 
 [verification]
-level = "development-verified"
-evidence = "Current local checks: npm run build, npm run test, npm run test:rust, npm run test:ui."
-reviewed = "2026-07-30"
+level = "local-verified"
+evidence = "npm run build, npm run test, npm run test:rust, npm run test:ui, npm run tauri:build, SHA-256 hash, Authenticode unsigned check, and launch verification from packaged release executable."
+reviewed = "2026-07-31"
 build_verified = true
 tests_verified = true
-artifact_verified = false
-release_verified = false
+artifact_verified = true
+release_verified = true
 
 [release]
 version = "2.0.0"
-date = "2026-07-30"
-status = "pre-release"
-release_verified = false
+name = "CommandWizard v2.0.0 - Stable Command Workspace Release"
+date = "2026-07-31"
+status = "local-verified"
+release_verified = true
+
+[release.installer]
+path = "artifacts/installer/CommandWizard-2.0.0.0-win-x64.exe"
+runtime = "win-x64"
+package_version = "2.0.0.0"
+size_bytes = 3768522
+sha256 = "6B75295313661A71E0BB14197547A4D377AE5740896B56CA9205CF4CE002CA64"
+signing = "unsigned; Get-AuthenticodeSignature reported NotSigned on 2026-07-31"
+
+[release.verified]
+date = "2026-07-31"
+tests = "npm run test passed 23 tests across 6 files; npm run test:rust passed 7 Rust tests; npm run test:ui passed 4 Playwright smoke tests"
+installer_build = "npm run tauri:build completed on 2026-07-31"
+install_check = "Packaged release executable launched on 2026-07-31 with window title 'CommandWizard'"
+data_safety = "Launch-only verification did not modify or delete local CommandWizard user data; installer install/uninstall was not executed"

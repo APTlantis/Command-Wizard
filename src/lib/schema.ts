@@ -12,7 +12,7 @@ export const emptyMetadata = (): SchemaMetadata => ({
   version: "",
   author: "",
   source: "",
-  importedFrom: "",
+  sha256: "",
   homepage: "",
   executableVersion: "",
   lastValidated: ""
@@ -157,7 +157,7 @@ export const parseSchemaToml = (tomlText: string, sourcePath = ""): ToolSchema =
     version: String(metadataTable.version ?? ""),
     author: String(metadataTable.author ?? ""),
     source: String(metadataTable.source ?? ""),
-    importedFrom: String(metadataTable.imported_from ?? ""),
+    sha256: String(metadataTable.sha_256 ?? ""),
     homepage: String(metadataTable.homepage ?? ""),
     executableVersion: String(metadataTable.executable_version ?? ""),
     lastValidated: String(metadataTable.last_validated ?? "")
@@ -191,7 +191,7 @@ const metadataLines = (metadata: SchemaMetadata): string[] => {
     metadata.version.trim() ? `version = ${quote(metadata.version)}` : "",
     metadata.author.trim() ? `author = ${quote(metadata.author)}` : "",
     metadata.source.trim() ? `source = ${quote(metadata.source)}` : "",
-    metadata.importedFrom.trim() ? `imported_from = ${quote(metadata.importedFrom)}` : "",
+    metadata.sha256.trim() ? `sha_256 = ${quote(metadata.sha256)}` : "",
     metadata.homepage.trim() ? `homepage = ${quote(metadata.homepage)}` : "",
     metadata.executableVersion.trim() ? `executable_version = ${quote(metadata.executableVersion)}` : "",
     metadata.lastValidated.trim() ? `last_validated = ${quote(metadata.lastValidated)}` : ""

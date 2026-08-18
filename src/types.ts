@@ -9,7 +9,7 @@ export interface SchemaMetadata {
   version: string;
   author: string;
   source: string;
-  importedFrom: string;
+  sha256: string;
   homepage: string;
   executableVersion: string;
   lastValidated: string;

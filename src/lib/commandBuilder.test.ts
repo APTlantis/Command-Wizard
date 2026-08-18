@@ -13,7 +13,7 @@ const schema: ToolSchema = {
     version: "",
     author: "",
     source: "",
-    importedFrom: "",
+    sha256: "",
     homepage: "",
     executableVersion: "",
     lastValidated: ""

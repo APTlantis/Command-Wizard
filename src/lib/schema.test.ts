@@ -37,7 +37,7 @@ type = "path"
         version: "1",
         author: "Herb",
         source: "help import; completion imported",
-        importedFrom: "yt-dlp --help",
+        sha256: "3B2C1A0D4E5F6789ABCDEF0123456789ABCDEF0123456789ABCDEF012345678",
         homepage: "https://github.com/yt-dlp/yt-dlp",
         executableVersion: "2026.07.01",
         lastValidated: "2026-07-30T12:00:00.000Z"
@@ -49,10 +49,10 @@ type = "path"
     });
 
     expect(toml).toContain("[metadata]");
-    expect(toml).toContain('imported_from = "yt-dlp --help"');
+    expect(toml).toContain('sha_256 = "3B2C1A0D4E5F6789ABCDEF0123456789ABCDEF0123456789ABCDEF012345678"');
     expect(parseSchemaToml(toml).metadata).toMatchObject({
       source: "help import; completion imported",
-      importedFrom: "yt-dlp --help",
+      sha256: "3B2C1A0D4E5F6789ABCDEF0123456789ABCDEF0123456789ABCDEF012345678",
       executableVersion: "2026.07.01"
     });
   });

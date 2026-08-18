@@ -1,6 +1,6 @@
 # CommandWizard
 
-![status](https://img.shields.io/badge/status-tauri%20rebuild%20active-cyan)
+![status](https://img.shields.io/badge/status-stable%20local%20release-green)
 ![license](https://img.shields.io/badge/license-MIT-blue)
 ![language](https://img.shields.io/badge/language-TypeScript%20%2F%20Rust-lightgrey)
 
@@ -9,6 +9,12 @@ CommandWizard is a local-first desktop app for building CLI command strings from
 Generated commands are copy/export only. CommandWizard does not run generated commands.
 
 Quick links: [Project README](Project-README.md) | [Proposal](Project-Proposal.md) | [Manifest](CommandWizard.manifest.toml)
+
+## Current Release
+
+Current version: **CommandWizard v2.0.0**.
+
+The v2.0.0 stable release is locally verified for Windows x64. The canonical private release artifact is `artifacts/installer/CommandWizard-2.0.0.0-win-x64.exe`, with release notes in `docs/CommandWizard v2.0.0 - Stable Command Workspace Release.md`.
 
 ## Product surfaces
 
@@ -97,7 +103,7 @@ npm run test:rust
 npm run test:ui
 ```
 
-The Tauri app should not be called release-verified until a DRS release evidence bundle is created from a clean build, test pass, launch check, and packaged app verification.
+The v2.0.0 Tauri app is local-verified under DRS. Full installer install/uninstall was not executed during this local verification pass; launch behavior was verified from the packaged release executable.
 
 ## Core principles
 

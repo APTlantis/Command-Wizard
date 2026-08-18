@@ -52,7 +52,7 @@ struct SchemaMetadata {
     #[serde(default)]
     source: String,
     #[serde(default)]
-    imported_from: String,
+    sha_256: String,
     #[serde(default)]
     homepage: String,
     #[serde(default)]
@@ -181,7 +181,7 @@ struct TomlMetadata {
     #[serde(default)]
     source: String,
     #[serde(default)]
-    imported_from: String,
+    sha_256: String,
     #[serde(default)]
     homepage: String,
     #[serde(default)]
@@ -356,7 +356,7 @@ fn parse_schema_toml(text: &str, source_path: &Path) -> Result<ToolSchema> {
             version: metadata.version,
             author: metadata.author,
             source: metadata.source,
-            imported_from: metadata.imported_from,
+            sha_256: metadata.sha_256,
             homepage: metadata.homepage,
             executable_version: metadata.executable_version,
             last_validated: metadata.last_validated,
@@ -517,8 +517,8 @@ fn schema_metadata_lines(metadata: &SchemaMetadata) -> Vec<String> {
     if !metadata.source.trim().is_empty() {
         lines.push(format!("source = {}", quote_toml(&metadata.source)));
     }
-    if !metadata.imported_from.trim().is_empty() {
-        lines.push(format!("imported_from = {}", quote_toml(&metadata.imported_from)));
+    if !metadata.sha_256.trim().is_empty() {
+        lines.push(format!("sha_256 = {}", quote_toml(&metadata.sha_256)));
     }
     if !metadata.homepage.trim().is_empty() {
         lines.push(format!("homepage = {}", quote_toml(&metadata.homepage)));
@@ -1086,19 +1086,19 @@ installed_name = "yt-dlp"
 version = "1"
 author = "Herb"
 source = "help import; completion imported"
-imported_from = "yt-dlp --help"
+sha_256 = "3B2C1A0D4E5F6789ABCDEF0123456789ABCDEF0123456789ABCDEF012345678"
 homepage = "https://example.com/yt-dlp"
 executable_version = "2026.07.01"
 last_validated = "2026-07-30T12:00:00.000Z"
 "#;
         let schema = parse_schema_toml(toml, Path::new("yt-dlp.toml")).unwrap();
         assert_eq!(schema.metadata.source, "help import; completion imported");
-        assert_eq!(schema.metadata.imported_from, "yt-dlp --help");
+        assert_eq!(schema.metadata.sha_256, "3B2C1A0D4E5F6789ABCDEF0123456789ABCDEF0123456789ABCDEF012345678");
         assert_eq!(schema.metadata.executable_version, "2026.07.01");
 
         let serialized = serialize_schema_toml(&schema).unwrap();
         assert!(serialized.contains("[metadata]"));
-        assert!(serialized.contains("imported_from = \"yt-dlp --help\""));
+        assert!(serialized.contains("sha_256 = \"3B2C1A0D4E5F6789ABCDEF0123456789ABCDEF0123456789ABCDEF012345678\""));
     }
 
     #[test]

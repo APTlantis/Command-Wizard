@@ -14,7 +14,7 @@ const baseSchema = (): ToolSchema => ({
     version: "1",
     author: "Herb",
     source: "help import; completion imported",
-    importedFrom: "yt-dlp --help",
+    sha256: "",
     homepage: "https://example.com/yt-dlp",
     executableVersion: "2026.07.01",
     lastValidated: "2026-07-30T12:00:00.000Z"

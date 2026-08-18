@@ -23,6 +23,8 @@ As of 2026-07-30, previous implementation files, old test projects, old packagin
 
 The active project contains the Tauri rebuild, current schemas, PPS/DRS/WGS documentation, manifest metadata, bundled Prism Okaidia TOML highlighting assets, and current test suites.
 
+As of 2026-07-31, version `2.0.0` is the local-verified stable release. The canonical private release artifact is `artifacts/installer/CommandWizard-2.0.0.0-win-x64.exe`. Future manifest-import expansion and parser improvements are maintenance patch/minor work, not blockers for the current stable release.
+
 ## Visual system
 
 CommandWizard adopts [Blue Slate](D:/.library/aptlantis_core/blue.slate/Project-README.md) as an active visual-system dependency for color tokens, operational layout, command surfaces, status chips, evidence panels, and focus treatment.
@@ -41,11 +43,10 @@ npm run tauri:dev
 npm run tauri:build
 ```
 
-Release verification still requires a DRS evidence bundle from a clean build, tests, launch verification, and packaged app verification.
+The v2.0.0 stable release was verified with build, tests, UI smoke, Tauri packaging, SHA-256 hashing, unsigned Authenticode status, and launch verification from the packaged release executable. Full installer install/uninstall was not executed during this local verification pass.
 
 ## Known gaps and next review
 
-- Complete a Tauri release evidence bundle before calling the app release-verified.
 - Expand Import Workbench coverage as the parser handles more command families.
 - Confirm cross-platform data path behavior on macOS and Linux.
 - Decide whether to keep generated Vite `dist/` artifacts checked in after release packaging policy is finalized.

@@ -444,7 +444,6 @@ export const buildSchemaFromDraft = (draft: HelpImportDraft): ToolSchema => ({
   metadata: {
     ...emptySchema().metadata,
     source: draft.completionImported ? `${draft.importSource}; completion imported` : draft.importSource,
-    importedFrom: draft.importedFrom.trim() || draft.installedName.trim() || draft.toolName.trim(),
     lastValidated: new Date().toISOString()
   },
   actions: draft.stagedActions.filter((action) => action.name.trim()).map((action) => ({ ...action, name: action.name.trim() })),

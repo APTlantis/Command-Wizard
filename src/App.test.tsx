@@ -22,8 +22,10 @@ describe("App", () => {
     await screen.findByText("CommandWizard");
     await user.click(screen.getByRole("button", { name: "CLI" }));
 
-    expect(screen.getByRole("heading", { name: "Managed script commands" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Standards command desk" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Choose Script" })).toBeInTheDocument();
+    expect(screen.getByText("Standards Quick Starts")).toBeInTheDocument();
+    expect(screen.getByText("Verify Manifest")).toBeInTheDocument();
   });
 
   it("shows schema health in the rail and command panel", async () => {

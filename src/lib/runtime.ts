@@ -14,7 +14,7 @@ const sampleSchema: ToolSchema = {
     version: "",
     author: "",
     source: "browser sample",
-    importedFrom: "",
+    sha256: "",
     homepage: "",
     executableVersion: "",
     lastValidated: ""

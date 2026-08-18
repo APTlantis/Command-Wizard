@@ -13,6 +13,7 @@ import type {
   ToolSchema
 } from "../types";
 import { buildParts, makeOptionStates, makeParameterStates, tokensFromParts } from "../lib/commandBuilder";
+import type { CliPreset } from "../lib/cliPresets";
 import { filterFavorites } from "../lib/favorites";
 import {
   addActionLines,
@@ -102,6 +103,7 @@ interface StoreState {
   setCliField: (field: "cliScriptPath" | "cliCommandName" | "cliHelpArgs", value: string) => void;
   chooseCliScript: () => Promise<void>;
   importCliScript: () => Promise<void>;
+  saveCliPreset: (preset: CliPreset) => Promise<void>;
   saveCliDraftAsSchema: () => Promise<void>;
   refreshLog: () => Promise<void>;
 }
@@ -408,6 +410,19 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     } catch (error) {
       set({ status: error instanceof Error ? error.message : "CLI import failed." });
     }
+  },
+  async saveCliPreset(preset) {
+    const favorite: FavoriteCommand = {
+      command: preset.command,
+      tool: preset.family,
+      action: preset.title,
+      task: preset.description,
+      createdAt: new Date().toISOString(),
+      tags: preset.tags
+    };
+    const favorites = [...get().favorites, favorite];
+    await runtime.saveFavorites(favorites);
+    set({ favorites, status: `${preset.title} saved to library.` });
   },
   async saveCliDraftAsSchema() {
     const draft = get().cliDraft;

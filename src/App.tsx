@@ -1,27 +1,32 @@
 import {
   AlertTriangle,
   BookMarked,
-  Braces,
   CheckCircle2,
   Clipboard,
   Cog,
-  Database,
   FileInput,
   FolderOpen,
-  Import,
-  Library,
   Plus,
   RefreshCw,
-  Route,
   Save,
   Search,
-  Trash2,
   Wand2,
   XCircle,
   Zap
 } from "lucide-react";
+import {
+  AutoFixHigh,
+  DataObject,
+  DeleteOutlined,
+  LibraryBooks,
+  Storage,
+  Terminal,
+  UploadFile
+} from "@mui/icons-material";
 import { useEffect, useMemo, useState } from "react";
 import { IconButton } from "./components/IconButton";
+import { asSizedIcon } from "./components/muiIcon";
+import { cliPresets } from "./lib/cliPresets";
 import {
   commandPreviewForState,
   selectFavoriteTags,
@@ -35,13 +40,21 @@ import {
 } from "./stores/useCommandWizardStore";
 import type { ArgumentValueStyle, HelpImportDraft, SchemaArgument, SchemaParameter } from "./types";
 
+const AutoFixHighIcon = asSizedIcon(AutoFixHigh);
+const UploadFileIcon = asSizedIcon(UploadFile);
+const TerminalIcon = asSizedIcon(Terminal);
+const DataObjectIcon = asSizedIcon(DataObject);
+const LibraryBooksIcon = asSizedIcon(LibraryBooks);
+const StorageIcon = asSizedIcon(Storage);
+const DeleteOutlinedIcon = asSizedIcon(DeleteOutlined);
+
 const nav = [
-  { id: "builder", label: "Builder", icon: Wand2 },
-  { id: "import", label: "Import", icon: Import },
-  { id: "cli", label: "CLI", icon: Route },
-  { id: "schema", label: "Schema", icon: Braces },
-  { id: "library", label: "Library", icon: Library },
-  { id: "settings", label: "Evidence", icon: Database }
+  { id: "builder", label: "Builder", icon: AutoFixHighIcon },
+  { id: "import", label: "Import", icon: UploadFileIcon },
+  { id: "cli", label: "CLI", icon: TerminalIcon },
+  { id: "schema", label: "Schema", icon: DataObjectIcon },
+  { id: "library", label: "Library", icon: LibraryBooksIcon },
+  { id: "settings", label: "Evidence", icon: StorageIcon }
 ] as const;
 
 function escapeHtml(value: string) {
@@ -52,6 +65,12 @@ function highlightToml(code: string) {
   if (typeof window === "undefined") return escapeHtml(code);
   const grammar = window.Prism?.languages?.toml;
   return grammar && window.Prism ? window.Prism.highlight(code, grammar, "toml") : escapeHtml(code);
+}
+
+function highlightBash(code: string) {
+  if (typeof window === "undefined") return escapeHtml(code);
+  const grammar = window.Prism?.languages?.bash;
+  return grammar && window.Prism ? window.Prism.highlight(code, grammar, "bash") : escapeHtml(code);
 }
 
 function lineNumbersFor(value: string) {
@@ -109,6 +128,17 @@ function TomlPreview({ code, className = "" }: { code: string; className?: strin
       </div>
       <pre>
         <code className="language-toml" dangerouslySetInnerHTML={{ __html: highlighted }} />
+      </pre>
+    </div>
+  );
+}
+
+function CommandCodeBlock({ code, className = "" }: { code: string; className?: string }) {
+  const highlighted = useMemo(() => highlightBash(code), [code]);
+  return (
+    <div className={`atl-code atl-code-prism language-bash ${className}`}>
+      <pre>
+        <code className="language-bash" dangerouslySetInnerHTML={{ __html: highlighted }} />
       </pre>
     </div>
   );
@@ -356,7 +386,7 @@ function ImportView() {
             <label className="atl-label mb-0" htmlFor="import-help-text">
               Pasted Help Text
             </label>
-            <IconButton icon={Trash2} label="Clear" variant="ghost" onClick={state.clearImportHelpText} title="Clear pasted help text" />
+            <IconButton icon={DeleteOutlinedIcon} label="Clear" variant="ghost" onClick={state.clearImportHelpText} title="Clear pasted help text" />
           </div>
           <StructuredTextArea
             id="import-help-text"
@@ -405,12 +435,24 @@ function CliView() {
   const state = useCommandWizardStore();
   const draft = state.cliDraft;
   const install = state.cliLastInstall;
+  const presetGroups = useMemo(
+    () =>
+      Array.from(new Set(cliPresets.map((preset) => preset.family))).map((family) => ({
+        family,
+        presets: cliPresets.filter((preset) => preset.family === family)
+      })),
+    []
+  );
+  const copyPreset = async (command: string, title: string) => {
+    await navigator.clipboard.writeText(command);
+    state.setStatus(`${title} copied to clipboard.`);
+  };
   return (
     <section className="atl-panel min-h-0 overflow-auto p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-wide text-atl-cyan-bright">CLI Import</p>
-          <h1 className="text-2xl font-semibold">Managed script commands</h1>
+          <h1 className="text-2xl font-semibold">Standards command desk</h1>
         </div>
         <div className="flex gap-2">
           <IconButton icon={FolderOpen} label="Choose Script" variant="secondary" onClick={state.chooseCliScript} />
@@ -431,6 +473,36 @@ function CliView() {
             <input className="atl-input" value={state.cliCommandName} onChange={(event) => state.setCliField("cliCommandName", event.target.value)} placeholder="my-script" />
             <label className="atl-label mt-3">Help Arguments</label>
             <input className="atl-input" value={state.cliHelpArgs} onChange={(event) => state.setCliField("cliHelpArgs", event.target.value)} placeholder="--help" />
+          </div>
+          <div className="atl-card p-4">
+            <p className="atl-label">Standards Quick Starts</p>
+            <div className="mt-3 space-y-3">
+              {presetGroups.map((group) => (
+                <div key={group.family} className="atl-card-soft p-3">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <h2 className="text-sm font-semibold">{group.family}</h2>
+                    <span className="atl-chip">{group.presets.length}</span>
+                  </div>
+                  <div className="space-y-2">
+                    {group.presets.map((preset) => (
+                      <div key={preset.id} className="rounded-md border border-atl-ridge/60 bg-atl-void/35 p-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-atl-archive">{preset.title}</p>
+                            <p className="mt-1 text-xs text-atl-frost">{preset.description}</p>
+                          </div>
+                          <div className="flex shrink-0 gap-1">
+                            <IconButton icon={Clipboard} label="Copy" title={`Copy ${preset.title}`} onClick={() => copyPreset(preset.command, preset.title)} />
+                            <IconButton icon={Save} label="Save" title={`Save ${preset.title}`} onClick={() => state.saveCliPreset(preset)} />
+                          </div>
+                        </div>
+                        <CommandCodeBlock code={preset.command} className="mt-2 max-h-24 p-2" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="atl-card p-4">
             <p className="atl-label">PATH Directory</p>
@@ -459,7 +531,7 @@ function CliView() {
               </div>
             </>
           ) : (
-            <EmptyState title="No CLI staged yet" body="Choose a script, capture its help, then review the detected actions and flags." />
+            <EmptyState title="No CLI staged yet" body="Copy or save a standards command, or choose a script to capture its interface." />
           )}
         </div>
       </div>
@@ -575,7 +647,7 @@ function SchemaView() {
         </div>
         <div className="flex gap-2">
           <IconButton icon={Save} label="Save Schema" variant="primary" onClick={state.saveSelectedSchema} />
-          <IconButton icon={Trash2} label="Delete" variant="warning" onClick={state.deleteSelectedSchema} />
+          <IconButton icon={DeleteOutlinedIcon} label="Delete" variant="warning" onClick={state.deleteSelectedSchema} />
         </div>
       </div>
       <div className="mt-5 grid gap-4 xl:grid-cols-[1fr_28rem]">
@@ -632,11 +704,11 @@ function SchemaView() {
               />
             </label>
             <label>
-              <span className="atl-label">Imported From</span>
+              <span className="atl-label">SHA-256</span>
               <input
                 className="atl-input"
-                value={schema.metadata.importedFrom}
-                onChange={(event) => state.updateSelectedSchema({ metadata: { ...schema.metadata, importedFrom: event.target.value } })}
+                value={schema.metadata.sha256}
+                onChange={(event) => state.updateSelectedSchema({ metadata: { ...schema.metadata, sha256: event.target.value } })}
               />
             </label>
             <label>
@@ -669,7 +741,7 @@ function SchemaView() {
               <div className="grid gap-2 md:grid-cols-[minmax(10rem,16rem)_minmax(16rem,1fr)_auto]" key={`${action.name}-${index}`}>
                 <input className="atl-input min-w-0" value={action.name} onChange={(event) => state.updateAction(index, { name: event.target.value })} placeholder="action" />
                 <input className="atl-input min-w-0" value={action.description} onChange={(event) => state.updateAction(index, { description: event.target.value })} placeholder="description" />
-                <IconButton icon={Trash2} label="Remove" onClick={() => state.removeRow("action", index)} />
+                <IconButton icon={DeleteOutlinedIcon} label="Remove" onClick={() => state.removeRow("action", index)} />
               </div>
             ))}
             <IconButton icon={Plus} label="Add Action" onClick={state.addAction} />
@@ -680,7 +752,7 @@ function SchemaView() {
                 <div className="min-w-0">
                   <ArgumentRow argument={argument} onChange={(patch) => state.updateArgument(index, patch)} />
                 </div>
-                <IconButton icon={Trash2} label="Remove" onClick={() => state.removeRow("argument", index)} />
+                <IconButton icon={DeleteOutlinedIcon} label="Remove" onClick={() => state.removeRow("argument", index)} />
               </div>
             ))}
             <IconButton icon={Plus} label="Add Argument" onClick={state.addArgument} />
@@ -691,7 +763,7 @@ function SchemaView() {
                 <div className="min-w-0">
                   <ParameterRow parameter={parameter} onChange={(patch) => state.updateParameterDef(index, patch)} />
                 </div>
-                <IconButton icon={Trash2} label="Remove" onClick={() => state.removeRow("parameter", index)} />
+                <IconButton icon={DeleteOutlinedIcon} label="Remove" onClick={() => state.removeRow("parameter", index)} />
               </div>
             ))}
             <IconButton icon={Plus} label="Add Parameter" onClick={state.addParameter} />
@@ -701,7 +773,7 @@ function SchemaView() {
               <div className="grid gap-2 md:grid-cols-[1fr_8rem_auto]" key={`${tag.name}-${index}`}>
                 <input className="atl-input" value={tag.name} onChange={(event) => state.updateTag(index, { name: event.target.value })} />
                 <input className="atl-input" value={tag.color} onChange={(event) => state.updateTag(index, { color: event.target.value })} />
-                <IconButton icon={Trash2} label="Remove" onClick={() => state.removeRow("tag", index)} />
+                <IconButton icon={DeleteOutlinedIcon} label="Remove" onClick={() => state.removeRow("tag", index)} />
               </div>
             ))}
             <IconButton icon={Plus} label="Add Tag" onClick={state.addTag} />
@@ -727,7 +799,7 @@ function LibraryView() {
         <div className="flex gap-2">
           <IconButton icon={FolderOpen} label="JSON" onClick={() => state.exportFavorites("json")} />
           <IconButton icon={FolderOpen} label="Text" onClick={() => state.exportFavorites("text")} />
-          <IconButton icon={Trash2} label="Clear" variant="warning" onClick={state.clearFavorites} />
+          <IconButton icon={DeleteOutlinedIcon} label="Clear" variant="warning" onClick={state.clearFavorites} />
         </div>
       </div>
       <div className="mt-5 grid gap-3 md:grid-cols-[1fr_12rem]">
@@ -785,14 +857,14 @@ function LibraryView() {
       <div className="mt-5 space-y-3">
         {favorites.map((favorite) => (
           <div className="atl-card p-4" key={favorite.createdAt}>
-            <pre className="whitespace-pre-wrap break-words font-mono text-sm text-atl-silver">{favorite.command}</pre>
+            <CommandCodeBlock code={favorite.command} />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-atl-frost">
               <span>
                 {favorite.tool} {favorite.action ? `/ ${favorite.action}` : ""} {favorite.task ? `/ ${favorite.task}` : ""}
               </span>
               <div className="flex gap-2">
                 <IconButton icon={Clipboard} label="Copy" onClick={() => navigator.clipboard.writeText(favorite.command)} />
-                <IconButton icon={Trash2} label="Remove" onClick={() => state.removeFavorite(favorite.createdAt)} />
+                <IconButton icon={DeleteOutlinedIcon} label="Remove" onClick={() => state.removeFavorite(favorite.createdAt)} />
               </div>
             </div>
           </div>

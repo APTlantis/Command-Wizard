@@ -1,8 +1,12 @@
-import type { LucideIcon } from "lucide-react";
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, ComponentType } from "react";
+
+export interface IconComponentProps {
+  size?: number;
+  className?: string;
+}
 
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  icon: LucideIcon;
+  icon: ComponentType<IconComponentProps>;
   label: string;
   variant?: "primary" | "secondary" | "warning" | "ghost";
 }

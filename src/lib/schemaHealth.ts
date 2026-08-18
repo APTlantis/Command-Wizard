@@ -32,7 +32,7 @@ const missingRequiredParameters = (parameters: ParameterState[]) =>
   parameters.filter((parameter) => parameter.parameter.required && !parameter.value.trim()).map((parameter) => parameter.parameter.name);
 
 const completionImported = (schema: ToolSchema) => {
-  const source = `${schema.metadata.source} ${schema.metadata.importedFrom}`.toLowerCase();
+  const source = schema.metadata.source.toLowerCase();
   return source.includes("completion");
 };
 
