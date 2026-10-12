@@ -27,6 +27,7 @@ import { useEffect, useMemo, useState } from "react";
 import { IconButton } from "./components/IconButton";
 import { asSizedIcon } from "./components/muiIcon";
 import { cliPresets } from "./lib/cliPresets";
+import { commandCategories, commandCategory, categoryTags, type CommandCategory } from "./lib/commandCategory";
 import {
   commandPreviewForState,
   selectFavoriteTags,
@@ -51,7 +52,6 @@ const DeleteOutlinedIcon = asSizedIcon(DeleteOutlined);
 const nav = [
   { id: "builder", label: "Builder", icon: AutoFixHighIcon },
   { id: "import", label: "Import", icon: UploadFileIcon },
-  { id: "cli", label: "CLI", icon: TerminalIcon },
   { id: "schema", label: "Schema", icon: DataObjectIcon },
   { id: "library", label: "Library", icon: LibraryBooksIcon },
   { id: "settings", label: "Evidence", icon: StorageIcon }
@@ -195,14 +195,14 @@ function ToolRail() {
           >
             <div className="flex items-center justify-between gap-2">
               <span className="truncate font-semibold">{schema.name}</span>
-              <span className={`${chipClass} max-w-[8.75rem] shrink-0 whitespace-nowrap`} title={health.railLabel}>
+              {health.railLabel !== "Needs Review" && <span className={`${chipClass} max-w-[8.75rem] shrink-0 whitespace-nowrap`} title={health.railLabel}>
                 <StatusIcon size={12} />
                 <span className="truncate">{health.railLabel}</span>
-              </span>
+              </span>}
             </div>
             <p className="mt-1 line-clamp-2 text-xs text-atl-frost">{schema.description || "No description"}</p>
             <div className="mt-2 flex flex-wrap gap-1">
-              {schema.tags.slice(0, 3).map((tag) => (
+              {schema.tags.filter((tag) => !tag.name.startsWith("workspace:")).slice(0, 3).map((tag) => (
                 <span key={tag.name} className="atl-chip" style={{ borderColor: tag.color }}>
                   {tag.name}
                 </span>
@@ -231,7 +231,7 @@ function CommandPanel() {
           <p className="text-xs font-bold uppercase tracking-wide text-atl-frost">Command Preview</p>
           <h2 className="text-lg font-semibold">{schema?.name ?? "No schema"}</h2>
         </div>
-        <span className={commandCheck?.state === "pass" ? "atl-chip atl-chip-active" : "atl-chip-warning"}>{commandCheck?.message ?? "Not ready."}</span>
+        {commandCheck?.state === "pass" && <span className="atl-chip atl-chip-active">Ready.</span>}
       </div>
       <PlainCodeBlock value={preview || "Select a tool and fill fields to assemble a command."} className="mt-4 min-h-32 p-4" />
       <div className="mt-4 grid grid-cols-2 gap-2">
@@ -245,7 +245,7 @@ function CommandPanel() {
       <div className="mt-5 min-h-0 flex-1 overflow-auto">
         <p className="atl-label">Validation</p>
         <div className="space-y-2">
-          {health.checks.map((check) => (
+          {health.checks.filter((check) => check.id !== "command").map((check) => (
             <div key={check.id} className="atl-card-soft flex items-start gap-2 p-2 text-sm text-atl-silver">
               {check.state === "pass" ? (
                 <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-atl-green" />
@@ -269,7 +269,7 @@ function CommandPanel() {
 function BuilderView() {
   const state = useCommandWizardStore();
   const schema = selectSelectedSchema(state);
-  if (!schema) return <EmptyState title="No schemas loaded" body="Create or import a schema to begin." />;
+  if (!schema) return <EmptyState title="No commands in this tab" body="Create or import a schema, then choose its command category in Schema Studio." />;
   return (
     <section className="atl-panel min-h-0 overflow-auto p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -288,7 +288,21 @@ function BuilderView() {
         </select>
       </div>
 
-      <div className="mt-6 grid gap-4 xl:grid-cols-2">
+      <div className="mt-6 space-y-4">
+        {state.parameters.length > 0 && <div className="atl-card p-4" data-testid="builder-parameters">
+          <h2 className="font-semibold">Parameters</h2>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            {state.parameters.map((parameter, index) => (
+              <label key={parameter.key} className={index === state.parameters.length - 1 && state.parameters.length % 2 === 1 ? "block md:col-span-2" : "block"}>
+                <span className="atl-label">
+                  {parameter.parameter.name}
+                  {!parameter.parameter.required ? " optional" : ""}
+                </span>
+                <input className="atl-input" value={parameter.value} onChange={(event) => state.updateParameter(parameter.key, event.target.value)} placeholder={parameter.parameter.type} />
+              </label>
+            ))}
+          </div>
+        </div>}
         <div className="atl-card p-4">
           <h2 className="font-semibold">Options</h2>
           <div className="mt-3 space-y-3">
@@ -315,25 +329,6 @@ function BuilderView() {
                   )}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-        <div className="atl-card p-4">
-          <h2 className="font-semibold">Parameters</h2>
-          <div className="mt-3 space-y-3">
-            {state.parameters.map((parameter) => (
-              <label key={parameter.key} className="block">
-                <span className="atl-label">
-                  {parameter.parameter.name}
-                  {!parameter.parameter.required ? " optional" : ""}
-                </span>
-                <input
-                  className="atl-input"
-                  value={parameter.value}
-                  onChange={(event) => state.updateParameter(parameter.key, event.target.value)}
-                  placeholder={parameter.parameter.type}
-                />
-              </label>
             ))}
           </div>
         </div>
@@ -662,6 +657,12 @@ function SchemaView() {
               <input className="atl-input" value={schema.installedName} onChange={(event) => state.updateSelectedSchema({ installedName: event.target.value })} />
             </label>
             <label className="md:col-span-2">
+              <span className="atl-label">Command Category</span>
+              <select aria-label="Command Category" className="atl-input" value={commandCategory(schema)} onChange={(event) => state.updateSelectedSchema({ tags: categoryTags(schema, event.target.value as CommandCategory) })}>
+                {commandCategories.map((category) => <option key={category.id} value={category.id}>{category.label}</option>)}
+              </select>
+            </label>
+            <label className="md:col-span-2">
               <span className="atl-label">Description</span>
               <input className="atl-input" value={schema.description} onChange={(event) => state.updateSelectedSchema({ description: event.target.value })} />
             </label>
@@ -949,7 +950,10 @@ export default function App() {
           ))}
         </nav>
       </header>
-      <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[18rem_minmax(0,1fr)_22rem]">
+      {state.view === "builder" && <div role="tablist" aria-label="Command categories" className="cw-tabs mb-3">
+        {commandCategories.map((category) => <button key={category.id} role="tab" aria-selected={state.commandCategory === category.id} className={`cw-tab rounded-md ${state.commandCategory === category.id ? "cw-tab-active bg-atl-cyan/15 text-atl-cyan-bright" : "text-atl-silver"}`} onClick={() => state.setCommandCategory(category.id)}>{category.label}</button>)}
+      </div>}
+      <div className={`grid min-h-0 flex-1 gap-3 ${state.view === "builder" && selectSelectedSchema(state) ? "lg:grid-cols-[18rem_minmax(0,1fr)_22rem]" : "lg:grid-cols-[18rem_minmax(0,1fr)]"}`}>
         <ToolRail />
         {state.view === "builder" && <BuilderView />}
         {state.view === "import" && <ImportView />}
@@ -957,7 +961,7 @@ export default function App() {
         {state.view === "schema" && <SchemaView />}
         {state.view === "library" && <LibraryView />}
         {state.view === "settings" && <SettingsView />}
-        <CommandPanel />
+        {state.view === "builder" && selectSelectedSchema(state) && <CommandPanel />}
       </div>
       <footer className="mt-3 flex items-center justify-between rounded-lg border border-atl-ridge/70 bg-atl-void/70 px-3 py-2 text-xs text-atl-frost">
         <span>{state.status}</span>

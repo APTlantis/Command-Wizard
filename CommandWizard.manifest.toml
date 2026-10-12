@@ -53,14 +53,14 @@ version = "2.0.0"
 
 [governance]
 primary_standard = "DRS"
-primary_standard_path = "D:\\.library\\aptlantis_core\\DRS\\README.md"
+primary_standard_path = "D:\\.city_hall\\DRS\\README.md"
 additional_standards = [
     "WGS",
     "PPS",
 ]
 additional_standard_paths = [
-    "D:\\.library\\aptlantis_core\\WGS\\README.md",
-    "D:\\.library\\aptlantis_core\\PPS\\README.md",
+    "D:\\.city_hall\\WGS\\README.md",
+    "D:\\.city_hall\\PPS\\README.md",
 ]
 inherits_from = "..\\DRS.manifest.toml"
 
@@ -70,12 +70,13 @@ last_reviewed = "2026-07-31"
 maintainer = "Herb"
 
 [paths]
-root = "D:\\DRS\\CommandWizard"
+root = "D:\\DRS\\Command-Wizard"
 
 [documentation]
 project_readme = "Project-README.md"
 readme = "README.md"
 proposal = "Project-Proposal.md"
+project_proposal = "Project-Proposal.md"
 release_notes = "docs/CommandWizard v2.0.0 - Stable Command Workspace Release.md"
 release_checklist = "docs/CommandWizard - Release Checklist.md"
 
@@ -122,10 +123,10 @@ known_gaps = [
 
 [visual_system]
 name = "Blue Slate"
-path = "D:\\.library\\aptlantis_core\\blue.slate\\README.md"
+path = "D:\\.city_hall\\blue.slate\\README.md"
 adoption_level = "active"
 framework_profile = "Tauri / Vite / React"
-token_source = "D:\\.library\\aptlantis_core\\blue.slate\\spec\\tokens\\BlueSlate.Tokens.json"
+token_source = "D:\\.city_hall\\blue.slate\\spec\\tokens\\BlueSlate.Tokens.json"
 
 [implementation]
 name = "CommandWizard Tauri rebuild"
@@ -203,3 +204,15 @@ tests = "npm run test passed 23 tests across 6 files; npm run test:rust passed 7
 installer_build = "npm run tauri:build completed on 2026-07-31"
 install_check = "Packaged release executable launched on 2026-07-31 with window title 'CommandWizard'"
 data_safety = "Launch-only verification did not modify or delete local CommandWizard user data; installer install/uninstall was not executed"
+
+[maintenance.command_categories]
+date = "2026-10-12"
+status = "local-candidate-verified"
+record = "docs/Command-Categories-2026-10-12.md"
+scope = "General, PowerShell cmdlet, and Linux (WSL) Builder tabs; explicit saved categorization; Builder-only preview; stacked Parameters and Options; hidden CLI navigation; removed generic readiness/review badges."
+release_record = "Existing v2.0.0 release metadata and historical installer hash retained."
+checks = "Build passed; 27 unit tests; 7 Rust tests; 8 browser checks; Tauri NSIS build; final packaged executable launched with CommandWizard window title. Installer install/uninstall not tested."
+candidate_executable = "src-tauri/target/release/commandwizard.exe"
+candidate_executable_sha256 = "99723628ACF031A50D9A3092ED9BD1B8665B619B48893E9BECC0CFAA02DD112A"
+candidate_installer = "src-tauri/target/release/bundle/nsis/CommandWizard_2.0.0_x64-setup.exe"
+candidate_installer_sha256 = "9F0E14BBE23F137A7200C34F2F1A33FBDDF2751259A7DD511A9034B1C0318B7E"

@@ -75,6 +75,9 @@ importers:
       '@vitest/browser':
         specifier: ^4.1.9
         version: 4.1.10(vite@8.1.5(@types/node@24.13.3)(jiti@2.7.0))(vitest@4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.1.5(@types/node@24.13.3)(jiti@2.7.0)))
+      daisyui:
+        specifier: ^5.7.47
+        version: 5.7.47
       jsdom:
         specifier: ^29.1.1
         version: 29.1.1
@@ -846,6 +849,9 @@ packages:
 
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
+
+  daisyui@5.7.47:
+    resolution: {integrity: sha512-NOl4vPifelRqB3CMzoU751zc44KCDD9HdHMTTqQ30uiYVpIyK7+s94/ySDWgYqjdl1tQCaCrgGBx4KCizm+a3Q==}
 
   data-urls@7.0.0:
     resolution: {integrity: sha512-23XHcCF+coGYevirZceTVD7NdJOqVn+49IHyxgszm+JIiHLoB2TkmPtsYkNWT1pvRSGkc35L6NHs0yHkN2SumA==}
@@ -2225,6 +2231,8 @@ snapshots:
   css.escape@1.5.1: {}
 
   csstype@3.2.3: {}
+
+  daisyui@5.7.47: {}
 
   data-urls@7.0.0:
     dependencies:

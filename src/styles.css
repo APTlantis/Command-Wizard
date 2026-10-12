@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@plugin "daisyui" {
+  themes: false;
+  include: tab;
+  prefix: cw-;
+  logs: false;
+}
 
 @theme {
   --color-atl-void: #050913;

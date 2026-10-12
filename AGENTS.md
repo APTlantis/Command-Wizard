@@ -7,7 +7,7 @@ Inherit the parent portfolio and [drive instructions](D:/AGENTS.md).
 1. `CommandWizard.manifest.toml`
 2. `Project-README.md`
 3. Existing project README, process, or rules documents
-4. [DRS canonical standard](D:/.library/aptlantis_core/DRS/README.md)
+4. [DRS canonical standard](D:/.city_hall/DRS/README.md)
 
 ## Local boundaries
 

@@ -1,7 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import App from "./App";
+import { useCommandWizardStore } from "./stores/useCommandWizardStore";
+import { emptySchema } from "./lib/schema";
+import { act } from "@testing-library/react";
+
+beforeEach(() => useCommandWizardStore.setState({ view: "builder", toolSearch: "", importHelpText: "", manualFavoriteCommand: "", manualFavoriteTask: "" }));
 
 describe("App", () => {
   it("renders the Blue Slate shell and core navigation", async () => {
@@ -10,22 +15,32 @@ describe("App", () => {
     expect(await screen.findByText("CommandWizard")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Builder" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Import" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "CLI" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "CLI" })).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "General" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "PowerShell" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Linux (WSL)" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Schema" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Library" })).toBeInTheDocument();
   });
 
-  it("opens the CLI import surface", async () => {
+  it("shows preview only in Builder and hides it in empty categories", async () => {
     const user = userEvent.setup();
     render(<App />);
 
     await screen.findByText("CommandWizard");
-    await user.click(screen.getByRole("button", { name: "CLI" }));
-
-    expect(screen.getByRole("heading", { name: "Standards command desk" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Choose Script" })).toBeInTheDocument();
-    expect(screen.getByText("Standards Quick Starts")).toBeInTheDocument();
-    expect(screen.getByText("Verify Manifest")).toBeInTheDocument();
+    await screen.findByRole("heading", { name: "rsync", level: 1 });
+    expect(screen.getByText("Command Preview")).toBeInTheDocument();
+    expect(screen.queryByText("Not ready.")).not.toBeInTheDocument();
+    expect(screen.queryByText("Needs Review")).not.toBeInTheDocument();
+    for (const name of ["Import", "Schema", "Library", "Evidence"]) {
+      await user.click(screen.getByRole("button", { name }));
+      expect(screen.queryByText("Command Preview")).not.toBeInTheDocument();
+    }
+    await user.click(screen.getByRole("button", { name: "Builder" }));
+    expect(screen.getByText("Command Preview")).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "PowerShell" }));
+    expect(screen.queryByText("Command Preview")).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "rsync", level: 1 })).not.toBeInTheDocument();
   });
 
   it("shows schema health in the rail and command panel", async () => {
@@ -36,7 +51,24 @@ describe("App", () => {
     expect(screen.getByText("Executable")).toBeInTheDocument();
     expect(screen.getByText("Arguments")).toBeInTheDocument();
     expect(screen.getByText("Required Parameters")).toBeInTheDocument();
-    expect(screen.getByText("Command")).toBeInTheDocument();
+    expect(screen.queryByText("Not ready.")).not.toBeInTheDocument();
+  });
+
+  it("hides empty parameter sections and spans an odd final parameter", async () => {
+    render(<App />);
+    await screen.findByRole("heading", { name: "rsync", level: 1 });
+    const schema = { ...emptySchema(), name: "pandoc" };
+    act(() => {
+      useCommandWizardStore.setState({ schemas: [schema] });
+      useCommandWizardStore.getState().selectSchema("pandoc");
+    });
+    expect(screen.queryByTestId("builder-parameters")).not.toBeInTheDocument();
+    schema.parameters = ["first", "second", "third"].map((name) => ({ name, type: "string", required: true }));
+    act(() => useCommandWizardStore.getState().selectSchema("pandoc"));
+    const inputs = screen.getByTestId("builder-parameters").querySelectorAll("input");
+    expect(inputs).toHaveLength(3);
+    expect(inputs[2].parentElement).toHaveClass("md:col-span-2");
+    expect(screen.getByText("Parameters").compareDocumentPosition(screen.getByText("Options")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("edits provenance metadata in Schema Studio", async () => {

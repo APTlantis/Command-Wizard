@@ -25,11 +25,14 @@ import {
 import { emptySchema, serializeSchemaToml, validateSchema } from "../lib/schema";
 import { schemaHealth } from "../lib/schemaHealth";
 import { runtime } from "../lib/runtime";
+import { commandCategory, categoryTags, type CommandCategory } from "../lib/commandCategory";
 
 type View = "builder" | "import" | "cli" | "schema" | "library" | "settings";
 
 interface StoreState {
   view: View;
+  commandCategory: CommandCategory;
+  setCommandCategory: (category: CommandCategory) => void;
   dataRoot: string;
   schemas: ToolSchema[];
   executableHealth: Record<string, ExecutableHealth>;
@@ -122,6 +125,7 @@ export const commandPreviewForState = (state: Pick<StoreState, "schemas" | "sele
 const syncSelection = (schemas: ToolSchema[], selectedName = "") => {
   const schema = schemas.find((item) => item.name === selectedName) ?? schemas[0] ?? null;
   return {
+    commandCategory: schema ? commandCategory(schema) : "general" as CommandCategory,
     selectedSchemaName: schema?.name ?? "",
     selectedActionName: schema?.actions[0]?.name ?? "",
     options: schema ? makeOptionStates(schema) : [],
@@ -131,6 +135,12 @@ const syncSelection = (schemas: ToolSchema[], selectedName = "") => {
 
 export const useCommandWizardStore = create<StoreState>((set, get) => ({
   view: "builder",
+  commandCategory: "general",
+  setCommandCategory: (category) => set((state) => {
+    if (category === state.commandCategory) return {};
+    const schemas = state.schemas.filter((schema) => commandCategory(schema) === category);
+    return { ...syncSelection(schemas), commandCategory: category };
+  }),
   dataRoot: "",
   schemas: [],
   executableHealth: {},
@@ -161,7 +171,7 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
   canCaptureHelp: runtime.canCaptureHelp,
   logText: "",
   isLoading: false,
-  setView: (view) => set({ view, status: view === "import" && !runtime.canCaptureHelp ? "Browser preview: paste help text and use Parse Paste. Capture Help needs the Tauri desktop app." : "Ready" }),
+  setView: (view) => set((state) => ({ view, ...(view === "builder" && selectedSchema(state) ? { commandCategory: commandCategory(selectedSchema(state)!) } : {}), status: view === "import" && !runtime.canCaptureHelp ? "Browser preview: paste help text and use Parse Paste. Capture Help needs the Tauri desktop app." : "Ready" })),
   setStatus: (status) => set({ status }),
   async load() {
     set({ isLoading: true, status: "Loading local workspace..." });
@@ -250,6 +260,7 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
   },
   newSchema() {
     const schema = { ...emptySchema(), name: "new-tool" };
+    schema.tags = categoryTags(schema, get().commandCategory);
     set((state) => ({ schemas: [...state.schemas, schema], view: "schema", ...syncSelection([...state.schemas, schema], schema.name) }));
   },
   updateSelectedSchema(patch) {
@@ -449,8 +460,10 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
 
 export const selectFilteredSchemas = (state: StoreState) => {
   const search = state.toolSearch.trim().toLowerCase();
-  if (!search) return state.schemas;
-  return state.schemas.filter((schema) => schemaSearchText(schema).includes(search));
+  return state.schemas.filter((schema) =>
+    (state.view !== "builder" || commandCategory(schema) === state.commandCategory) &&
+    (!search || schemaSearchText(schema).includes(search))
+  );
 };
 
 export const schemaSearchText = (schema: ToolSchema) =>
@@ -490,7 +503,17 @@ export const selectSchemaIssues = (state: StoreState) => {
 };
 export const selectSchemaHealth = (state: StoreState) => {
   const schema = selectedSchema(state);
-  return schemaHealth(schema, state.parameters, schema ? state.executableHealth[schema.name] : undefined);
+  return schemaHealth(schema, state.parameters, schema ? executableHealthForCategory(state, schema) : undefined);
+};
+const executableHealthForCategory = (state: StoreState, schema: ToolSchema): ExecutableHealth | undefined => {
+  const category = commandCategory(schema);
+  if (category === "general") return state.executableHealth[schema.name];
+  return {
+    schemaName: schema.name,
+    status: "unknown",
+    message: category === "powershell" ? "Cmdlet availability has not been checked in PowerShell." : "Command availability has not been checked in Linux / WSL.",
+    checkedAt: ""
+  };
 };
 export const selectRailSchemaHealth = (state: StoreState, schema: ToolSchema) =>
-  schemaHealth(schema, [], state.executableHealth[schema.name]);
+  schemaHealth(schema, [], executableHealthForCategory(state, schema));

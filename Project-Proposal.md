@@ -4,6 +4,10 @@
 
 Desktop application.
 
+## Responsibility Posture
+
+shared
+
 ## Readiness Level
 
 ready
@@ -12,10 +16,10 @@ ready
 
 ## Governing Standards
 
-* Proposal: PPS (`D:\.library\aptlantis_core\PPS\README.md`)
-* Workspace: WGS (`D:\.library\aptlantis_core\WGS\README.md`)
-* Delivery: DRS (`D:\.library\aptlantis_core\DRS\README.md`)
-* Supporting: Blue Slate (`D:\.library\aptlantis_core\blue.slate\README.md`)
+* Proposal: PPS (`D:\.city_hall\PPS\README.md`)
+* Workspace: WGS (`D:\.city_hall\WGS\README.md`)
+* Delivery: DRS (`D:\.city_hall\DRS\README.md`)
+* Supporting: Blue Slate (`D:\.city_hall\blue.slate\README.md`)
 
 ---
 
@@ -60,6 +64,10 @@ Evidence & Logs
 ---
 
 ## Primary Workspaces
+
+### Approved maintenance direction — 2026-10-12
+
+The operator's tested workflow now calls for General, PowerShell cmdlet, and Linux (WSL) categories within Builder, with explicit category assignment for installed apps. Command Preview belongs only to Builder. Parameters precede Options, empty parameter sections disappear, and an odd final parameter fills the row. CLI navigation is hidden pending a separate decision about removing that feature. Generic readiness/review badges are removed from the command preview and tool rail. Generated commands remain copy/export only; this maintenance work does not authorize execution features in the original roadmap.
 
 ### Builder
 
@@ -321,3 +329,23 @@ Evidence Capture
 8. Verify cross-platform packaging.
 9. Produce Tauri DRS release evidence.
 10. Release CommandWizard v2.
+
+---
+
+## Version Milestone Sketch
+
+### v2.0.0
+
+* Purpose: Stable local command workspace release for schema-driven CLI import, schema editing, command building, local library, and evidence workflows.
+* Completion shape: Build, unit tests, Rust tests, UI smoke, Tauri packaging, SHA-256 hashing, unsigned signing posture, and packaged executable launch verification are recorded; full installer install/uninstall remains explicitly outside the verified evidence.
+* Responsibility posture: shared
+* Complete project endpoint: yes
+* Deferred: Integrated ConPTY execution, dry-run pipeline, execution transcripts, macOS/Linux verification, and public signing.
+
+### v2.1
+
+* Purpose: Maintenance and parser-expansion milestone after the stable v2 baseline.
+* Completion shape: Import Workbench supports more command families while preserving local-first schemas, explicit operator review, and documented execution boundaries.
+* Responsibility posture: shared
+* Complete project endpoint: no
+* Deferred: Automatic execution or PATH mutation without explicit operator intent.
