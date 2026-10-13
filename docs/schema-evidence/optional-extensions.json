@@ -1,0 +1,1826 @@
+[
+  {
+    "path": "docs/schemas/carge/cargo-binstall.md",
+    "sha256": "4e3cbb563cb17edf10644d3b9c8ebdd6bf50aed201f44c09396f925a5c87d265",
+    "bytes": 16977,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-clippy.md",
+    "sha256": "739d41c6dd4bbfc3698f67b043a1fb55a2ab1359610a128e7e776baf99f89e13",
+    "bytes": 18600,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-deb.md",
+    "sha256": "4ae3a2d1f8147bc678960a4a853f97ce5bdf359bdd0a5e26330794b1b23c6600",
+    "bytes": 17452,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-fmt.md",
+    "sha256": "bdbf6b63fd03bbdcf6dc665cf6c5bc456adc555dd4cb526deb59e0a5761f906f",
+    "bytes": 17111,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-geiger.md",
+    "sha256": "beca1c468a9ee1ce5429878d19e8a64c8794133dede269c841706e2a6ac50699",
+    "bytes": 16633,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-help.md",
+    "sha256": "cc4ce4ee818fb4e43d2e37237d0f03860fdc86c218057dbef95b81d22a702c6c",
+    "bytes": 16597,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-license.md",
+    "sha256": "63ff67fb156eef4364757f4e370280605e99d0dce5cdc428d2eb92744311ab60",
+    "bytes": 5983,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-msrv.md",
+    "sha256": "c7d8e48718ce594f3cb69fb532a8b1510ed38a8cb81373149657c654459812c8",
+    "bytes": 17269,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-seek.md",
+    "sha256": "59258ff61f778876899470b05c58485df304a5c1a7c4710325394e76fce370e8",
+    "bytes": 14801,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-selector.md",
+    "sha256": "36f45e2f70aa96b80cf503aa468a27dfbfa9deda137feb18b5b63e582282fa8a",
+    "bytes": 15709,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-set-version.md",
+    "sha256": "ed3b737af80e606f22edf5f0194d205158f1ab2d5fb8a74c1e0a091639509317",
+    "bytes": 17059,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-upgrade.md",
+    "sha256": "5fbbad657d55239d87a7816e677e3a12471b61c1e680c0ec7dec0060ea3abc05",
+    "bytes": 17204,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/carge/cargo-watch.md",
+    "sha256": "22b4c942113beb4c051651ae86bb52980d6a8c676f0726c66fe913423fba2203",
+    "bytes": 18409,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/docker/docker-agent.md",
+    "sha256": "de3d0d5e9ec2dbce8b6d5f31f975237855beba04e27f08d410725d0b95090dca",
+    "bytes": 14270,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/docker/docker-commit.md",
+    "sha256": "0394cc74953cc121783fdbac331269b3be34abfcb8590b1583555f9717d5cb44",
+    "bytes": 17782,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/docker/docker-machine.md",
+    "sha256": "ef397a4ba0e2839ffef75c251921327c604e5056fe7dfcbda88d0b50f23f87fe",
+    "bytes": 16268,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/docker/docker-slim.md",
+    "sha256": "702739ec7bfdc75b3b33f8e1fad16c0110db7edff8a02e071967647acc6f23fc",
+    "bytes": 16177,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/gh/gh-pages.md",
+    "sha256": "3cb0513f5aadb234ed5637a0b50dcab922e1bfb92bd3b2f70b98adcb396534f0",
+    "bytes": 18221,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/gh/gh-preview.md",
+    "sha256": "54b40d219dd6a644bbbc8990c3e66f41c3286a2b10486cd1e8962514f6a620a0",
+    "bytes": 17026,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/gh/gh-rs.md",
+    "sha256": "cfe81a49cd9f71e1c3fb6d504fb0c6f230d5ea27246f46f0c57c48916129418e",
+    "bytes": 18624,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/gh/gh-screensaver.md",
+    "sha256": "bc54b102335fa5244d2266b26d8a0bcb304656318d24a5994030d6ce232af059",
+    "bytes": 15891,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/gh/gh-skyline.md",
+    "sha256": "d17d24b4025dafa8104bf4951cb22ebfb19d79ff6e851f8e4c53d4377031b300",
+    "bytes": 16294,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/gh/gh-stack.md",
+    "sha256": "561b901c3fd7349a37c7425deb35bd44430084d6653d60095e8c400529815128",
+    "bytes": 16370,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/gh/ghq.md",
+    "sha256": "be91d0d4ab6e95bacaa93b480e06cea0a7cf654cf992c93e66336d157867d63a",
+    "bytes": 17490,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-abort.md",
+    "sha256": "f91b5f6ff14000f5edf3d352d831340051825a78307fd01694572afb8548c510",
+    "bytes": 16298,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-absorb.md",
+    "sha256": "9f33607b8f53af00e4bdaca8e1e8459c29caf6553837925231c0bed7f3df2fdc",
+    "bytes": 18051,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-agecrypt.md",
+    "sha256": "d3aef6e01b19e11b0be2e35f5404c10bcbc23451dbb1b3ec339bc59fc6f462d1",
+    "bytes": 21245,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-alias.md",
+    "sha256": "894e065ef8cf4316ddd385174880d5ed783d58c62f3e3a072284a91769e465ed",
+    "bytes": 19237,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-annex.md",
+    "sha256": "5faf61c25580e301e32eefe2b90fa766d4031db1fd7ad163e53de54b437f3cc1",
+    "bytes": 23561,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-archive-file.md",
+    "sha256": "f3dab2a105823b87eb3028e0f156d89baf03e24fbd565311b7fd98f410da21c8",
+    "bytes": 15291,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-authors.md",
+    "sha256": "6fa9a5a5f20a96573c4a6a58ece6afb4076bf4d6507851eabb8b01d1849648f7",
+    "bytes": 18596,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-blame-someone-else.md",
+    "sha256": "f1c6418363ff703f9d353923ec95c4eebb2dd9783860dc69d9a864b369faf913",
+    "bytes": 18371,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-branchless.md",
+    "sha256": "b307793a2f0172962bceeab273327dad7eb2d9dd4753fd1859293abc7e0882c1",
+    "bytes": 19590,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-browse-ci.md",
+    "sha256": "3fa24013ed9bf31c213c908d4072b40cec1e23ec1994551f1807aebe6170f408",
+    "bytes": 17512,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-browse.md",
+    "sha256": "f7d3e6fe9cdfb221e2c66cd535a3eba26b97986c450c81ccefbab766c9554a87",
+    "bytes": 17364,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-brv.md",
+    "sha256": "6e4ee7480eeee36b65186ed461e7683975cd9a0f13432a01bbd75ba385fddd00",
+    "bytes": 15911,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-bug.md",
+    "sha256": "52b82de3a3c3a0cd99c05ac723798db396769de9af5f8ef41b4a35b6414e4c3e",
+    "bytes": 17007,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-bulk.md",
+    "sha256": "abb0f063d6532ec44b037ead45caa4b58f57fba9a348002f9128d61d84a0f496",
+    "bytes": 17622,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-changelog.md",
+    "sha256": "3e2b2c6710776e16420a621ca047d3384597ce9f0e7f3e8a58625dd54b1cf4bd",
+    "bytes": 18694,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-clear-soft.md",
+    "sha256": "4991104b716f1d64a6eaa2fdaadbbf58069191ebdc8f4d1c3843c8803ee4cc7f",
+    "bytes": 16437,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-clear.md",
+    "sha256": "24d5a318aa5303a53ae02371b01587e602962f119bd51b649355faa6cd5045ab",
+    "bytes": 16706,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-cliff.md",
+    "sha256": "2445e490381726c48d6be5cbad697cbaecff48f067b5e4747b68bcd784ee7f6e",
+    "bytes": 17738,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-coauthor.md",
+    "sha256": "cae8309f2c34c64ca83c5a4cc6145d9726fef1f9221fe1f5feaf23daa6826708",
+    "bytes": 17144,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-cola.md",
+    "sha256": "548b4b9deea19e86b16a329ef6b9d453cf7b9d1ba7ca0dab23e3d032f0830d25",
+    "bytes": 16224,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-commits-since.md",
+    "sha256": "663ed1fa9304a230b04d705c1bf4a36739b64bb677eb22b611a68fd8d253a003",
+    "bytes": 16178,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-continue.md",
+    "sha256": "a511f5cc06a319f2dcb436b1217cb3ac79773165993ddca5a0fcf52ac350aefe",
+    "bytes": 16641,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-contrib.md",
+    "sha256": "c7b759ccdcc2b9634af7240ebdce902f7d09b7c89ef25bfdbe60ece03cf3b4fa",
+    "bytes": 16341,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-count.md",
+    "sha256": "8b4429f26b3eedfd57c1bf46553afae917020affc7822f408d91a1cc8ec20363",
+    "bytes": 16100,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-cp.md",
+    "sha256": "706edb8f09cd9fb9c81a4e8ad9869424ef71dff1487e98b45b2de46dfa39e185",
+    "bytes": 15676,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-create-branch.md",
+    "sha256": "a8bdeee889d0b56b7d80aa81f2bdf034790128f5d89082708e8a342e97a91275",
+    "bytes": 16306,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-crypt.md",
+    "sha256": "996a263f560321d5b82d50ed862d9688439b4ed9b44af52a7679682a709fbea0",
+    "bytes": 18783,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-cvsexportcommit.md",
+    "sha256": "00770e1576e50e1491cce211135ecf36c1348aacd5fb773870173e95e0e1953f",
+    "bytes": 18122,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-delete-branch.md",
+    "sha256": "4bd3092778985eb2c290013270ed25207902f1f68bf7d4e57c2ccf69e5e2bd1a",
+    "bytes": 15720,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-delete-merged-branches.md",
+    "sha256": "c6fb053a4116d74f47e8f178231458d096e63b5eade8a1931f43be06927d191e",
+    "bytes": 14512,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-delete-squashed-branches.md",
+    "sha256": "ff6805c6cc158654d4695b8ca7089ab92442597afa6333149c114555154929bd",
+    "bytes": 15623,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-delete-submodule.md",
+    "sha256": "09bcba718b114ba99ba09433cdd598baa12b7aeb447419883fabecda4f9d3a55",
+    "bytes": 15602,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-delete-tag.md",
+    "sha256": "ddcfe33c76d8a5fe134a33ac8f8034fb89e14260308932995b7eb44a0fbb563a",
+    "bytes": 15677,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-delta.md",
+    "sha256": "4392cf3e7a9babf6f56367ae5265ee61fa106f52d33d8cf4d86fca4ec4603380",
+    "bytes": 16387,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-effort.md",
+    "sha256": "7429e4c6960ee75eebefe9d84aece29074c49898d18b0405316936034e736cf6",
+    "bytes": 16769,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-extras.md",
+    "sha256": "c5cd418134790e21c28df83ab14b130d2f071be631472d758f9d786c46f926c8",
+    "bytes": 16013,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-fame.md",
+    "sha256": "d1cb4541a9f7bdaf0ef0002b8426a7bfac2a319506fd6ffca6040e16098666ca",
+    "bytes": 17465,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-feature.md",
+    "sha256": "558544e4bf8a0e2f6ec9e5e9b76a7c3c64a9b6575e852083935cd69ecdfc8ab3",
+    "bytes": 17471,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-filter-repo.md",
+    "sha256": "8747b9c8a74b4573ba9d586d062a25f8039c8357e361acdcc410b2d91d984c98",
+    "bytes": 18661,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-flow.md",
+    "sha256": "863ed8573630846bc310228aa848bc95ce63f331f85d79c29f57961353e2ab09",
+    "bytes": 17254,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-force-clone.md",
+    "sha256": "849837f2947f38f51b8f598c8d5a8ba20b42ec19c2e6c532b26ee2872a6ca5ee",
+    "bytes": 17330,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-fork.md",
+    "sha256": "e6acf8628ddefa9705a6e228b799b3e4a945c90664bf072bfd7b3c1ddd8de02f",
+    "bytes": 15824,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-fresh-branch.md",
+    "sha256": "16ac2268adde8d4db5a3891b29e93aa5e04f8d67a77982c9a184d6a8ae225fbb",
+    "bytes": 16428,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-gh-pages.md",
+    "sha256": "b7c656e38a0643f5becb13b47f7c3521b6d810d43851de87abe1cd8ca68ee347",
+    "bytes": 15807,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-graft.md",
+    "sha256": "7bcfebf66c8c572fd3052dd985e2072a215c41a3ad69a5b24c404e52f2dc6a2d",
+    "bytes": 16096,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-guilt.md",
+    "sha256": "669b52b261879b0f34de18ec9df7dec1030fd511abae3826e7c4505cfca94fb1",
+    "bytes": 17640,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-hooks.md",
+    "sha256": "8a56a8f57f079e37d190e5c8eeccc9a332737ca5709bd4baa0fdc891fda10a08",
+    "bytes": 17875,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-ignore-io.md",
+    "sha256": "ff2580e9b9851df2503ae880878837f07de8e8778d9bba5f2a0d702c4b7acf77",
+    "bytes": 16475,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-ignore.md",
+    "sha256": "7c583ac0df19c71b2e227795a206a2363e7658a4592108570af9ac073db9a1c0",
+    "bytes": 16067,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-imerge.md",
+    "sha256": "8745ce42482e2070237430f2c348fe25a556d44aaabcfd2e8e78311a5330cce2",
+    "bytes": 17433,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-info.md",
+    "sha256": "382c578f1783a7edd9c9510d5326e286c46cc48810a369cfd2dda12457797437",
+    "bytes": 16567,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-instaweb.md",
+    "sha256": "84bfcf894b07c08ec93707bedb3df85fe4ccfd401a77d5346635505af4729709",
+    "bytes": 15892,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-interactive-rebase-tool.md",
+    "sha256": "b5ac6533c39612a5e48b5bea68969023eb7b0a5986e60194b67495b240eb72c2",
+    "bytes": 16287,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-lazy-mount.md",
+    "sha256": "05c287d2fa9f311d3c868e2eaf08f8deb261c144789e6f30690388976b049a4d",
+    "bytes": 17738,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-lfs-transfer.md",
+    "sha256": "6e63109afda6aafe8f7e03999edb3c650bd23005b65e94818f91935c5c0a102d",
+    "bytes": 14584,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-lfs.md",
+    "sha256": "ef42a6f89a17760ffda37b1910741aaaf5146281abfee30c3b7fefc595345806",
+    "bytes": 18175,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-local-commits.md",
+    "sha256": "38f31d21464b5bc78141997cb858549a0c99a1324ba975ee72e9589924f027ac",
+    "bytes": 16172,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-lock.md",
+    "sha256": "c291fc8aafc6f239481623776f3e5db6d3c78f4117933f8e61957eeed01aaf44",
+    "bytes": 16552,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-locked.md",
+    "sha256": "6026dc3aa4944ae5c7f84fedb6f39214a82aa12eb331bff8843e0d64ebb0389f",
+    "bytes": 15893,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-lrc.md",
+    "sha256": "f35eb1a20041509bb79d9345b1d77350a5b2b57ca534ba0380c35b2a5068538d",
+    "bytes": 18372,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-magic.md",
+    "sha256": "de569b2ca30852a610d36871619aba28cbf7b0806519abb3c4c46f92977acde8",
+    "bytes": 17675,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-merge-into.md",
+    "sha256": "bae40c58e04512c58f683b0c1a4f8fa2805a9371b1f476d960ad46f28d7fc9cb",
+    "bytes": 16555,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-merge-repo.md",
+    "sha256": "c2f3a88e466d1a00495ac69a49c942ef504e33b63b593202f34a225c0d4a22c3",
+    "bytes": 16882,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-mergetool--lib.md",
+    "sha256": "f576487b5df2262145304158697ce19a35e7851ca87ee69b559d67bf6561e0eb",
+    "bytes": 16027,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-missing.md",
+    "sha256": "7e5e69d9ec14f8f58a8e367d97c42d1161c702a355e926b4914f4bf64ab2fd98",
+    "bytes": 15751,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-mr.md",
+    "sha256": "6b0335eeeb59b247ea8488f2c7549dc1782e8ab0e071ed952e159153a8504cc2",
+    "bytes": 15091,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-obliterate.md",
+    "sha256": "a84b79a274ea07f0c9c72419ca6fe32b217ee6b22c2944aa38340ea16cbaa706",
+    "bytes": 16688,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-p4.md",
+    "sha256": "e997180520d46b2f024afead083f215bbdd541c7cf22cc1daef5d12dd66c254a",
+    "bytes": 16840,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-paste.md",
+    "sha256": "bb6dde2fbf1adaf84b61c53428584bbca52e419a74875479dddb89c96ee5aef2",
+    "bytes": 16519,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-pr.md",
+    "sha256": "e9adf0cc6cbb0c2f065dda7a81bd4844c53223fbe20b0e49c653911422b3b71a",
+    "bytes": 15866,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-psykorebase.md",
+    "sha256": "798e77102d49bed5b0448199d1359b3e35925431f429a9bc761385249c1adac0",
+    "bytes": 17455,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-pull-request.md",
+    "sha256": "ca9350d1dfc64edd2e4695e0292b182e3341aed33bc0979f9aa2964c362d2179",
+    "bytes": 15756,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-reauthor.md",
+    "sha256": "585e5b18232d846f720e1870c2de6985a337f59d67d5b53afe457ff21341acf4",
+    "bytes": 17722,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-rebase-patch.md",
+    "sha256": "7ad8548bd68c1c4b7b7e7e7757e4244b8185a3e0ad0ca4abc78547f041c921f6",
+    "bytes": 16017,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-release.md",
+    "sha256": "c3e5778461350064726bbafdc478cc015a3eadaa6b03eed9869030674841b32a",
+    "bytes": 16273,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-rename-branch.md",
+    "sha256": "9022c3c10b422c82323d148917726c009966d8583cbb4547556726a339dcfb37",
+    "bytes": 16075,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-rename-remote.md",
+    "sha256": "320cd4dab08286611e1eafb359021d46884c688037842b39b8173afa1490ead8",
+    "bytes": 15161,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-rename-tag.md",
+    "sha256": "d8fe89e080b7db2914dcca59bcbd0a2a97dde7272abaff202cd3ed7df474ac8a",
+    "bytes": 15537,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-repl.md",
+    "sha256": "f69087ed633abaafdc3a8cbc7ec65891762aa5a3d4c0f8806460e2609979d950",
+    "bytes": 16362,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-reset-file.md",
+    "sha256": "1399d60c5b70c39a1e7bfd56cc8f814d7449690e65798a54e026038ddf936cd2",
+    "bytes": 15964,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-root.md",
+    "sha256": "50a389477fff96491cfb79203a2bd3d0bfbe85a5e1fcf8c4b67be003a6638dba",
+    "bytes": 15608,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-rscp.md",
+    "sha256": "dbcbee4e1c6bba6f753100225574aad34fb2ccfb4ef622902bbd10995adc0330",
+    "bytes": 16103,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-scp.md",
+    "sha256": "cbbe901f3e44d9862118c802a2c4876c3ae07bfcb686ba7360d6628ae248b279",
+    "bytes": 15580,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-secret.md",
+    "sha256": "a66bee6d72ddfb5dd629d1a2a76c2329517e57c154a14e33894dca01599f552a",
+    "bytes": 17577,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-secrets.md",
+    "sha256": "b8c1e0a6f1562ddd1aa5a11fc3067595fe78c9cd77204ef520c71ec0a8d04574",
+    "bytes": 16938,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-sed.md",
+    "sha256": "1178ec56ad9f8caee2363455e074141406beac0f5ea82336d779cdc02950a61d",
+    "bytes": 16792,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-setup.md",
+    "sha256": "d7490f4efce0efd1865ee5fa3af8c7bd81effa80105e7c7341ffe1ba137f9ad9",
+    "bytes": 16218,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-sh-i18n.md",
+    "sha256": "e21399e2714ddd500c9b67ac18d1f13d3e63b2e0f65f6388fb77e7e42f6f9b45",
+    "bytes": 15971,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-sh-setup.md",
+    "sha256": "4d5b224db26b9ee6bfeecf2a66b9786ffc9370d1db0c0ddd6090a41511fd591f",
+    "bytes": 15857,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-shell.md",
+    "sha256": "213605c2f4426704125f5efac3223d4b350c693dedcbee86c754deb4b778d16f",
+    "bytes": 16766,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-show-merged-branches.md",
+    "sha256": "9da4054da4565364734d34143e668f6dd3536f6cd86b779d82c10bfa2dbe298e",
+    "bytes": 15796,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-show-tree.md",
+    "sha256": "48c4834a246f5d637a5407961b0d1b51044dc91b972a2b2dbffe9d1604a076fc",
+    "bytes": 15648,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-show-unmerged-branches.md",
+    "sha256": "b3e08689392bb2cc4fa0a68d2ede7b14c1b0961c7817b5492ad6db1acdf266b1",
+    "bytes": 15809,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-sizer.md",
+    "sha256": "76ecc7da9272efd5810ca884aeacabf8f242f7f64bc59ed87a24e4572232efd4",
+    "bytes": 16044,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-squash.md",
+    "sha256": "3ca48f8c67f7cfdbd1c800a0818da5419234bc38eb6ecfbf63a3b51795d45dd0",
+    "bytes": 16367,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-stamp.md",
+    "sha256": "1da7e9af98bef5eb65558c72d946812a97f8c19956d75aa7689203d473648e47",
+    "bytes": 16714,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-standup.md",
+    "sha256": "2b7a5905c2c841c10fa2dfe004c67c43c6638a58c7e049477a3b4f5d0ab7e891",
+    "bytes": 15548,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-summary.md",
+    "sha256": "461bd97f326b7547c127a0a9fbda169567c8a86c5bb1e65c9cd56fbf1c912163",
+    "bytes": 16639,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-svn.md",
+    "sha256": "365728e1d76cdd04a73e2b855b5c9a65d4ebfa1519994e81d34ca62e8bc87f17",
+    "bytes": 16987,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-sync.md",
+    "sha256": "dd53f039a8c780cd689675acb0b123e43f6af1b8128092980a9179a8313ad1cf",
+    "bytes": 16161,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-touch.md",
+    "sha256": "79dc0d68968f722dc5c350412e61499b276ac0fb32c18895752a76173d49737a",
+    "bytes": 16164,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-undo.md",
+    "sha256": "5b35e26f54cd9f0b5c3b1cbee3d285b91295a2e1cb547bee364c4c43c02d73f0",
+    "bytes": 16297,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-unlock.md",
+    "sha256": "7aa46e9cfb118da80fcde55ea46888a12ee646c718f8767f148c6c3fdfb426b9",
+    "bytes": 15720,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-utimes.md",
+    "sha256": "1ed0230d420ef17bd3a84354b4c097865b7d06a06cef05a783fcc2616c7bd8b6",
+    "bytes": 15816,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-who.md",
+    "sha256": "2586dbe5b013c68faf81865b1d9f28872a3a4af4c1e2445c338c1504d845d708",
+    "bytes": 15870,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/git-xargs.md",
+    "sha256": "b267f8a96d8da49f18a4234aa7acca1fc56f8f4346fa191b8e628654d0077736",
+    "bytes": 15500,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gita.md",
+    "sha256": "a26431c2e5caf33cc85688e2ffb2e9160086981876532be12ea55c41fa147d8c",
+    "bytes": 18385,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitbook.md",
+    "sha256": "3aa6b7ac84eb6d8c3635a58d5be96cf93a417b4c9da8b73ef62626aca7439531",
+    "bytes": 16997,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitea.md",
+    "sha256": "607f7cafb71d2e038b5bf9df6d557fa6372bd97fb91fbbfd4ec9249673a1557d",
+    "bytes": 18319,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitgres.md",
+    "sha256": "13172a5ef07ae31e5184ebd96ac67f1efa2af73295c683097b35f8fe77a3d46c",
+    "bytes": 16635,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/github-copilot-cli.md",
+    "sha256": "656e5deb15a96a0772e4b5e3f312055033fbbb4c348a533064c8bdaf18fdd5fb",
+    "bytes": 16235,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/github-label-sync.md",
+    "sha256": "c6502b48112b3bb5772ccb9178ea2ff6da0f6d7888b4a182a527773102a8819b",
+    "bytes": 15604,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitlab-backup.md",
+    "sha256": "894acca0454e85df6518a46d5ddbe82f1675eb6a6735e8632db673410defdbdf",
+    "bytes": 17629,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitlab-ctl.md",
+    "sha256": "80b55e95c2900390badb9f5990c70ccfa4ea9c54743fecbba24dfcf0965c6f49",
+    "bytes": 15107,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitlab-runner.md",
+    "sha256": "a4c93159dd2a14cc24d74a9a69f3ab209103497b2bb48bafd1784c2417fe4892",
+    "bytes": 18994,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitlab.md",
+    "sha256": "9eda1effc17add97ac9b3149a9438ba4106a235deba929b70a80c087e4f0a4d0",
+    "bytes": 17505,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitleaks.md",
+    "sha256": "4acaa6f78833c54de669a69e39446ef7fbc3fd6edc1a5b17ab1a2dbac5fefa23",
+    "bytes": 19358,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitlint.md",
+    "sha256": "b5623513eb812058ccec19985d34b98f34e7c92a6044ced5f176099d86a5d5b8",
+    "bytes": 18753,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitlogue.md",
+    "sha256": "09121422265064f7b748a90d5639cdd865039f62c0b18dd03697dd8b40490a94",
+    "bytes": 15188,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitmoji.md",
+    "sha256": "64820352ba032d0c0a6bc9dc49c059cd23a5d69467b3f950fc51e87991401a57",
+    "bytes": 15740,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitnr.md",
+    "sha256": "62f382fb533c06afb42652b98e81692815bd9753529fc0f37ffda8e143736ae9",
+    "bytes": 15641,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitsome.md",
+    "sha256": "2214f035885984baaf073fc76527d8d74255f665b2b24995f66ea2e210baf363",
+    "bytes": 14939,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitstats.md",
+    "sha256": "9d2aceb015dd1511a7a5f885fc65299e9d1ad9401f64c4065fa9d13416289e04",
+    "bytes": 15194,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitty.md",
+    "sha256": "5e064fb1598ebb68544f3c1cccd19f5a3d4474ded5580ab169af81b7319d2e7a",
+    "bytes": 14476,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gittype.md",
+    "sha256": "63bc333e4747f0233f871cc9c1d7044775cceebcb116571098c9bbe0517d83b7",
+    "bytes": 15402,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitu.md",
+    "sha256": "286ac2a8297b32d32231675f44d59a9c4784efc441b3622998fda97f49d935f7",
+    "bytes": 15821,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitui.md",
+    "sha256": "bf35a42c5b3f692c2c05f14cf82595d6c1536e4ccd79ded5fcf361aff97638b8",
+    "bytes": 17973,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  },
+  {
+    "path": "docs/schemas/git/gitwatch.md",
+    "sha256": "d70896edb2e855a69bf7489e9e9ae25f8b10fc5936ef35b42327205356c3d8d9",
+    "bytes": 16620,
+    "validation": [
+      "Read as documentation; no example commands executed."
+    ],
+    "gaps": [
+      "Not part of the reviewed core command allowlist; extension installation and syntax not reviewed."
+    ],
+    "classification": "optional extension"
+  }
+]

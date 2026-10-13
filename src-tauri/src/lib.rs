@@ -83,6 +83,8 @@ struct SchemaArgument {
     r#type: String,
     #[serde(default = "default_value_style")]
     value_style: String,
+    #[serde(default)]
+    position: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
@@ -101,6 +103,10 @@ struct SchemaAction {
 #[serde(rename_all = "camelCase")]
 struct ToolSchema {
     name: String,
+    #[serde(default)]
+    family: String,
+    #[serde(default)]
+    command_prefix: Vec<String>,
     #[serde(default)]
     description: String,
     #[serde(default)]
@@ -127,6 +133,18 @@ struct ToolSchema {
 #[serde(rename_all = "camelCase")]
 struct FavoriteCommand {
     command: String,
+    #[serde(default)]
+    id: String,
+    #[serde(default)]
+    title: String,
+    #[serde(default)]
+    notes: String,
+    #[serde(default)]
+    category: String,
+    #[serde(default)]
+    updated_at: String,
+    #[serde(default)]
+    builder_snapshot: Option<serde_json::Value>,
     #[serde(default)]
     tool: String,
     #[serde(default)]
@@ -162,6 +180,10 @@ struct CliInstallResult {
 #[derive(Debug, Deserialize)]
 struct TomlTool {
     name: String,
+    #[serde(default)]
+    family: String,
+    #[serde(default)]
+    command_prefix: Vec<String>,
     #[serde(default)]
     description: String,
     #[serde(default)]
@@ -311,6 +333,7 @@ fn parse_argument(value: &Value) -> Option<SchemaArgument> {
             .unwrap_or("boolean")
             .to_string(),
         value_style,
+        position: string_field(table, "position"),
     })
 }
 
@@ -352,6 +375,8 @@ fn parse_schema_toml(text: &str, source_path: &Path) -> Result<ToolSchema> {
         source_path: source_path.to_string_lossy().to_string(),
         executable_path: tool.executable_path,
         installed_name: tool.installed_name,
+        family: tool.family,
+        command_prefix: tool.command_prefix,
         metadata: SchemaMetadata {
             version: metadata.version,
             author: metadata.author,
@@ -418,6 +443,8 @@ fn serialize_schema_toml(schema: &ToolSchema) -> Result<String> {
         format!("name = {}", quote_toml(&schema.name)),
         format!("description = {}", quote_toml(&schema.description)),
     ];
+    if !schema.family.is_empty() { lines.push(format!("family = {}", quote_toml(&schema.family))); }
+    if !schema.command_prefix.is_empty() { lines.push(format!("command_prefix = {}", serde_json::to_string(&schema.command_prefix)?)); }
     if !schema.notes.trim().is_empty() {
         lines.push(format!("notes = {}", quote_toml(&schema.notes)));
     }
@@ -480,7 +507,7 @@ fn serialize_schema_toml(schema: &ToolSchema) -> Result<String> {
 }
 
 fn quote_toml(value: &str) -> String {
-    format!("\"{}\"", value.replace('\\', "\\\\").replace('"', "\\\""))
+    serde_json::to_string(value).expect("strings always serialize")
 }
 
 fn argument_lines(argument: &SchemaArgument) -> Vec<String> {
@@ -489,6 +516,7 @@ fn argument_lines(argument: &SchemaArgument) -> Vec<String> {
         format!("description = {}", quote_toml(&argument.description)),
         format!("type = {}", quote_toml(&argument.r#type)),
     ];
+    if argument.position == "before-prefix" { lines.push("position = \"before-prefix\"".to_string()); }
     if !argument.long.trim().is_empty() {
         lines.insert(1, format!("long = {}", quote_toml(&argument.long)));
     }
@@ -572,10 +600,7 @@ fn load_snapshot() -> Result<AppSnapshot> {
     Ok(AppSnapshot {
         data_root: root.to_string_lossy().to_string(),
         schemas: load_schemas()?,
-        favorites: load_favorites().unwrap_or_else(|err| {
-            log_line(&format!("Favorites load failed: {err}"));
-            vec![]
-        }),
+        favorites: load_favorites()?,
         log_text: read_log().unwrap_or_default(),
     })
 }
@@ -616,11 +641,51 @@ fn delete_schema(schema: ToolSchema) -> Result<()> {
 #[tauri::command]
 fn save_favorites(favorites: Vec<FavoriteCommand>) -> Result<()> {
     let path = history_path()?;
+    write_favorites_at(&path, &favorites)?;
+    log_line(&format!("Favorites saved: {}", favorites.len()));
+    Ok(())
+}
+
+fn write_favorites_at(path: &Path, favorites: &[FavoriteCommand]) -> Result<()> {
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
     }
-    fs::write(&path, serde_json::to_string_pretty(&favorites)?)?;
-    log_line(&format!("Favorites saved: {}", favorites.len()));
+    if path.exists() {
+        let existing = fs::read(path)?;
+        let old: Vec<FavoriteCommand> = serde_json::from_slice(&existing)?;
+        if old.iter().any(|entry| entry.id.is_empty() || entry.title.is_empty()) {
+            let backup = path.with_extension(format!("backup-{}.json", SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_nanos()));
+            let mut file = fs::OpenOptions::new().write(true).create_new(true).open(backup)?;
+            file.write_all(&existing)?;
+            file.sync_all()?;
+        }
+    }
+    let temporary = path.with_extension(format!("tmp-{}-{}", std::process::id(), SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_nanos()));
+    let result = (|| -> Result<()> {
+        let mut file = fs::OpenOptions::new().write(true).create_new(true).open(&temporary)?;
+        file.write_all(&serde_json::to_vec_pretty(favorites)?)?;
+        file.sync_all()?;
+        drop(file);
+        atomic_replace(&temporary, path)?;
+        Ok(())
+    })();
+    if result.is_err() { let _ = fs::remove_file(&temporary); }
+    result
+}
+
+fn atomic_replace(temporary: &Path, destination: &Path) -> std::io::Result<()> {
+    #[cfg(target_os = "windows")]
+    if destination.exists() {
+        use std::os::windows::ffi::OsStrExt;
+        #[link(name = "kernel32")]
+        extern "system" { fn ReplaceFileW(replaced: *const u16, replacement: *const u16, backup: *const u16, flags: u32, exclude: *mut std::ffi::c_void, reserved: *mut std::ffi::c_void) -> i32; }
+        let replaced: Vec<u16> = destination.as_os_str().encode_wide().chain(Some(0)).collect();
+        let replacement: Vec<u16> = temporary.as_os_str().encode_wide().chain(Some(0)).collect();
+        let success = unsafe { ReplaceFileW(replaced.as_ptr(), replacement.as_ptr(), std::ptr::null(), 0, std::ptr::null_mut(), std::ptr::null_mut()) };
+        if success == 0 { return Err(std::io::Error::last_os_error()); }
+        return Ok(());
+    }
+    fs::rename(temporary, destination)?;
     Ok(())
 }
 
@@ -1050,6 +1115,93 @@ mod tests {
     use super::*;
 
     #[test]
+    fn split_identity_and_scoped_fields_round_trip() {
+        let source = r#"
+[tool]
+name = "cargo report future-incompatibilities"
+installed_name = "cargo"
+family = "cargo"
+command_prefix = ["report", "future-incompatibilities"]
+notes = "first\nsecond"
+[[arguments]]
+flag = "-C"
+type = "string"
+position = "before-prefix"
+[[arguments]]
+flag = "-c"
+type = "string"
+[[actions]]
+name = "show"
+[[actions.arguments]]
+flag = "--verbose"
+type = "boolean"
+[[actions.parameters]]
+name = "item"
+required = true
+"#;
+        let schema = parse_schema_toml(source, Path::new("test.toml")).unwrap();
+        let restored = parse_schema_toml(&serialize_schema_toml(&schema).unwrap(), Path::new("test.toml")).unwrap();
+        assert_eq!(restored.command_prefix, vec!["report", "future-incompatibilities"]);
+        assert_eq!(restored.notes, "first\nsecond");
+        assert_eq!(restored.arguments[0].position, "before-prefix");
+        assert_eq!(restored.actions[0].arguments[0].flag, "--verbose");
+        assert_eq!(restored.actions[0].parameters[0].name, "item");
+        // Cargo is the executable; the display name is never passed to lookup.
+        assert_eq!(check_schema_executable(&schema).status, "available");
+    }
+
+    #[test]
+    fn history_migration_preserves_original_and_atomic_updates() {
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target").join(format!("history-test-{}", SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()));
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("history.json");
+        let bytes = br#"[{"command":"  first\nsecond  \n","tool":"git","action":"","task":"legacy","createdAt":"old","tags":[{"name":"work","color":"red"}]}]"#;
+        fs::write(&path, bytes).unwrap();
+        let mut entries: Vec<FavoriteCommand> = serde_json::from_slice(bytes).unwrap();
+        assert!(entries[0].id.is_empty());
+        entries[0].id = "stable".into(); entries[0].title = "Legacy".into();
+        entries[0].builder_snapshot = Some(serde_json::json!({"schema":{"name":"snapshot"}}));
+        write_favorites_at(&path, &entries).unwrap();
+        let backup = fs::read_dir(&dir).unwrap().filter_map(|p| p.ok()).find(|p| p.file_name().to_string_lossy().contains("backup-")).unwrap();
+        assert_eq!(fs::read(backup.path()).unwrap(), bytes);
+        let restored: Vec<FavoriteCommand> = serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+        assert_eq!(restored[0].command, "  first\nsecond  \n");
+        assert_eq!(restored[0].tags[0].name, "work");
+        assert_eq!(restored[0].builder_snapshot, entries[0].builder_snapshot);
+        entries[0].title = "Edited".into(); write_favorites_at(&path, &entries).unwrap();
+        assert_eq!(fs::read_dir(&dir).unwrap().count(), 2);
+        #[cfg(target_os = "windows")]
+        {
+            let original = fs::read(&path).unwrap();
+            let mut permissions = fs::metadata(&path).unwrap().permissions();
+            permissions.set_readonly(true); fs::set_permissions(&path, permissions).unwrap();
+            assert!(write_favorites_at(&path, &[]).is_err());
+            assert_eq!(fs::read(&path).unwrap(), original);
+            assert_eq!(fs::read_dir(&dir).unwrap().count(), 2); // failed temporary file was cleaned
+            let mut permissions = fs::metadata(&path).unwrap().permissions();
+            permissions.set_readonly(false); fs::set_permissions(&path, permissions).unwrap();
+        }
+        fs::write(&path, "broken history").unwrap();
+        assert!(write_favorites_at(&path, &entries).is_err());
+        assert_eq!(fs::read_to_string(&path).unwrap(), "broken history");
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn all_repository_catalog_schemas_parse_and_round_trip() {
+        let directory = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().join("schemas");
+        for entry in fs::read_dir(directory).unwrap() {
+            let path = entry.unwrap().path();
+            if path.extension().and_then(|e| e.to_str()) != Some("toml") { continue; }
+            let schema = parse_schema_toml(&fs::read_to_string(&path).unwrap(), &path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
+            let restored = parse_schema_toml(&serialize_schema_toml(&schema).unwrap(), &path).unwrap();
+            assert_eq!(schema.name, restored.name);
+            assert_eq!(schema.command_prefix, restored.command_prefix);
+            assert_eq!(schema.arguments.len(), restored.arguments.len());
+        }
+    }
+
+    #[test]
     fn parses_existing_schema_shape() {
         let toml = r#"
 [tool]
@@ -1109,6 +1261,7 @@ last_validated = "2026-07-30T12:00:00.000Z"
             ..ToolSchema::default()
         };
         schema.arguments.push(SchemaArgument {
+            position: String::new(),
             flag: "--config".into(),
             long: String::new(),
             description: "Config".into(),

@@ -15,6 +15,7 @@ import type {
 import { buildParts, makeOptionStates, makeParameterStates, tokensFromParts } from "../lib/commandBuilder";
 import type { CliPreset } from "../lib/cliPresets";
 import { filterFavorites } from "../lib/favorites";
+import { clone, newEntry, normalizeEntry, validSnapshot, type LibraryEntry } from "../lib/library";
 import {
   addActionLines,
   addArgumentLines,
@@ -31,6 +32,22 @@ type View = "builder" | "import" | "cli" | "schema" | "library" | "settings";
 
 interface StoreState {
   view: View;
+  transientSchema: ToolSchema | null;
+  transientExecutableHealth: ExecutableHealth | undefined;
+  libraryDraft: LibraryEntry | null;
+  libraryDirty: boolean;
+  libraryModal: boolean;
+  librarySaving: boolean;
+  libraryError: string;
+  librarySavedId: string;
+  libraryCategory: string;
+  setLibraryCategory: (category: string) => void;
+  openLibraryEntry: (id?: string) => void;
+  updateLibraryDraft: (patch: Partial<LibraryEntry>) => void;
+  cancelLibraryDraft: () => void;
+  commitLibraryDraft: () => Promise<void>;
+  duplicateLibraryEntry: () => void;
+  reopenLibraryEntry: () => void;
   commandCategory: CommandCategory;
   setCommandCategory: (category: CommandCategory) => void;
   dataRoot: string;
@@ -45,9 +62,6 @@ interface StoreState {
   toolSearch: string;
   favoriteSearch: string;
   favoriteTag: string;
-  manualFavoriteTool: string;
-  manualFavoriteTask: string;
-  manualFavoriteCommand: string;
   importCommandName: string;
   importHelpArgs: string;
   importHelpText: string;
@@ -74,8 +88,6 @@ interface StoreState {
   setToolSearch: (search: string) => void;
   setFavoriteSearch: (search: string) => void;
   setFavoriteTag: (tag: string) => void;
-  setManualFavoriteField: (field: "manualFavoriteTool" | "manualFavoriteTask" | "manualFavoriteCommand", value: string) => void;
-  saveManualFavorite: () => Promise<void>;
   copyCommand: () => Promise<void>;
   saveFavorite: () => Promise<void>;
   removeFavorite: (createdAt: string) => Promise<void>;
@@ -111,13 +123,13 @@ interface StoreState {
   refreshLog: () => Promise<void>;
 }
 
-const selectedSchema = (state: StoreState) => state.schemas.find((schema) => schema.name === state.selectedSchemaName) ?? null;
+const selectedSchema = (state: StoreState) => state.transientSchema ?? state.schemas.find((schema) => schema.name === state.selectedSchemaName) ?? null;
 const selectedAction = (state: StoreState) => {
   const schema = selectedSchema(state);
   return schema?.actions.find((action) => action.name === state.selectedActionName) ?? null;
 };
-export const commandPreviewForState = (state: Pick<StoreState, "schemas" | "selectedSchemaName" | "selectedActionName" | "options" | "parameters">) => {
-  const schema = state.schemas.find((item) => item.name === state.selectedSchemaName) ?? null;
+export const commandPreviewForState = (state: Pick<StoreState, "schemas" | "selectedSchemaName" | "selectedActionName" | "options" | "parameters"> & { transientSchema?: ToolSchema | null }) => {
+  const schema = state.transientSchema ?? state.schemas.find((item) => item.name === state.selectedSchemaName) ?? null;
   const action = schema?.actions.find((item) => item.name === state.selectedActionName) ?? null;
   return tokensFromParts(buildParts(schema, action, state.options, state.parameters));
 };
@@ -125,16 +137,79 @@ export const commandPreviewForState = (state: Pick<StoreState, "schemas" | "sele
 const syncSelection = (schemas: ToolSchema[], selectedName = "") => {
   const schema = schemas.find((item) => item.name === selectedName) ?? schemas[0] ?? null;
   return {
+    transientSchema: null,
+    transientExecutableHealth: undefined,
     commandCategory: schema ? commandCategory(schema) : "general" as CommandCategory,
     selectedSchemaName: schema?.name ?? "",
     selectedActionName: schema?.actions[0]?.name ?? "",
-    options: schema ? makeOptionStates(schema) : [],
-    parameters: schema ? makeParameterStates(schema) : []
+    options: schema ? makeOptionStates(schema, schema.actions[0]) : [],
+    parameters: schema ? makeParameterStates(schema, schema.actions[0]) : []
   };
 };
 
 export const useCommandWizardStore = create<StoreState>((set, get) => ({
   view: "builder",
+  transientSchema: null,
+  transientExecutableHealth: undefined,
+  libraryDraft: null,
+  libraryDirty: false,
+  libraryModal: false,
+  librarySaving: false,
+  libraryError: "",
+  librarySavedId: "",
+  libraryCategory: "All",
+  setLibraryCategory: (libraryCategory) => set({ libraryCategory }),
+  openLibraryEntry(id) {
+    if (get().librarySaving) return;
+    if (get().libraryDirty && !window.confirm("Discard unsaved command changes?")) return;
+    const entry = get().favorites.find((entry) => entry.id === id);
+    set({ libraryDraft: entry ? clone(normalizeEntry(entry)) : newEntry(), libraryDirty: false, libraryModal: false, libraryError: "" });
+  },
+  updateLibraryDraft(patch) {
+    set((state) => ({ libraryDirty: true, libraryError: "", libraryDraft: state.libraryDraft ? { ...state.libraryDraft, ...patch, ...(patch.command !== undefined && patch.command !== state.libraryDraft.command ? { builderSnapshot: null } : {}) } : null }));
+  },
+  cancelLibraryDraft() {
+    if (get().librarySaving) return;
+    if (get().libraryDirty && !window.confirm("Discard unsaved command changes?")) return;
+    const original = get().favorites.find((entry) => entry.id === get().libraryDraft?.id);
+    set({ libraryDraft: original && !get().libraryModal ? clone(normalizeEntry(original)) : null, libraryDirty: false, libraryModal: false, libraryError: "" });
+  },
+  async commitLibraryDraft() {
+    const state = get();
+    if (!state.libraryDraft || state.librarySaving) return;
+    if (!state.libraryDraft.title.trim() || !state.libraryDraft.command.trim()) return set({ libraryError: "Enter a title and command before saving." });
+    const entry = { ...clone(state.libraryDraft), title: state.libraryDraft.title.trim(), tags: state.libraryDraft.tags.map((tag) => ({ ...tag, name: tag.name.trim() })).filter((tag, index, tags) => tag.name && tags.findIndex((other) => other.name === tag.name) === index), updatedAt: new Date().toISOString() };
+    const favorites = state.favorites.some((item) => item.id === entry.id) ? state.favorites.map((item) => item.id === entry.id ? entry : item) : [...state.favorites, entry];
+    set({ librarySaving: true, libraryError: "" });
+    try {
+      await runtime.saveFavorites(favorites);
+      set({ favorites, libraryDraft: entry, libraryDirty: false, libraryModal: false, librarySaving: false, librarySavedId: entry.id, status: `Saved ${entry.title} to Library.` });
+    } catch (error) { set({ librarySaving: false, libraryError: error instanceof Error ? error.message : "Could not save command." }); }
+  },
+  duplicateLibraryEntry() {
+    const state = get();
+    if (!state.libraryDraft || state.librarySaving) return;
+    if (state.libraryDirty && !window.confirm("Discard unsaved command changes before duplicating?")) return;
+    const original = state.favorites.find((entry) => entry.id === state.libraryDraft?.id);
+    const entry = state.libraryDirty && original ? normalizeEntry(original) : state.libraryDraft;
+    set({ libraryDraft: { ...clone(entry), id: crypto.randomUUID(), title: `${entry.title} copy`, createdAt: new Date().toISOString() }, libraryDirty: true, libraryError: "" });
+  },
+  reopenLibraryEntry() {
+    const state = get();
+    const snapshot = state.libraryDraft?.builderSnapshot;
+    if (!validSnapshot(snapshot)) return;
+    if (state.libraryDirty && !window.confirm("Discard unsaved command changes before reopening?")) return;
+    const original = state.favorites.find((entry) => entry.id === state.libraryDraft?.id);
+    const entry = state.libraryDirty && original ? normalizeEntry(original) : state.libraryDraft!;
+    if (!validSnapshot(entry.builderSnapshot)) return;
+    const saved = clone(entry.builderSnapshot);
+    set({ view: "builder", transientSchema: saved.schema, transientExecutableHealth: undefined, selectedSchemaName: saved.schema.name, selectedActionName: saved.selectedActionName, options: saved.options, parameters: saved.parameters, taskLabel: entry.title, commandCategory: commandCategory(saved.schema), libraryDraft: clone(entry), libraryDirty: false, status: "Restored saved Builder snapshot." });
+    void runtime.checkExecutables([saved.schema]).then((health) => {
+      if (get().transientSchema === saved.schema) set({ transientExecutableHealth: health[0] });
+    }).catch(() => {
+      if (get().transientSchema === saved.schema) set({ transientExecutableHealth: { schemaName: saved.schema.name, status: "unknown", message: "Could not check the saved executable.", checkedAt: "" } });
+    });
+  },
   commandCategory: "general",
   setCommandCategory: (category) => set((state) => {
     if (category === state.commandCategory) return {};
@@ -153,9 +228,6 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
   toolSearch: "",
   favoriteSearch: "",
   favoriteTag: "All",
-  manualFavoriteTool: "",
-  manualFavoriteTask: "",
-  manualFavoriteCommand: "",
   importCommandName: "",
   importHelpArgs: "--help",
   importHelpText: "",
@@ -171,7 +243,17 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
   canCaptureHelp: runtime.canCaptureHelp,
   logText: "",
   isLoading: false,
-  setView: (view) => set((state) => ({ view, ...(view === "builder" && selectedSchema(state) ? { commandCategory: commandCategory(selectedSchema(state)!) } : {}), status: view === "import" && !runtime.canCaptureHelp ? "Browser preview: paste help text and use Parse Paste. Capture Help needs the Tauri desktop app." : "Ready" })),
+  setView: (view) => {
+    const state = get();
+    if (state.librarySaving) return;
+    if (view !== state.view && state.libraryDirty && !window.confirm("Discard unsaved command changes?")) return;
+    if (view !== state.view && state.libraryDirty) {
+      const original = state.favorites.find((entry) => entry.id === state.libraryDraft?.id);
+      set({ libraryDraft: original ? clone(normalizeEntry(original)) : null, libraryDirty: false, libraryError: "" });
+    }
+    if (view === "schema" && state.transientSchema) return set({ status: "This is a saved Builder snapshot. Select an installed schema to edit it." });
+    set({ view, ...(view === "builder" && selectedSchema(state) ? { commandCategory: commandCategory(selectedSchema(state)!) } : {}), status: view === "import" && !runtime.canCaptureHelp ? "Browser preview: paste help text and use Parse Paste. Capture Help needs the Tauri desktop app." : "Ready" });
+  },
   setStatus: (status) => set({ status }),
   async load() {
     set({ isLoading: true, status: "Loading local workspace..." });
@@ -182,11 +264,10 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
         dataRoot: snapshot.dataRoot,
         schemas: snapshot.schemas,
         executableHealth,
-        favorites: snapshot.favorites,
+        favorites: snapshot.favorites.map(normalizeEntry),
         logText: snapshot.logText,
         status: `${snapshot.schemas.length} schemas loaded`,
         isLoading: false,
-        manualFavoriteTool: snapshot.schemas[0]?.name ?? "",
         ...syncSelection(snapshot.schemas)
       });
     } catch (error) {
@@ -194,7 +275,18 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     }
   },
   selectSchema: (name) => set((state) => syncSelection(state.schemas, name)),
-  selectAction: (name) => set({ selectedActionName: name }),
+  selectAction: (name) => set((state) => {
+    const schema = selectedSchema(state);
+    const action = schema?.actions.find((action) => action.name === name);
+    const options = schema ? makeOptionStates(schema, action) : [];
+    const parameters = schema ? makeParameterStates(schema, action) : [];
+    return { selectedActionName: name, options: options.map((row) => {
+      const flag = row.argument.long || row.argument.flag;
+      const shared = schema?.arguments.some((arg) => (arg.long || arg.flag) === flag) && !action?.arguments.some((arg) => (arg.long || arg.flag) === flag);
+      const old = shared ? state.options.find((option) => (option.argument.long || option.argument.flag) === flag && option.argument.position === row.argument.position) : undefined;
+      return { ...row, selected: old?.selected ?? false, value: old?.value ?? "" };
+    }), parameters };
+  }),
   updateOption: (key, value) =>
     set((state) => ({ options: state.options.map((option) => (option.key === key ? { ...option, ...value } : option)) })),
   updateParameter: (key, value) =>
@@ -203,24 +295,6 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
   setToolSearch: (toolSearch) => set({ toolSearch }),
   setFavoriteSearch: (favoriteSearch) => set({ favoriteSearch }),
   setFavoriteTag: (favoriteTag) => set({ favoriteTag }),
-  setManualFavoriteField: (field, value) => set({ [field]: value }),
-  async saveManualFavorite() {
-    const state = get();
-    const command = state.manualFavoriteCommand.trim();
-    if (!command) return set({ status: "Enter a command before saving it to the library." });
-    const schema = state.schemas.find((item) => item.name === state.manualFavoriteTool) ?? null;
-    const favorite: FavoriteCommand = {
-      command,
-      tool: schema?.name ?? state.manualFavoriteTool.trim(),
-      action: "",
-      task: state.manualFavoriteTask.trim(),
-      createdAt: new Date().toISOString(),
-      tags: schema?.tags ?? []
-    };
-    const favorites = [...state.favorites, favorite];
-    await runtime.saveFavorites(favorites);
-    set({ favorites, manualFavoriteCommand: "", manualFavoriteTask: "", status: "Manual command saved to library." });
-  },
   async copyCommand() {
     const command = commandPreviewForState(get());
     if (!command) return set({ status: "No command to copy yet." });
@@ -232,22 +306,26 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     const schema = selectedSchema(state);
     const command = commandPreviewForState(state);
     if (!schema || !command) return set({ status: "No command to save yet." });
-    const favorite: FavoriteCommand = {
+    if (state.libraryDirty && !window.confirm("Discard unsaved command changes?")) return;
+    const favorite: LibraryEntry = {
+      ...newEntry(),
+      title: state.taskLabel || `${schema.name}${state.selectedActionName ? ` ${state.selectedActionName}` : ""}`,
+      category: commandCategory(schema),
+      builderSnapshot: clone({ schema, selectedActionName: state.selectedActionName, options: state.options, parameters: state.parameters }),
       command,
       tool: schema.name,
       action: selectedAction(state)?.name ?? "",
       task: state.taskLabel,
       createdAt: new Date().toISOString(),
-      tags: schema.tags
+      tags: schema.tags.filter((tag) => !tag.name.startsWith("workspace:"))
     };
-    const favorites = [...state.favorites, favorite];
-    await runtime.saveFavorites(favorites);
-    set({ favorites, status: "Command saved to favorites." });
+    set({ libraryDraft: favorite, libraryDirty: false, libraryModal: true, libraryError: "" });
   },
-  async removeFavorite(createdAt) {
-    const favorites = get().favorites.filter((favorite) => favorite.createdAt !== createdAt);
-    await runtime.saveFavorites(favorites);
-    set({ favorites, status: "Favorite removed." });
+  async removeFavorite(id) {
+    if (get().librarySaving || !window.confirm("Delete this saved command?")) return;
+    const favorites = get().favorites.filter((favorite) => favorite.id !== id);
+    try { await runtime.saveFavorites(favorites); set({ favorites, libraryDraft: null, libraryDirty: false, status: "Command deleted." }); }
+    catch (error) { set({ libraryError: error instanceof Error ? error.message : "Could not delete command." }); }
   },
   async clearFavorites() {
     if (!window.confirm("Clear all favorites?")) return;
@@ -255,8 +333,10 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     set({ favorites: [], status: "Favorites cleared." });
   },
   async exportFavorites(format) {
-    const path = await runtime.exportFavorites(get().favorites, format);
-    set({ status: path ? `Favorites exported to ${path}.` : "Favorites export prepared." });
+    try {
+      const path = await runtime.exportFavorites(get().favorites, format);
+      set({ status: path ? `Commands exported to ${path}.` : "Command export prepared.", libraryError: "" });
+    } catch (error) { set({ libraryError: error instanceof Error ? error.message : "Could not export commands.", status: "Command export failed." }); }
   },
   newSchema() {
     const schema = { ...emptySchema(), name: "new-tool" };
@@ -365,9 +445,11 @@ export const useCommandWizardStore = create<StoreState>((set, get) => ({
     }
     try {
       set({ status: `Capturing help from ${state.importCommandName || "command"}...` });
-      const help = await runtime.captureHelp(state.importCommandName, state.importHelpArgs || "--help");
+      const identity = state.importCommandName.trim().split(/\s+/);
+      const executable = identity.shift() ?? "";
+      const help = await runtime.captureHelp(executable, [...identity, state.importHelpArgs || "--help"].join(" "));
       let completion = "";
-      if (state.importUseCompletion) completion = (await runtime.captureCompletion(state.importCommandName)) ?? "";
+      if (state.importUseCompletion) completion = (await runtime.captureCompletion(executable)) ?? "";
       const draft = createImportDraft(state.importCommandName, help, completion);
       set({ importHelpText: help, importDraft: draft, status: "Help captured and staged." });
     } catch (error) {
@@ -470,6 +552,8 @@ export const schemaSearchText = (schema: ToolSchema) =>
   [
     schema.name,
     schema.installedName,
+    schema.family ?? "",
+    ...(schema.commandPrefix ?? []),
     schema.description,
     schema.notes,
     ...Object.values(schema.metadata),
@@ -489,7 +573,9 @@ export const schemaSearchText = (schema: ToolSchema) =>
 export const selectFavoriteTags = (favorites: FavoriteCommand[]) =>
   ["All", ...Array.from(new Set(favorites.flatMap((favorite) => favorite.tags.map((tag) => tag.name)))).sort((a, b) => a.localeCompare(b))];
 
-export const selectFilteredFavorites = (state: StoreState) => filterFavorites(state.favorites, state.favoriteSearch, state.favoriteTag);
+export const selectFilteredFavorites = (state: StoreState) => filterFavorites(state.favorites, state.favoriteSearch, state.favoriteTag)
+  .filter((entry) => state.libraryCategory === "All" || (entry.category ?? "general") === state.libraryCategory)
+  .sort((a, b) => (b.updatedAt || b.createdAt).localeCompare(a.updatedAt || a.createdAt));
 
 export const selectSelectedSchema = selectedSchema;
 export const selectSelectedAction = selectedAction;
@@ -507,7 +593,7 @@ export const selectSchemaHealth = (state: StoreState) => {
 };
 const executableHealthForCategory = (state: StoreState, schema: ToolSchema): ExecutableHealth | undefined => {
   const category = commandCategory(schema);
-  if (category === "general") return state.executableHealth[schema.name];
+  if (category === "general") return state.transientSchema === schema ? state.transientExecutableHealth : state.executableHealth[schema.name];
   return {
     schemaName: schema.name,
     status: "unknown",

@@ -24,14 +24,15 @@ import {
   UploadFile
 } from "@mui/icons-material";
 import { useEffect, useMemo, useState } from "react";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { isTauriRuntime } from "./lib/runtime";
 import { IconButton } from "./components/IconButton";
+import { LibraryWorkspace, LibrarySaveDialog } from "./components/LibraryWorkspace";
 import { asSizedIcon } from "./components/muiIcon";
 import { cliPresets } from "./lib/cliPresets";
 import { commandCategories, commandCategory, categoryTags, type CommandCategory } from "./lib/commandCategory";
 import {
   commandPreviewForState,
-  selectFavoriteTags,
-  selectFilteredFavorites,
   selectFilteredSchemas,
   selectRailSchemaHealth,
   selectSchemaHealth,
@@ -161,6 +162,16 @@ function PlainCodeBlock({ value, className = "" }: { value: string; className?: 
 function ToolRail() {
   const state = useCommandWizardStore();
   const schemas = selectFilteredSchemas(state);
+  const families = [...new Set(schemas.map((schema) => schema.family || schema.name))];
+  const renderSchema = (schema: typeof schemas[number]) => {
+    const health = selectRailSchemaHealth(state, schema);
+    return <button key={schema.name} className={`atl-card w-full p-3 text-left ${schema.name === state.selectedSchemaName ? "border-atl-cyan bg-atl-cyan/10" : "hover:border-atl-cyan-bright"}`} onClick={() => state.selectSchema(schema.name)}>
+      <span className="block break-words font-semibold">{schema.name}</span>
+      {health.railLabel === "Missing Executable" && <span className="text-xs text-atl-brass">Missing Executable</span>}
+      <p className="mt-1 line-clamp-2 text-xs text-atl-frost">{schema.description || "No description"}</p>
+      <div className="mt-2 flex flex-wrap gap-1">{schema.tags.filter((tag) => !tag.name.startsWith("workspace:")).slice(0, 3).map((tag) => <span key={tag.name} className="atl-chip" style={{ borderColor: tag.color }}>{tag.name}</span>)}</div>
+    </button>;
+  };
   return (
     <aside className="atl-panel flex min-h-0 flex-col p-3">
       <div className="flex items-center gap-2">
@@ -168,50 +179,10 @@ function ToolRail() {
         <input className="atl-input" placeholder="Search tools..." value={state.toolSearch} onChange={(event) => state.setToolSearch(event.target.value)} />
       </div>
       <div className="mt-3 min-h-0 flex-1 space-y-2 overflow-auto pr-1">
-        {schemas.map((schema) => (
-          (() => {
-            const health = selectRailSchemaHealth(state, schema);
-            const StatusIcon =
-              health.railLabel === "Missing Executable"
-                ? XCircle
-                : health.railLabel === "Needs Review"
-                  ? AlertTriangle
-                  : health.railLabel === "Completion Imported"
-                    ? Zap
-                    : CheckCircle2;
-            const chipClass =
-              health.railLabel === "Missing Executable" || health.railLabel === "Needs Review"
-                ? "atl-chip-warning"
-                : "atl-chip atl-chip-active";
-            return (
-          <button
-            key={schema.name}
-            className={`w-full rounded-lg border p-3 text-left transition ${
-              schema.name === state.selectedSchemaName
-                ? "border-atl-cyan bg-atl-cyan/10"
-                : "border-atl-ridge/70 bg-atl-void/30 hover:border-atl-cyan-bright"
-            }`}
-            onClick={() => state.selectSchema(schema.name)}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <span className="truncate font-semibold">{schema.name}</span>
-              {health.railLabel !== "Needs Review" && <span className={`${chipClass} max-w-[8.75rem] shrink-0 whitespace-nowrap`} title={health.railLabel}>
-                <StatusIcon size={12} />
-                <span className="truncate">{health.railLabel}</span>
-              </span>}
-            </div>
-            <p className="mt-1 line-clamp-2 text-xs text-atl-frost">{schema.description || "No description"}</p>
-            <div className="mt-2 flex flex-wrap gap-1">
-              {schema.tags.filter((tag) => !tag.name.startsWith("workspace:")).slice(0, 3).map((tag) => (
-                <span key={tag.name} className="atl-chip" style={{ borderColor: tag.color }}>
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          </button>
-            );
-          })()
-        ))}
+        {state.toolSearch.trim() ? schemas.map(renderSchema) : families.map((family) => {
+          const members = schemas.filter((schema) => (schema.family || schema.name) === family);
+          return members.length === 1 && !members[0].family ? renderSchema(members[0]) : <details key={family} open={members.some((schema) => schema.name === state.selectedSchemaName)}><summary className="cursor-pointer rounded-md bg-atl-void/30 px-3 py-2 text-sm font-semibold">{family} <span className="text-atl-frost">({members.length})</span></summary><div className="mt-2 space-y-2 pl-2">{members.map(renderSchema)}</div></details>;
+        })}
       </div>
       <IconButton icon={Plus} label="New Schema" variant="secondary" className="mt-3 w-full" onClick={state.newSchema} />
     </aside>
@@ -236,8 +207,9 @@ function CommandPanel() {
       <PlainCodeBlock value={preview || "Select a tool and fill fields to assemble a command."} className="mt-4 min-h-32 p-4" />
       <div className="mt-4 grid grid-cols-2 gap-2">
         <IconButton icon={Clipboard} label="Copy" variant="primary" onClick={state.copyCommand} />
-        <IconButton icon={BookMarked} label="Save" variant="secondary" onClick={state.saveFavorite} />
+        <IconButton icon={BookMarked} label="Save to Library" variant="secondary" onClick={state.saveFavorite} />
       </div>
+      {state.librarySavedId && <IconButton icon={BookMarked} label="View in Library" className="mt-3" onClick={() => { state.setView("library"); state.openLibraryEntry(state.librarySavedId); }} />}
       <div className="mt-5 border-t border-atl-ridge/70 pt-4">
         <label className="atl-label">Task Label</label>
         <input className="atl-input" value={state.taskLabel} onChange={(event) => state.setTaskLabel(event.target.value)} placeholder="optional label" />
@@ -277,6 +249,7 @@ function BuilderView() {
           <p className="text-xs font-bold uppercase tracking-wide text-atl-cyan-bright">Builder</p>
           <h1 className="text-2xl font-semibold">{schema.name}</h1>
           <p className="mt-1 max-w-3xl text-sm text-atl-frost">{schema.description}</p>
+          {state.transientSchema && <p className="mt-2 text-xs text-atl-brass">Saved Builder snapshot · select an installed command to leave this snapshot.</p>}
         </div>
         <select className="atl-input max-w-64" value={state.selectedActionName} onChange={(event) => state.selectAction(event.target.value)}>
           <option value="">No action</option>
@@ -610,6 +583,7 @@ function ArgumentRow({ argument, onChange }: { argument: SchemaArgument; onChang
         <option value="equals">equals</option>
         <option value="attached">attached</option>
       </select>
+      <select aria-label="Option placement" className="atl-input xl:col-span-4" value={argument.position ?? "after-prefix"} onChange={(event) => onChange({ position: event.target.value as SchemaArgument["position"] })}><option value="after-prefix">After command prefix</option><option value="before-prefix">Before command prefix (global option)</option></select>
       <input className="atl-input min-w-0 xl:col-span-4" value={argument.description} onChange={(event) => onChange({ description: event.target.value })} placeholder="description" />
     </div>
   );
@@ -656,6 +630,8 @@ function SchemaView() {
               <span className="atl-label">Installed Name</span>
               <input className="atl-input" value={schema.installedName} onChange={(event) => state.updateSelectedSchema({ installedName: event.target.value })} />
             </label>
+            <label><span className="atl-label">Tool Family</span><input className="atl-input" value={schema.family ?? ""} onChange={(event) => state.updateSelectedSchema({ family: event.target.value })} /></label>
+            <label><span className="atl-label">Fixed Command Prefix</span><input className="atl-input" value={(schema.commandPrefix ?? []).join(" ")} onChange={(event) => state.updateSelectedSchema({ commandPrefix: event.target.value.trim().split(/\s+/).filter(Boolean) })} placeholder="build or tunnel run" /></label>
             <label className="md:col-span-2">
               <span className="atl-label">Command Category</span>
               <select aria-label="Command Category" className="atl-input" value={commandCategory(schema)} onChange={(event) => state.updateSelectedSchema({ tags: categoryTags(schema, event.target.value as CommandCategory) })}>
@@ -786,96 +762,6 @@ function SchemaView() {
   );
 }
 
-function LibraryView() {
-  const state = useCommandWizardStore();
-  const favorites = selectFilteredFavorites(state);
-  const tags = useMemo(() => selectFavoriteTags(state.favorites), [state.favorites]);
-  return (
-    <section className="atl-panel min-h-0 overflow-auto p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-atl-cyan-bright">Command Library</p>
-          <h1 className="text-2xl font-semibold">Favorites Quick Copy</h1>
-        </div>
-        <div className="flex gap-2">
-          <IconButton icon={FolderOpen} label="JSON" onClick={() => state.exportFavorites("json")} />
-          <IconButton icon={FolderOpen} label="Text" onClick={() => state.exportFavorites("text")} />
-          <IconButton icon={DeleteOutlinedIcon} label="Clear" variant="warning" onClick={state.clearFavorites} />
-        </div>
-      </div>
-      <div className="mt-5 grid gap-3 md:grid-cols-[1fr_12rem]">
-        <input className="atl-input" placeholder="Search favorites..." value={state.favoriteSearch} onChange={(event) => state.setFavoriteSearch(event.target.value)} />
-        <select className="atl-input" value={state.favoriteTag} onChange={(event) => state.setFavoriteTag(event.target.value)}>
-          {tags.map((tag) => (
-            <option key={tag}>{tag}</option>
-          ))}
-        </select>
-      </div>
-      <div className="atl-card mt-5 p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="atl-label mb-1">Manual Entry</p>
-            <h2 className="font-semibold">Save a command without building it</h2>
-          </div>
-          <IconButton icon={Save} label="Save Manual" variant="secondary" onClick={state.saveManualFavorite} />
-        </div>
-        <div className="mt-3 grid gap-3 md:grid-cols-[14rem_1fr]">
-          <label>
-            <span className="atl-label">Schema</span>
-            <select className="atl-input" value={state.manualFavoriteTool} onChange={(event) => state.setManualFavoriteField("manualFavoriteTool", event.target.value)}>
-              <option value="">Unassigned</option>
-              {state.schemas.map((schema) => (
-                <option key={schema.name} value={schema.name}>
-                  {schema.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span className="atl-label">Task Label</span>
-            <input
-              className="atl-input"
-              value={state.manualFavoriteTask}
-              onChange={(event) => state.setManualFavoriteField("manualFavoriteTask", event.target.value)}
-              placeholder="optional label"
-            />
-          </label>
-        </div>
-        <div className="mt-3">
-          <label className="atl-label" htmlFor="manual-library-command">
-            Command
-          </label>
-          <StructuredTextArea
-            id="manual-library-command"
-            label="Command"
-            minLines={3}
-            value={state.manualFavoriteCommand}
-            onChange={(value) => state.setManualFavoriteField("manualFavoriteCommand", value)}
-            placeholder="bun run build --watch"
-          />
-        </div>
-      </div>
-      <div className="mt-5 space-y-3">
-        {favorites.map((favorite) => (
-          <div className="atl-card p-4" key={favorite.createdAt}>
-            <CommandCodeBlock code={favorite.command} />
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-atl-frost">
-              <span>
-                {favorite.tool} {favorite.action ? `/ ${favorite.action}` : ""} {favorite.task ? `/ ${favorite.task}` : ""}
-              </span>
-              <div className="flex gap-2">
-                <IconButton icon={Clipboard} label="Copy" onClick={() => navigator.clipboard.writeText(favorite.command)} />
-                <IconButton icon={DeleteOutlinedIcon} label="Remove" onClick={() => state.removeFavorite(favorite.createdAt)} />
-              </div>
-            </div>
-          </div>
-        ))}
-        {favorites.length === 0 && <EmptyState title="No favorites match" body="Saved commands will appear here with search and tag filtering." />}
-      </div>
-    </section>
-  );
-}
-
 function SettingsView() {
   const state = useCommandWizardStore();
   return (
@@ -923,6 +809,24 @@ export default function App() {
   useEffect(() => {
     void state.load();
   }, []);
+  useEffect(() => {
+    if (isTauriRuntime()) {
+      let disposed = false;
+      let unlisten: (() => void) | undefined;
+      void getCurrentWindow().onCloseRequested((event) => {
+        const current = useCommandWizardStore.getState();
+        if (current.librarySaving) { event.preventDefault(); current.setStatus("Wait for the command save to finish before closing."); }
+        else if (current.libraryDirty && !window.confirm("Discard unsaved command changes and close CommandWizard?")) event.preventDefault();
+      }).then((stop) => { if (disposed) stop(); else unlisten = stop; }).catch(() => useCommandWizardStore.getState().setStatus("Could not enable the unsaved-command close prompt."));
+      return () => { disposed = true; unlisten?.(); };
+    }
+    const protectDraft = (event: BeforeUnloadEvent) => {
+      const current = useCommandWizardStore.getState();
+      if (current.libraryDirty || current.librarySaving) { event.preventDefault(); event.returnValue = ""; }
+    };
+    window.addEventListener("beforeunload", protectDraft);
+    return () => window.removeEventListener("beforeunload", protectDraft);
+  }, []);
   return (
     <main className="atl-shell flex h-screen min-h-0 flex-col p-3">
       <header className="atl-panel mb-3 flex flex-wrap items-center justify-between gap-3 px-4 py-3">
@@ -953,16 +857,16 @@ export default function App() {
       {state.view === "builder" && <div role="tablist" aria-label="Command categories" className="cw-tabs mb-3">
         {commandCategories.map((category) => <button key={category.id} role="tab" aria-selected={state.commandCategory === category.id} className={`cw-tab rounded-md ${state.commandCategory === category.id ? "cw-tab-active bg-atl-cyan/15 text-atl-cyan-bright" : "text-atl-silver"}`} onClick={() => state.setCommandCategory(category.id)}>{category.label}</button>)}
       </div>}
-      <div className={`grid min-h-0 flex-1 gap-3 ${state.view === "builder" && selectSelectedSchema(state) ? "lg:grid-cols-[18rem_minmax(0,1fr)_22rem]" : "lg:grid-cols-[18rem_minmax(0,1fr)]"}`}>
+      {state.view === "library" ? <LibraryWorkspace /> : <div className={`grid min-h-0 flex-1 auto-rows-[24rem] gap-3 overflow-auto lg:auto-rows-auto lg:grid-rows-1 lg:overflow-hidden ${state.view === "builder" && selectSelectedSchema(state) ? "lg:grid-cols-[18rem_minmax(0,1fr)_22rem]" : "lg:grid-cols-[18rem_minmax(0,1fr)]"}`}>
         <ToolRail />
         {state.view === "builder" && <BuilderView />}
         {state.view === "import" && <ImportView />}
         {state.view === "cli" && <CliView />}
         {state.view === "schema" && <SchemaView />}
-        {state.view === "library" && <LibraryView />}
         {state.view === "settings" && <SettingsView />}
         {state.view === "builder" && selectSelectedSchema(state) && <CommandPanel />}
-      </div>
+      </div>}
+      <LibrarySaveDialog />
       <footer className="mt-3 flex items-center justify-between rounded-lg border border-atl-ridge/70 bg-atl-void/70 px-3 py-2 text-xs text-atl-frost">
         <span>{state.status}</span>
         <span>{state.isLoading ? "loading" : state.runtimeLabel}</span>

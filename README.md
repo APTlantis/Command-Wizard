@@ -1,5 +1,7 @@
 # CommandWizard
 
+The 2026-10-12 maintenance candidate adds a repository-only [portable command catalog](schemas/README.md) and a first-class [Command Library](docs/Command-Library-Contract.md), including save review, editing, multiline text, and saved Builder snapshots. See the [delivery and verification record](docs/Catalog-and-Library-2026-10-12.md) for current evidence and browser/native limits. The historical v2.0.0 release evidence is retained.
+
 ![status](https://img.shields.io/badge/status-active-blue)
 ![license](https://img.shields.io/badge/license-not-recorded-lightgrey)
 ![stage](https://img.shields.io/badge/stage-active-orange)

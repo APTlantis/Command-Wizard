@@ -24,7 +24,7 @@ const optionSectionHeaders = new Set([
 ]);
 
 const normalizeHelpLine = (line: string) =>
-  Array.from(line.replace(ansiEscape, ""))
+  Array.from(line.replace(/\u001b\][^\u0007]*?(?:\u0007|\u001b\\)/g, "").replace(ansiEscape, ""))
     .map((ch) => (ch.charCodeAt(0) <= 127 ? ch : " "))
     .join("");
 
@@ -146,12 +146,32 @@ export const parseActions = (lines: string[]): SchemaAction[] => {
 };
 
 const isLooseValueToken = (token: string) => {
-  const cleaned = token.trim().replace(/^[,;)(]+|[,;)(]+$/g, "");
+  const cleaned = token.trim().replace(/^[,;)("']+|[,;)("']+$/g, "");
   return (
     cleaned.startsWith("<") ||
     cleaned.startsWith("[") ||
     [
       "value",
+      "val",
+      "infile",
+      "outfile",
+      "num",
+      "option",
+      "type",
+      "method",
+      "geometry",
+      "password",
+      "id",
+      "distance",
+      "format:option",
+      "list",
+      "map",
+      "duration",
+      "bytes",
+      "cidr",
+      "ip",
+      "strings",
+      "stringarray",
       "file",
       "filename",
       "path",
@@ -173,7 +193,7 @@ const isLooseValueToken = (token: string) => {
       "uri"
     ].includes(
       cleaned.toLowerCase()
-    )
+    ) || /^[A-Z][A-Z0-9_]*(?:\|[A-Z][A-Z0-9_]*)+$/.test(cleaned)
   );
 };
 
@@ -213,8 +233,8 @@ export const parseArguments = (lines: string[], warnings: string[]): SchemaArgum
           const shortFlag = tokens.find((token) => token.startsWith("-") && !token.startsWith("--"));
           const longFlag = tokens.find((token) => token.startsWith("--"));
           const primary = longFlag ?? shortFlag ?? tokens[0];
-          const argument = { flag: shortFlag ?? primary, long: shortFlag && longFlag ? longFlag : "", description: "", type: inferArgumentType(tokens), valueStyle: "space" as const };
-          const key = keyForArgument(argument).toLowerCase();
+          const argument = { flag: cleanFlagToken(shortFlag ?? primary), long: shortFlag && longFlag ? cleanFlagToken(longFlag) : "", description: "", type: inferArgumentType(tokens), valueStyle: tokens.some((token) => token.includes("=")) ? "equals" as const : "space" as const };
+          const key = keyForArgument(argument);
           if (!byKey.has(key)) {
             byKey.set(key, argument);
             argumentsList.push(argument);
@@ -244,7 +264,7 @@ export const parseArguments = (lines: string[], warnings: string[]): SchemaArgum
     const longFlag = tokens.find((token) => token.startsWith("--"));
     const primary = longFlag ?? shortFlag ?? tokens[0];
     if (!primary) continue;
-    const key = (longFlag ?? primary).toLowerCase();
+    const key = (longFlag ?? primary);
     const type = foundValuePlaceholder || tokens.some((token) => token.includes(":") && isLooseValueToken(token.split(":", 2)[1])) ? "string" : inferArgumentType(tokens);
 
     const existing = byKey.get(key);
@@ -315,8 +335,8 @@ export const parseParametersFromUsage = (commandName: string, lines: string[], a
     for (const token of tokenizeUsage(usageText)) {
       const name = token.text;
       if (!name || name.startsWith("-")) continue;
-      if (["options", "option", "sdk-options", "command-options"].includes(name.toLowerCase())) continue;
-      if (commandName && name.toLowerCase() === commandName.toLowerCase()) continue;
+      if (["options", "option", "flags", "command", "subcommand", "sdk-options", "command-options"].includes(name.toLowerCase())) continue;
+      if (commandName.split(/\s+/).some((part) => part.toLowerCase() === name.replace(/\.exe$/i, "").toLowerCase())) continue;
       if (actionNames.has(name.toLowerCase())) continue;
       if (seen.has(name.toLowerCase())) continue;
       seen.add(name.toLowerCase());
@@ -335,7 +355,7 @@ export const parseParametersFromUsage = (commandName: string, lines: string[], a
       extract(trimmed.slice("usage:".length).trim());
       continue;
     }
-    if (inUsage && isIndented(raw) && !sectionHeader.test(raw)) {
+    if (inUsage && isIndented(raw) && !sectionHeader.test(raw) && !trimmed.startsWith("-") && !trimmed.startsWith("/")) {
       extract(trimmed);
       continue;
     }
@@ -346,10 +366,12 @@ export const parseParametersFromUsage = (commandName: string, lines: string[], a
 
 export const parseHelpText = (commandName: string, helpText: string): { schema: ToolSchema; warnings: string[] } => {
   const warnings: string[] = [];
-  const lines = helpText.split(/\r?\n/).map((line) => normalizeHelpLine(line.trimEnd()));
+  const lines = helpText.split(/\r?\n/).map((line) => normalizeHelpLine(line.trimEnd()).replace(/--\[no-\]/g, "--"));
   const schema = emptySchema();
   schema.name = commandName.trim() || "tool";
-  schema.installedName = commandName.trim();
+  const [executable, ...prefix] = commandName.trim().split(/\s+/);
+  schema.installedName = executable;
+  if (prefix.length) { schema.family = executable; schema.commandPrefix = prefix; }
   schema.description = inferDescription(lines);
   schema.actions = parseActions(lines);
   schema.parameters = parseParametersFromUsage(commandName, lines, schema.actions);
@@ -377,7 +399,7 @@ export const parseCompletionText = (completionText: string): Pick<ToolSchema, "a
 const dedupeArguments = (args: SchemaArgument[]) => {
   const seen = new Set<string>();
   return args.filter((argument) => {
-    const key = keyForArgument(argument).toLowerCase();
+    const key = keyForArgument(argument);
     if (!key || seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -387,9 +409,9 @@ const dedupeArguments = (args: SchemaArgument[]) => {
 export const mergeCompletionData = (schema: ToolSchema, completionText: string): ToolSchema => {
   const parsed = parseCompletionText(completionText);
   const next: ToolSchema = { ...schema, actions: [...schema.actions], arguments: [...schema.arguments] };
-  const argKeys = new Map(next.arguments.map((arg) => [keyForArgument(arg).toLowerCase(), arg]));
+  const argKeys = new Map(next.arguments.map((arg) => [keyForArgument(arg), arg]));
   for (const arg of parsed.arguments) {
-    const key = keyForArgument(arg).toLowerCase();
+    const key = keyForArgument(arg);
     if (!argKeys.has(key)) {
       next.arguments.push(arg);
       argKeys.set(key, arg);
@@ -420,6 +442,8 @@ export const createImportDraft = (
     warnings.push("No actions or flags were detected. Paste rows into the buckets below before saving.");
   }
   return {
+    family: schema.family,
+    commandPrefix: schema.commandPrefix,
     toolName: schema.name,
     description: schema.description,
     installedName: schema.installedName,
@@ -438,6 +462,8 @@ export const createImportDraft = (
 export const buildSchemaFromDraft = (draft: HelpImportDraft): ToolSchema => ({
   ...emptySchema(),
   name: draft.toolName.trim() || "tool",
+  family: draft.family,
+  commandPrefix: draft.commandPrefix,
   description: draft.description.trim(),
   installedName: draft.installedName.trim(),
   executablePath: draft.executablePath.trim(),

@@ -3,7 +3,7 @@ schema = "APTlantis Entity Manifest"
 schema_version = "2.4"
 manifest_type = "project"
 canonical_name = "CommandWizard.manifest.toml"
-last_updated = "2026-07-31"
+last_updated = "2026-10-12"
 maintainer = "Herb"
 
 [entity]
@@ -216,3 +216,40 @@ candidate_executable = "src-tauri/target/release/commandwizard.exe"
 candidate_executable_sha256 = "99723628ACF031A50D9A3092ED9BD1B8665B619B48893E9BECC0CFAA02DD112A"
 candidate_installer = "src-tauri/target/release/bundle/nsis/CommandWizard_2.0.0_x64-setup.exe"
 candidate_installer_sha256 = "9F0E14BBE23F137A7200C34F2F1A33FBDDF2751259A7DD511A9034B1C0318B7E"
+
+[contracts.command_catalog]
+directory = "schemas"
+guide = "schemas/README.md"
+schema_count = 401
+reference_inventory = "docs/schema-evidence/reference-inventory.json"
+reference_file_count = 466
+coverage = "docs/schema-evidence/catalog-coverage.json"
+help_evidence = "docs/schema-evidence/help-probes.json"
+probe_count = 398
+optional_extensions = "docs/schema-evidence/optional-extensions.json"
+optional_extension_count = 152
+installation = "Repository files only; no automatic catalog installation or live schema replacement."
+identity = "Display name, installed executable name, optional family, fixed command_prefix tokens, and scoped option placement are separate."
+
+[contracts.command_library]
+guide = "docs/Command-Library-Contract.md"
+storage = "%LOCALAPPDATA%\\Aptlantis\\CommandWizard\\history.json"
+entry_identity = "Stable ID; identical command strings may have separately named entries."
+metadata = "Title, notes, category, tags, createdAt, updatedAt; legacy command/tool/action/task fields retained."
+snapshots = "Embedded schema, selected action, option and parameter states; temporary restoration without installed-schema replacement. Text edits clear snapshot; metadata edits retain it."
+persistence = "Legacy conversion in memory; original-byte migration backup on first save; synced sibling temporary file and atomic replacement. Failed writes retain drafts."
+boundaries = "Copy/export only. No generated-command execution, live catalog deployment, collections or placeholder templates. CLI navigation remains hidden."
+
+[maintenance.command_catalog_and_library]
+date = "2026-10-12"
+status = "local-candidate-verified"
+record = "docs/Catalog-and-Library-2026-10-12.md"
+checks = "Build and Tauri NSIS packaging passed; 437 unit tests, 10 Rust tests, 12 browser checks; packaged executable launched with CommandWizard window title."
+candidate_executable = "artifacts/candidates/library-catalog-2026-10-12/commandwizard.exe"
+candidate_executable_sha256 = "B42512EF6BA1D344041263845CF52B34AD682F990D52A61D245131C9624E32F3"
+candidate_installer = "artifacts/candidates/library-catalog-2026-10-12/CommandWizard_2.0.0_x64-setup.exe"
+candidate_installer_sha256 = "B09ABD176CBC865B3922276681106080D9E7E4F719832BC2C4BBBC2230B77367"
+proof = "docs/schema-evidence/desktop-candidate.json"
+data_safety = "466 reference hashes unchanged; 47 live schema/history files unchanged across launch; no live additions. Historical release installer unchanged."
+proof_limits = "Browser interactions and isolated Windows Rust persistence tests are separate from native launch. Native interactive workflow and installer install/uninstall not verified."
+release_record = "Historical v2.0.0 release metadata retained; maintenance candidate is not an installed, signed or promoted release."

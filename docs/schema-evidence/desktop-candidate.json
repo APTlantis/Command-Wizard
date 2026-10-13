@@ -1,0 +1,26 @@
+{
+  "nativeLaunch": {
+    "processId": 32240,
+    "windowTitle": "CommandWizard",
+    "stayedRunning": true
+  },
+  "date": "2026-10-12T15:48:27.8178199-04:00",
+  "liveAddedFiles": [],
+  "artifacts": [
+    {
+      "bytes": 3790022,
+      "sha256": "B09ABD176CBC865B3922276681106080D9E7E4F719832BC2C4BBBC2230B77367",
+      "signing": "NotSigned",
+      "path": "D:\\DRS\\Command-Wizard\\artifacts\\candidates\\library-catalog-2026-10-12\\CommandWizard_2.0.0_x64-setup.exe"
+    },
+    {
+      "bytes": 17012224,
+      "sha256": "B42512EF6BA1D344041263845CF52B34AD682F990D52A61D245131C9624E32F3",
+      "signing": "NotSigned",
+      "path": "D:\\DRS\\Command-Wizard\\artifacts\\candidates\\library-catalog-2026-10-12\\commandwizard.exe"
+    }
+  ],
+  "liveFilesChecked": 47,
+  "proofLimits": "Native launch only; browser interaction and isolated Rust persistence tests are separate. No installer install/uninstall, live saves or catalog installation.",
+  "liveChangedFiles": []
+}

@@ -27,6 +27,7 @@ export interface SchemaArgument {
   description: string;
   type: string;
   valueStyle: ArgumentValueStyle;
+  position?: "before-prefix" | "after-prefix";
 }
 
 export interface SchemaAction {
@@ -43,6 +44,8 @@ export interface ToolSchema {
   sourcePath: string;
   executablePath: string;
   installedName: string;
+  family?: string;
+  commandPrefix?: string[];
   metadata: SchemaMetadata;
   actions: SchemaAction[];
   arguments: SchemaArgument[];
@@ -76,6 +79,12 @@ export interface ParameterState {
 }
 
 export interface FavoriteCommand {
+  id?: string;
+  title?: string;
+  notes?: string;
+  category?: "general" | "powershell" | "linux";
+  updatedAt?: string;
+  builderSnapshot?: BuilderSnapshot | null;
   command: string;
   tool: string;
   action: string;
@@ -84,7 +93,16 @@ export interface FavoriteCommand {
   tags: SchemaTag[];
 }
 
+export interface BuilderSnapshot {
+  schema: ToolSchema;
+  selectedActionName: string;
+  options: OptionState[];
+  parameters: ParameterState[];
+}
+
 export interface HelpImportDraft {
+  family?: string;
+  commandPrefix?: string[];
   toolName: string;
   description: string;
   installedName: string;

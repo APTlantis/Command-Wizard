@@ -34,4 +34,10 @@ describe("favorites", () => {
     expect(text).toContain("rsync -a src dest");
     expect(text).toContain("# action: clone");
   });
+  it("exports exact multiline command bytes and searches titles, notes and tags", () => {
+    const entry = { ...favorites[0], title: "My title", notes: "Some notes\nsecond note", command: "  first\r\nsecond  \n", tags: [{ name: "special", color: "red" }] };
+    expect(exportFavoritesText([entry])).toContain(entry.command);
+    expect(exportFavoritesText([entry])).toContain("# second note");
+    for (const query of ["My title", "Some notes", "special"]) expect(filterFavorites([entry], query, "All")).toHaveLength(1);
+  });
 });

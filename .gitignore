@@ -381,3 +381,13 @@ devcert.pfx
 
 # Local IDE state
 /.idea/go.imports.xml
+/docs/schemas/
+/docs/schema-evidence/
+/schemas/
+
+# Reviewed catalog and evidence are repository deliverables; temporary references stay excluded.
+!/schemas/
+!/schemas/*.toml
+!/schemas/README.md
+!/docs/schema-evidence/
+!/docs/schema-evidence/*.json

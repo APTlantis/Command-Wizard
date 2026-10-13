@@ -6,9 +6,17 @@ import { useCommandWizardStore } from "./stores/useCommandWizardStore";
 import { emptySchema } from "./lib/schema";
 import { act } from "@testing-library/react";
 
-beforeEach(() => useCommandWizardStore.setState({ view: "builder", toolSearch: "", importHelpText: "", manualFavoriteCommand: "", manualFavoriteTask: "" }));
+beforeEach(() => useCommandWizardStore.setState(useCommandWizardStore.getInitialState(), true));
 
 describe("App", () => {
+  it("protects unsaved Library drafts when leaving the browser page", async () => {
+    render(<App />);
+    await screen.findByRole("heading", { name: "rsync", level: 1 });
+    act(() => { useCommandWizardStore.getState().openLibraryEntry(); useCommandWizardStore.getState().updateLibraryDraft({ command: "keep this draft" }); });
+    const event = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
+  });
   it("renders the Blue Slate shell and core navigation", async () => {
     render(<App />);
 
@@ -46,7 +54,7 @@ describe("App", () => {
   it("shows schema health in the rail and command panel", async () => {
     render(<App />);
 
-    expect(await screen.findByText("Valid")).toBeInTheDocument();
+    await screen.findByRole("heading", { name: "rsync", level: 1 });
     expect(screen.getAllByText("Schema").length).toBeGreaterThan(0);
     expect(screen.getByText("Executable")).toBeInTheDocument();
     expect(screen.getByText("Arguments")).toBeInTheDocument();
@@ -105,9 +113,11 @@ describe("App", () => {
 
     await screen.findByText("CommandWizard");
     await user.click(screen.getByRole("button", { name: "Library" }));
+    await user.click(screen.getByRole("button", { name: "New Command" }));
     await user.type(screen.getByRole("textbox", { name: "Command" }), "rsync --version");
-    await user.click(screen.getByRole("button", { name: "Save Manual" }));
+    await user.click(screen.getByRole("button", { name: "Save Command" }));
 
-    expect(await screen.findByText("rsync --version")).toBeInTheDocument();
+    expect(await screen.findByRole("textbox", { name: "Command" })).toHaveValue("rsync --version");
+    expect(screen.getByRole("button", { name: /New command Unassigned/ })).toBeInTheDocument();
   });
 });

@@ -32,3 +32,5 @@ The final packaged executable was launched and closed after verification. Its pr
 The installer candidate is unsigned (`Get-AuthenticodeSignature`: `NotSigned`). Version remains 2.0.0; this is a local maintenance candidate, not a new release declaration.
 
 No parent manifest or drive navigation changes are needed: project identity, portfolio ownership, standards, and discovery paths remain unchanged. The project manifest root was reconciled to the physical `D:\DRS\Command-Wizard` directory. Pre-existing user edits were retained.
+
+The subsequent [catalog and Library candidate](Catalog-and-Library-2026-10-12.md) has its own copied artifacts and verification record. Tauri reuses the target build-output paths; hashes above identify this earlier category build, not the subsequent candidate. The historical release installer remains unchanged.

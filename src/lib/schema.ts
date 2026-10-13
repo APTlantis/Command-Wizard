@@ -32,19 +32,24 @@ export const emptySchema = (): ToolSchema => ({
   tags: []
 });
 
-const quote = (value: string) => `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+const quote = (value: string) => JSON.stringify(value);
 
-const parseValue = (value: string): string | boolean => {
+const parseValue = (value: string): string | boolean | string[] => {
   const trimmed = value.trim();
+  if (trimmed.startsWith("[")) {
+    const tokens = JSON.parse(trimmed);
+    if (!Array.isArray(tokens) || !tokens.every((token) => typeof token === "string")) throw new Error("Command prefix must be an array of strings.");
+    return tokens;
+  }
   if (trimmed === "true") return true;
   if (trimmed === "false") return false;
   if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
-    return trimmed.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+    return JSON.parse(trimmed) as string;
   }
   return trimmed;
 };
 
-const toValueStyle = (value: string | boolean | undefined): ArgumentValueStyle => {
+const toValueStyle = (value: string | boolean | string[] | undefined): ArgumentValueStyle => {
   if (typeof value !== "string") return "space";
   const normalized = value.toLowerCase();
   if (normalized === "equals" || normalized === "equals_separated") return "equals";
@@ -58,7 +63,7 @@ const stringifyValueStyle = (style: ArgumentValueStyle): string | null => {
   return null;
 };
 
-type TomlTable = Record<string, string | boolean>;
+type TomlTable = Record<string, string | boolean | string[]>;
 type Section =
   | { kind: "tool"; table: TomlTable }
   | { kind: "metadata"; table: TomlTable }
@@ -83,7 +88,8 @@ const applyTable = (section: Section | null) => {
       long: String(table.long ?? ""),
       description: String(table.description ?? ""),
       type: String(table.type ?? "boolean"),
-      valueStyle: toValueStyle(table.value_style)
+      valueStyle: toValueStyle(table.value_style),
+      position: table.position === "before-prefix" ? "before-prefix" : "after-prefix"
     });
     return;
   }
@@ -153,6 +159,8 @@ export const parseSchemaToml = (tomlText: string, sourcePath = ""): ToolSchema =
   schema.notes = String(toolTable.notes ?? "");
   schema.executablePath = String(toolTable.executable_path ?? "");
   schema.installedName = String(toolTable.installed_name ?? "");
+  schema.family = String(toolTable.family ?? "");
+  schema.commandPrefix = Array.isArray(toolTable.command_prefix) ? toolTable.command_prefix : [];
   schema.metadata = {
     version: String(metadataTable.version ?? ""),
     author: String(metadataTable.author ?? ""),
@@ -177,6 +185,7 @@ const serializeArgument = (argument: SchemaArgument): string[] => {
   ].filter(Boolean);
   const style = stringifyValueStyle(argument.valueStyle);
   if (style) lines.push(`value_style = ${quote(style)}`);
+  if (argument.position === "before-prefix") lines.push('position = "before-prefix"');
   return lines;
 };
 
@@ -209,6 +218,8 @@ export const serializeSchemaToml = (schema: ToolSchema): string => {
   if (schema.notes.trim()) lines.push(`notes = ${quote(schema.notes)}`);
   if (schema.executablePath.trim()) lines.push(`executable_path = ${quote(schema.executablePath)}`);
   if (schema.installedName.trim()) lines.push(`installed_name = ${quote(schema.installedName)}`);
+  if (schema.family?.trim()) lines.push(`family = ${quote(schema.family)}`);
+  if (schema.commandPrefix?.length) lines.push(`command_prefix = ${JSON.stringify(schema.commandPrefix)}`);
 
   lines.push(...metadataLines(schema.metadata));
 
@@ -242,11 +253,16 @@ export const validateSchema = (schema: ToolSchema): string[] => {
   for (const argument of schema.arguments) {
     const key = argument.long || argument.flag;
     if (!key.trim()) issues.push("Every argument needs a flag or long flag.");
-    if (keys.has(key.toLowerCase())) issues.push(`Duplicate argument: ${key}`);
-    keys.add(key.toLowerCase());
+    if (keys.has(key)) issues.push(`Duplicate argument: ${key}`);
+    keys.add(key);
   }
   for (const parameter of schema.parameters) {
     if (!parameter.name.trim()) issues.push("Every parameter needs a name.");
   }
+  for (const action of schema.actions) {
+    issues.push(...validateSchema({ ...schema, actions: [], arguments: action.arguments, parameters: action.parameters }).map((issue) => `${action.name}: ${issue}`));
+  }
+  if (schema.commandPrefix?.some((token) => !token.trim() || /\s/.test(token))) issues.push("Each command prefix token must be one nonempty word.");
+  if (schema.commandPrefix?.length && !schema.installedName.trim()) issues.push("Split commands require an installed executable name.");
   return issues;
 };

@@ -22,8 +22,8 @@ const argumentIssues = (schema: ToolSchema): string[] => {
   for (const argument of schema.arguments) {
     const key = argument.long || argument.flag;
     if (!key.trim()) issues.push("Every argument needs a flag or long flag.");
-    if (keys.has(key.toLowerCase())) issues.push(`Duplicate argument: ${key}`);
-    keys.add(key.toLowerCase());
+    if (keys.has(key)) issues.push(`Duplicate argument: ${key}`);
+    keys.add(key);
   }
   return issues;
 };

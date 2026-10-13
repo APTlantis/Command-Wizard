@@ -1,0 +1,73 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { normalizeEntry } from "./library";
+import { emptySchema } from "./schema";
+import { runtime } from "./runtime";
+import { commandPreviewForState, selectSchemaHealth, useCommandWizardStore as store } from "../stores/useCommandWizardStore";
+
+beforeEach(() => { vi.restoreAllMocks(); store.setState(store.getInitialState(), true); vi.spyOn(window, "confirm").mockReturnValue(true); });
+describe("Library", () => {
+  it("normalizes legacy history without dropping command bytes or tags", () => {
+    const old = { command: "  first\nsecond  \n", tool: "git", task: "My task", action: "", createdAt: "2026-01-01", tags: [{ name: "work", color: "red" }] };
+    const converted = normalizeEntry(old, 3);
+    expect(converted.command).toBe(old.command);
+    expect(converted.title).toBe("My task");
+    expect(converted.id).toBe("legacy:2026-01-01:3");
+    expect(converted.tags).toEqual(old.tags);
+    expect(converted.builderSnapshot).toBeNull();
+  });
+  it("keeps manual entries unassigned and preserves multiline text across editing and duplication", async () => {
+    const save = vi.spyOn(runtime, "saveFavorites").mockResolvedValue();
+    store.getState().openLibraryEntry();
+    expect(store.getState().libraryDraft?.tool).toBe("");
+    store.getState().updateLibraryDraft({ title: "Deploy notes", command: "  one\n two\n", notes: "Useful", category: "linux" });
+    await store.getState().commitLibraryDraft();
+    const id = store.getState().libraryDraft!.id;
+    expect(save.mock.calls[0][0][0].command).toBe("  one\n two\n");
+    store.getState().updateLibraryDraft({ title: "Renamed" });
+    await store.getState().commitLibraryDraft();
+    expect(store.getState().favorites).toHaveLength(1);
+    expect(store.getState().favorites[0].id).toBe(id);
+    store.getState().duplicateLibraryEntry();
+    await store.getState().commitLibraryDraft();
+    expect(store.getState().favorites).toHaveLength(2);
+    expect(store.getState().favorites[1].id).not.toBe(id);
+    await store.getState().removeFavorite(id);
+    expect(store.getState().favorites).toHaveLength(1);
+  });
+  it("retains the draft on failure and honors canceled discard", async () => {
+    vi.spyOn(runtime, "saveFavorites").mockRejectedValue(new Error("Disk unavailable"));
+    store.getState().openLibraryEntry();
+    store.getState().updateLibraryDraft({ title: "Keep me", command: "echo example" });
+    await store.getState().commitLibraryDraft();
+    expect(store.getState().libraryError).toBe("Disk unavailable");
+    expect(store.getState().favorites).toHaveLength(0);
+    expect(store.getState().libraryDirty).toBe(true);
+    vi.mocked(window.confirm).mockReturnValue(false);
+    store.getState().setView("library");
+    expect(store.getState().view).toBe("builder");
+    store.getState().cancelLibraryDraft();
+    expect(store.getState().libraryDraft?.title).toBe("Keep me");
+  });
+  it("reopens the saved schema independently of a changed installed schema", async () => {
+    vi.spyOn(runtime, "saveFavorites").mockResolvedValue();
+    const schema = { ...emptySchema(), name: "dotnet build", installedName: "dotnet", family: "dotnet", commandPrefix: ["build"], parameters: [{ name: "project", required: true, type: "path" }] };
+    store.setState({ schemas: [schema] });
+    store.getState().selectSchema(schema.name);
+    store.getState().updateParameter("project-0", "demo.csproj");
+    await store.getState().saveFavorite();
+    expect(store.getState().favorites).toHaveLength(0);
+    await store.getState().commitLibraryDraft();
+    const check = vi.spyOn(runtime, "checkExecutables").mockResolvedValue([{ schemaName: schema.name, status: "available", message: "Original dotnet executable", checkedAt: "" }]);
+    store.setState({ schemas: [{ ...schema, installedName: "different-executable", commandPrefix: ["publish"] }], executableHealth: { [schema.name]: { schemaName: schema.name, status: "missing", message: "Changed executable missing", checkedAt: "" } } });
+    store.getState().reopenLibraryEntry();
+    await Promise.resolve();
+    expect(commandPreviewForState(store.getState())).toBe("dotnet build demo.csproj");
+    expect(check.mock.calls[0][0][0].installedName).toBe("dotnet");
+    expect(selectSchemaHealth(store.getState()).checks.find((check) => check.id === "executable")?.message).toBe("Original dotnet executable");
+    expect(store.getState().schemas[0].commandPrefix).toEqual(["publish"]);
+    store.getState().updateLibraryDraft({ notes: "Metadata edit" });
+    expect(store.getState().libraryDraft?.builderSnapshot).toBeTruthy();
+    store.getState().updateLibraryDraft({ command: "dotnet build other.csproj" });
+    expect(store.getState().libraryDraft?.builderSnapshot).toBeNull();
+  });
+});

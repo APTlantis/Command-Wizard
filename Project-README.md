@@ -19,6 +19,12 @@ CLI import can copy a user-selected script into CommandWizard's managed local da
 
 ## Current state
 
+### Command catalog and Library — 2026-10-12
+
+The repository now contains a portable catalog of 401 reviewed command schemas, with a complete inventory of the 466 temporary references, preserved help/version evidence, and a separate optional-extension list. Command families use display labels, executable identity, and fixed prefixes independently. Catalog files are delivered under `schemas`; this pass does not install them into application data.
+
+Library now has a saved-command list and detail editor, shared save review for Builder and pasted commands, titles/notes/categories/tags, exact multiline storage, duplication, editing, filters, exports, and temporary Builder snapshot restoration. Existing history converts in memory and is backed up before the first subsequent atomic save. See [catalog guide](schemas/README.md), [Library contracts](docs/Command-Library-Contract.md), and [candidate verification](docs/Catalog-and-Library-2026-10-12.md). Previous release records below remain historical.
+
 ### Command category maintenance — 2026-10-12
 
 Builder now contains General, PowerShell, and Linux (WSL) tabs. PowerShell is for cmdlets such as `Move-Item` and `Invoke-WebRequest`, not every executable run from a PowerShell session. Common Linux utilities and schemas tagged `linux` or `wsl` are grouped in Linux; other applications default to General. Use **Schema → Command Category → Save Schema** to explicitly assign an installed application to a tab. This choice survives desktop reloads through a reserved `workspace:general`, `workspace:powershell`, or `workspace:linux` schema tag; existing user tags are preserved.

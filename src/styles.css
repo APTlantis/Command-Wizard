@@ -1,4 +1,7 @@
 @import "tailwindcss";
+
+.atl-library-dialog { width: min(56rem, calc(100vw - 2rem)); max-height: calc(100vh - 3rem); padding: 0; border: none; border-radius: .5rem; color: var(--color-atl-archive); background: var(--color-atl-abyss); }
+.atl-library-dialog::backdrop { background: rgb(5 9 19 / .8); }
 @plugin "daisyui" {
   themes: false;
   include: tab;
