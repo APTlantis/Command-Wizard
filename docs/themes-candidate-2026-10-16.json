@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-16",
+  "windowTitle": "CommandWizard",
+  "launchVerified": true,
+  "commandDataFilesChecked": 402,
+  "commandDataUnchanged": true,
+  "artifacts": [
+    {
+      "path": "D:\\DRS\\Command-Wizard\\artifacts\\candidates\\themes-2026-10-16\\CommandWizard_2.0.0_x64-setup.exe",
+      "bytes": 3804894,
+      "sha256": "B7DB4C32A97D68C47ABD24DA5D9A9D3B913F5FD620E5084C0A22387D6BA39DE0"
+    },
+    {
+      "path": "D:\\DRS\\Command-Wizard\\artifacts\\candidates\\themes-2026-10-16\\commandwizard.exe",
+      "bytes": 17029120,
+      "sha256": "DE69638CD8BD3AA37DFB4DC26D9A2C51B61499F42D0429BE36C33F348174EC84"
+    }
+  ],
+  "limits": "Native launch only; native interactive theme workflow and installer install/uninstall not tested."
+}

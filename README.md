@@ -1,5 +1,7 @@
 # CommandWizard
 
+**Themes:** Choose a theme in the header or use **Customize theme** to make, import, and export your own. Blue Slate and seven supplied Aptlantis themes are bundled. See the [theme guide](docs/Themes.md) and [dated verification](docs/Themes-2026-10-16.md).
+
 The 2026-10-12 maintenance candidate adds a repository-only [portable command catalog](schemas/README.md) and a first-class [Command Library](docs/Command-Library-Contract.md), including save review, editing, multiline text, and saved Builder snapshots. See the [delivery and verification record](docs/Catalog-and-Library-2026-10-12.md) for current evidence and browser/native limits. The historical v2.0.0 release evidence is retained.
 
 ![status](https://img.shields.io/badge/status-active-blue)

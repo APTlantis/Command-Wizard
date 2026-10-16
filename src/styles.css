@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .atl-library-dialog { width: min(56rem, calc(100vw - 2rem)); max-height: calc(100vh - 3rem); padding: 0; border: none; border-radius: .5rem; color: var(--color-atl-archive); background: var(--color-atl-abyss); }
-.atl-library-dialog::backdrop { background: rgb(5 9 19 / .8); }
+.atl-library-dialog::backdrop { background: color-mix(in oklab, var(--color-atl-void) 80%, transparent); }
 @plugin "daisyui" {
   themes: false;
   include: tab;
@@ -70,30 +70,30 @@
   .atl-shell {
     min-height: 100vh;
     background:
-      linear-gradient(rgb(225 231 219 / 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(225 231 219 / 0.026) 1px, transparent 1px),
-      radial-gradient(circle at 20% 5%, rgb(0 216 255 / 0.08), transparent 32rem),
+      linear-gradient(color-mix(in oklab, var(--color-atl-archive) 3.5%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--color-atl-archive) 2.6%, transparent) 1px, transparent 1px),
+      radial-gradient(circle at 20% 5%, color-mix(in oklab, var(--color-atl-cyan) 8%, transparent), transparent 32rem),
       linear-gradient(180deg, var(--color-atl-void), var(--color-atl-deep) 62%, var(--color-atl-void));
     background-size: 32px 32px, 32px 32px, auto, auto;
   }
 
   .atl-panel {
-    border: 1px solid rgb(83 96 106 / 0.58);
+    border: 1px solid color-mix(in oklab, var(--color-atl-ridge) 58%, transparent);
     border-radius: 0.5rem;
     background:
-      linear-gradient(180deg, rgb(225 231 219 / 0.055), transparent 42%),
+      linear-gradient(180deg, color-mix(in oklab, var(--color-atl-archive) 5.5%, transparent), transparent 42%),
       color-mix(in oklab, var(--color-atl-abyss) 88%, black);
-    box-shadow: 0 20px 70px rgb(0 0 0 / 0.32), inset 0 1px 0 rgb(225 231 219 / 0.07);
+    box-shadow: 0 20px 70px rgb(0 0 0 / 0.32), inset 0 1px 0 color-mix(in oklab, var(--color-atl-archive) 7%, transparent);
   }
 
   .atl-card {
-    border: 1px solid rgb(54 72 90 / 0.76);
+    border: 1px solid color-mix(in oklab, var(--color-atl-ridge) 76%, transparent);
     border-radius: 0.5rem;
     background: color-mix(in oklab, var(--color-atl-abyss) 90%, black);
   }
 
   .atl-card-soft {
-    border: 1px solid rgb(83 96 106 / 0.44);
+    border: 1px solid color-mix(in oklab, var(--color-atl-ridge) 44%, transparent);
     border-radius: 0.5rem;
     background: color-mix(in oklab, var(--color-atl-void) 72%, var(--color-atl-navy));
   }
@@ -115,25 +115,25 @@
   }
 
   .atl-button {
-    border: 1px solid rgb(0 216 255 / 0.58);
-    background: linear-gradient(180deg, rgb(0 216 255 / 0.18), rgb(0 216 255 / 0.04)), var(--color-atl-navy);
+    border: 1px solid color-mix(in oklab, var(--color-atl-cyan) 58%, transparent);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--color-atl-cyan) 18%, transparent), color-mix(in oklab, var(--color-atl-cyan) 4%, transparent)), var(--color-atl-navy);
     color: var(--color-atl-archive);
   }
 
   .atl-button-secondary {
-    border: 1px solid rgb(33 198 184 / 0.5);
-    background: rgb(33 198 184 / 0.12);
+    border: 1px solid color-mix(in oklab, var(--color-atl-teal) 50%, transparent);
+    background: color-mix(in oklab, var(--color-atl-teal) 12%, transparent);
     color: var(--color-atl-silver);
   }
 
   .atl-button-warning {
-    border: 1px solid rgb(255 136 77 / 0.55);
-    background: rgb(255 136 77 / 0.1);
+    border: 1px solid color-mix(in oklab, var(--color-atl-amber) 55%, transparent);
+    background: color-mix(in oklab, var(--color-atl-amber) 10%, transparent);
     color: var(--color-atl-amber);
   }
 
   .atl-button-ghost {
-    border: 1px solid rgb(54 72 90 / 0.8);
+    border: 1px solid color-mix(in oklab, var(--color-atl-ridge) 80%, transparent);
     background: transparent;
     color: var(--color-atl-silver);
   }
@@ -149,9 +149,9 @@
   .atl-input {
     width: 100%;
     min-height: 2.25rem;
-    border: 1px solid rgb(83 96 106 / 0.58);
+    border: 1px solid color-mix(in oklab, var(--color-atl-ridge) 58%, transparent);
     border-radius: 0.5rem;
-    background: rgb(5 9 19 / 0.64);
+    background: color-mix(in oklab, var(--color-atl-void) 64%, transparent);
     color: var(--color-atl-archive);
     padding: 0.45rem 0.55rem;
   }
@@ -166,9 +166,9 @@
     grid-template-columns: auto minmax(0, 1fr);
     gap: 0.75rem;
     overflow: auto;
-    border: 1px solid rgb(83 96 106 / 0.58);
+    border: 1px solid color-mix(in oklab, var(--color-atl-ridge) 58%, transparent);
     border-radius: 0.5rem;
-    background: rgb(5 9 19 / 0.64);
+    background: color-mix(in oklab, var(--color-atl-void) 64%, transparent);
     color: var(--color-atl-archive);
     padding: 0.65rem 0.75rem;
     font-family: var(--font-atl-mono);
@@ -178,7 +178,7 @@
 
   .atl-structured-field:focus-within {
     border-color: var(--color-atl-cyan-bright);
-    box-shadow: 0 0 0 1px rgb(101 242 255 / 0.28);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-atl-cyan-bright) 28%, transparent);
   }
 
   .atl-structured-gutter,
@@ -186,7 +186,7 @@
     min-width: 2ch;
     user-select: none;
     text-align: right;
-    color: rgb(152 162 162 / 0.72);
+    color: color-mix(in oklab, var(--color-atl-frost) 72%, transparent);
     font-variant-numeric: tabular-nums;
   }
 
@@ -207,7 +207,7 @@
   }
 
   .atl-structured-textarea::placeholder {
-    color: rgb(152 162 162 / 0.58);
+    color: color-mix(in oklab, var(--color-atl-frost) 58%, transparent);
   }
 
   .atl-label {
@@ -224,7 +224,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    border: 1px solid rgb(83 96 106 / 0.58);
+    border: 1px solid color-mix(in oklab, var(--color-atl-ridge) 58%, transparent);
     border-radius: 999px;
     padding: 0.15rem 0.55rem;
     color: var(--color-atl-silver);
@@ -233,20 +233,20 @@
   }
 
   .atl-chip-active {
-    border-color: rgb(0 216 255 / 0.55);
+    border-color: color-mix(in oklab, var(--color-atl-cyan) 55%, transparent);
     color: var(--color-atl-cyan-bright);
-    background: rgb(0 216 255 / 0.12);
+    background: color-mix(in oklab, var(--color-atl-cyan) 12%, transparent);
   }
 
   .atl-chip-warning {
-    border-color: rgb(217 164 65 / 0.55);
+    border-color: color-mix(in oklab, var(--color-atl-brass) 55%, transparent);
     color: var(--color-atl-brass);
-    background: rgb(217 164 65 / 0.12);
+    background: color-mix(in oklab, var(--color-atl-brass) 12%, transparent);
   }
 
   .atl-code {
     overflow: auto;
-    border: 1px solid rgb(33 198 184 / 0.32);
+    border: 1px solid color-mix(in oklab, var(--color-atl-teal) 32%, transparent);
     border-radius: 0.5rem;
     background: color-mix(in oklab, var(--color-atl-void) 88%, var(--color-atl-navy));
     color: var(--color-atl-silver);
@@ -318,7 +318,7 @@
   .atl-code-prism .token.string,
   .atl-code-prism .token.char,
   .atl-code-prism .token.builtin {
-    color: var(--color-atl-green);
+    color: var(--cw-string, var(--color-atl-green));
   }
 
   .atl-code-prism .token.operator,
@@ -335,3 +335,10 @@
     color: var(--color-atl-violet);
   }
 }
+
+/* Theme roles override vendor Prism and cover selection and status colors. */
+::selection { background: var(--cw-selection, var(--color-atl-navy)); color: var(--cw-selectionText, var(--color-atl-archive)); }
+.atl-code-prism .token.keyword { color: var(--cw-keyword, var(--color-atl-violet)); }
+.atl-code-prism .token.number { color: var(--cw-number, var(--color-atl-cyan-bright)); }
+.atl-code-prism .token.function { color: var(--cw-function, var(--color-atl-cyan)); }
+.atl-code-prism .token.operator { color: var(--cw-operator, var(--color-atl-silver)); }

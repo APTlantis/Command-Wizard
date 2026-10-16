@@ -65,6 +65,10 @@ Evidence & Logs
 
 ## Primary Workspaces
 
+### Approved theme maintenance — 2026-10-16
+
+Allow users to choose and create themes from the supplied Desktop MD resources. Use a versioned numeric OKLCH color-role contract, preserve source identity and hashes, retain Blue Slate as the default, and support local persistence plus portable JSON import/export. Themes contain color data only. No generated-command execution or external publication is part of this scope. Details and evidence are in `docs/Themes.md` and `docs/Themes-2026-10-16.md`.
+
 ### Approved maintenance direction — 2026-10-12
 
 The operator's tested workflow now calls for General, PowerShell cmdlet, and Linux (WSL) categories within Builder, with explicit category assignment for installed apps. Command Preview belongs only to Builder. Parameters precede Options, empty parameter sections disappear, and an odd final parameter fills the row. CLI navigation is hidden pending a separate decision about removing that feature. Generic readiness/review badges are removed from the command preview and tool rail. Generated commands remain copy/export only; this maintenance work does not authorize execution features in the original roadmap.

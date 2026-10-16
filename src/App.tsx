@@ -27,6 +27,8 @@ import { useEffect, useMemo, useState } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauriRuntime } from "./lib/runtime";
 import { IconButton } from "./components/IconButton";
+import { ThemePicker, ThemeStudio } from "./components/ThemeStudio";
+import { useThemeStore, selectedTheme } from "./stores/useThemeStore";
 import { LibraryWorkspace, LibrarySaveDialog } from "./components/LibraryWorkspace";
 import { asSizedIcon } from "./components/muiIcon";
 import { cliPresets } from "./lib/cliPresets";
@@ -764,6 +766,7 @@ function SchemaView() {
 
 function SettingsView() {
   const state = useCommandWizardStore();
+  const theme = selectedTheme(useThemeStore());
   return (
     <section className="atl-panel min-h-0 overflow-auto p-5">
       <div className="flex items-center justify-between gap-4">
@@ -773,9 +776,10 @@ function SettingsView() {
         </div>
         <IconButton icon={RefreshCw} label="Refresh Log" onClick={state.refreshLog} />
       </div>
+      <ThemeStudio />
       <div className="mt-5 grid gap-4 md:grid-cols-3">
         <Evidence label="Data Root" value={state.dataRoot} />
-        <Evidence label="Visual System" value="Blue Slate active dependency" />
+        <Evidence label="Visual System" value={`${theme.name} · Blue Slate default`} />
         <Evidence label="Project" value="Tauri rebuild is the canonical implementation" />
         <Evidence label="Schemas" value={`${state.schemas.length} loaded`} />
         <Evidence label="Favorites" value={`${state.favorites.length} saved`} />
@@ -816,13 +820,13 @@ export default function App() {
       void getCurrentWindow().onCloseRequested((event) => {
         const current = useCommandWizardStore.getState();
         if (current.librarySaving) { event.preventDefault(); current.setStatus("Wait for the command save to finish before closing."); }
-        else if (current.libraryDirty && !window.confirm("Discard unsaved command changes and close CommandWizard?")) event.preventDefault();
+        else if ((current.libraryDirty || useThemeStore.getState().editorDirty) && !window.confirm("Discard unsaved changes and close CommandWizard?")) event.preventDefault();
       }).then((stop) => { if (disposed) stop(); else unlisten = stop; }).catch(() => useCommandWizardStore.getState().setStatus("Could not enable the unsaved-command close prompt."));
       return () => { disposed = true; unlisten?.(); };
     }
     const protectDraft = (event: BeforeUnloadEvent) => {
       const current = useCommandWizardStore.getState();
-      if (current.libraryDirty || current.librarySaving) { event.preventDefault(); event.returnValue = ""; }
+      if (current.libraryDirty || current.librarySaving || useThemeStore.getState().editorDirty) { event.preventDefault(); event.returnValue = ""; }
     };
     window.addEventListener("beforeunload", protectDraft);
     return () => window.removeEventListener("beforeunload", protectDraft);
@@ -836,8 +840,12 @@ export default function App() {
           </div>
           <div>
             <h1 className="text-lg font-semibold leading-tight">CommandWizard</h1>
-            <p className="text-xs text-atl-frost">Tauri v2 rebuild · Blue Slate · copy/export only</p>
+            <p className="text-xs text-atl-frost">Local command workspace · copy/export only</p>
           </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <ThemePicker />
+          <button className="atl-button-ghost" onClick={() => state.setView("settings")}>Customize theme</button>
         </div>
         <nav className="flex flex-wrap gap-1">
           {nav.map((item) => (
@@ -846,7 +854,7 @@ export default function App() {
               className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold ${
                 state.view === item.id ? "bg-atl-cyan/15 text-atl-cyan-bright" : "text-atl-silver hover:bg-atl-slate/50"
               }`}
-              onClick={() => state.setView(item.id)}
+              onClick={() => { if (state.view !== item.id && useThemeStore.getState().editorDirty && !window.confirm("Discard unsaved theme changes?")) return; state.setView(item.id); }}
             >
               <item.icon size={15} />
               {item.label}

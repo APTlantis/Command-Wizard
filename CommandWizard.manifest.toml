@@ -3,7 +3,7 @@ schema = "APTlantis Entity Manifest"
 schema_version = "2.4"
 manifest_type = "project"
 canonical_name = "CommandWizard.manifest.toml"
-last_updated = "2026-10-12"
+last_updated = "2026-10-16"
 maintainer = "Herb"
 
 [entity]
@@ -127,6 +127,7 @@ path = "D:\\.city_hall\\blue.slate\\README.md"
 adoption_level = "active"
 framework_profile = "Tauri / Vite / React"
 token_source = "D:\\.city_hall\\blue.slate\\spec\\tokens\\BlueSlate.Tokens.json"
+user_themes = "Blue Slate remains the default project profile; seven supplied Aptlantis alternatives and custom OKLCH themes are available. See docs/Themes.md."
 
 [implementation]
 name = "CommandWizard Tauri rebuild"
@@ -253,3 +254,23 @@ proof = "docs/schema-evidence/desktop-candidate.json"
 data_safety = "466 reference hashes unchanged; 47 live schema/history files unchanged across launch; no live additions. Historical release installer unchanged."
 proof_limits = "Browser interactions and isolated Windows Rust persistence tests are separate from native launch. Native interactive workflow and installer install/uninstall not verified."
 release_record = "Historical v2.0.0 release metadata retained; maintenance candidate is not an installed, signed or promoted release."
+
+[contracts.themes]
+guide = "docs/Themes.md"
+schema = "public/themes/theme.schema.json"
+bundle = "src/themes/bundled.json"
+mapping = "src/themes/mapping.json"
+source_snapshots = "src/themes/sources"
+storage = "WebView localStorage key commandwizard.themes.v1; separate from command data"
+built_in_count = 8
+color_role_count = 23
+boundary = "Color data only; explicit import review; no CSS or code execution; no generated-command execution."
+
+[maintenance.themes]
+date = "2026-10-16"
+status = "local-candidate-verified-with-known-test-failure"
+record = "docs/Themes-2026-10-16.md"
+release_record = "Historical v2.0.0 release metadata and installer retained."
+checks = "Frontend and Tauri NSIS build passed; 441 unit tests passed and 1 existing mongoimport catalog test failed; 10 Rust tests and 22 browser checks passed; packaged executable launched."
+proof = "docs/themes-candidate-2026-10-16.json"
+proof_limits = "Native launch only; native interactive theme workflow, signing and installer install/uninstall not verified."

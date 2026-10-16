@@ -19,6 +19,10 @@ CLI import can copy a user-selected script into CommandWizard's managed local da
 
 ## Current state
 
+### User themes — 2026-10-16
+
+The header now provides eight selectable themes (Blue Slate plus the seven supplied Desktop MD families) and **Customize theme** opens a local editor with OKLCH roles, named copies, import/export, persistence, and contrast warnings. See the [theme contract and recovery guide](docs/Themes.md) and [verification record](docs/Themes-2026-10-16.md). Blue Slate remains the default project profile; this maintenance candidate does not replace the historical release or install into live application data.
+
 ### Schema metadata maintenance — 2026-10-14
 
 The restored 401-schema working copy now has descriptive colored tags from the supplied app vocabulary, with existing tags, command fields, and category routing preserved. See [metadata maintenance](docs/Metadata-Tags-2026-10-14.md) for hashes, recovery, and proof limits. The earlier absence of `schemas/` was part of the operator’s temporary application-data maintenance workflow.

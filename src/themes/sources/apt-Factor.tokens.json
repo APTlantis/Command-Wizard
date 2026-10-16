@@ -1,0 +1,1629 @@
+{
+  "target": "typora",
+  "budget": 40,
+  "named_count": 40,
+  "unique_count": 30,
+  "tokens": {
+    "background": {
+      "hex": "#020B14",
+      "rgb": [
+        2,
+        11,
+        20
+      ],
+      "oklch": [
+        0.1439154184565298,
+        0.026570633116272273,
+        242.6074216239515
+      ],
+      "weight": 204.0,
+      "origin": {
+        "source": "color_02",
+        "purpose": "app background",
+        "requested_oklch": [
+          0.1439154184565298,
+          0.026570633116272273,
+          242.6074216239515
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "foreground": {
+      "hex": "#FEFEFD",
+      "rgb": [
+        254,
+        254,
+        253
+      ],
+      "oklch": [
+        0.9967476164609226,
+        0.0013150600748799489,
+        106.4234400220998
+      ],
+      "weight": 798.0,
+      "origin": {
+        "source": "color_32",
+        "purpose": "body text across surfaces",
+        "requested_oklch": [
+          0.9967476164609226,
+          0.0013150600748799489,
+          106.4234400220998
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "panel": {
+      "hex": "#0B131A",
+      "rgb": [
+        11,
+        19,
+        26
+      ],
+      "oklch": [
+        0.18229086884302986,
+        0.018879905518875698,
+        245.4957943877125
+      ],
+      "requested_oklch": [
+        0.1839154184565298,
+        0.01859944318139059,
+        242.6074216239515
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_02",
+        "purpose": "panel background",
+        "requested_oklch": [
+          0.1839154184565298,
+          0.01859944318139059,
+          242.6074216239515
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "elevated": {
+      "hex": "#182027",
+      "rgb": [
+        24,
+        32,
+        39
+      ],
+      "oklch": [
+        0.2388829235692204,
+        0.01780093452381549,
+        245.049295306025
+      ],
+      "requested_oklch": [
+        0.24,
+        0.01859944318139059,
+        242.6074216239515
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_02",
+        "purpose": "elevated background",
+        "requested_oklch": [
+          0.24,
+          0.01859944318139059,
+          242.6074216239515
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "muted": {
+      "hex": "#2F9490",
+      "rgb": [
+        47,
+        148,
+        144
+      ],
+      "oklch": [
+        0.6088019706775989,
+        0.0907910700325867,
+        191.2197470933539
+      ],
+      "requested_oklch": [
+        0.6094425959929364,
+        0.09097775635458037,
+        190.97814015954856
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_17",
+        "purpose": "secondary text",
+        "requested_oklch": [
+          0.6094425959929364,
+          0.09097775635458037,
+          190.97814015954856
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "primary": {
+      "hex": "#F7D34D",
+      "rgb": [
+        247,
+        211,
+        77
+      ],
+      "oklch": [
+        0.8742266514987819,
+        0.15254806746647975,
+        93.75519139966194
+      ],
+      "weight": 239.0,
+      "origin": {
+        "source": "color_27",
+        "purpose": "link and active accent",
+        "requested_oklch": [
+          0.8742266514987819,
+          0.15254806746647975,
+          93.75519139966194
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "secondary": {
+      "hex": "#698D9D",
+      "rgb": [
+        105,
+        141,
+        157
+      ],
+      "oklch": [
+        0.6222631505747245,
+        0.046785123039772385,
+        227.09458565376207
+      ],
+      "requested_oklch": [
+        0.6227368689672415,
+        0.0467094406991438,
+        226.4134246550946
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_05",
+        "purpose": "secondary accent",
+        "requested_oklch": [
+          0.6227368689672415,
+          0.0467094406991438,
+          226.4134246550946
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "selection": {
+      "hex": "#382D00",
+      "rgb": [
+        56,
+        45,
+        0
+      ],
+      "oklch": [
+        0.3005997979835433,
+        0.06165676601271927,
+        94.34617939117983
+      ],
+      "requested_oklch": [
+        0.3,
+        0.08390143710656386,
+        93.75519139966194
+      ],
+      "gamut_mapped": true,
+      "origin": {
+        "source": "color_27",
+        "purpose": "selection background",
+        "requested_oklch": [
+          0.3,
+          0.08390143710656386,
+          93.75519139966194
+        ],
+        "gamut_mapped": true,
+        "derived": true
+      }
+    },
+    "selection_text": {
+      "hex": "#FEFEFD",
+      "rgb": [
+        254,
+        254,
+        253
+      ],
+      "oklch": [
+        0.9967476164609226,
+        0.0013150600748799489,
+        106.4234400220998
+      ],
+      "weight": 798.0,
+      "origin": {
+        "source": "color_32",
+        "purpose": "selection text",
+        "requested_oklch": [
+          0.9967476164609226,
+          0.0013150600748799489,
+          106.4234400220998
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "border": {
+      "hex": "#188581",
+      "rgb": [
+        24,
+        133,
+        129
+      ],
+      "oklch": [
+        0.5594425959929363,
+        0.09097775635458037,
+        190.97814015954856
+      ],
+      "weight": 15.0,
+      "origin": {
+        "source": "color_17",
+        "purpose": "control boundary",
+        "requested_oklch": [
+          0.5594425959929363,
+          0.09097775635458037,
+          190.97814015954856
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "warning": {
+      "hex": "#A68530",
+      "rgb": [
+        166,
+        133,
+        48
+      ],
+      "oklch": [
+        0.6320875248394502,
+        0.1090062665307827,
+        87.18361472667459
+      ],
+      "weight": 87.0,
+      "origin": {
+        "source": "color_18",
+        "purpose": "status text",
+        "requested_oklch": [
+          0.6320875248394502,
+          0.1090062665307827,
+          87.18361472667459
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "error": {
+      "hex": "#B07D30",
+      "rgb": [
+        176,
+        125,
+        48
+      ],
+      "oklch": [
+        0.6269819588960014,
+        0.11142055590754578,
+        73.9892407898291
+      ],
+      "requested_oklch": [
+        0.6268855207311903,
+        0.1114459841026209,
+        73.77374724978061
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_16",
+        "purpose": "status text",
+        "requested_oklch": [
+          0.6268855207311903,
+          0.1114459841026209,
+          73.77374724978061
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "success": {
+      "hex": "#FEF26E",
+      "rgb": [
+        254,
+        242,
+        110
+      ],
+      "oklch": [
+        0.945737357772213,
+        0.1523675070936176,
+        104.10826020413043
+      ],
+      "weight": 133.0,
+      "origin": {
+        "source": "color_30",
+        "purpose": "status text",
+        "requested_oklch": [
+          0.945737357772213,
+          0.1523675070936176,
+          104.10826020413043
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "info": {
+      "hex": "#698D9D",
+      "rgb": [
+        105,
+        141,
+        157
+      ],
+      "oklch": [
+        0.6222631505747245,
+        0.046785123039772385,
+        227.09458565376207
+      ],
+      "requested_oklch": [
+        0.6227368689672415,
+        0.0467094406991438,
+        226.4134246550946
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_05",
+        "purpose": "status text",
+        "requested_oklch": [
+          0.6227368689672415,
+          0.0467094406991438,
+          226.4134246550946
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "keyword": {
+      "hex": "#D69D21",
+      "rgb": [
+        214,
+        157,
+        33
+      ],
+      "oklch": [
+        0.731691519944413,
+        0.14303665775029745,
+        80.74182283551652
+      ],
+      "weight": 154.0,
+      "origin": {
+        "source": "color_21",
+        "purpose": "code text",
+        "requested_oklch": [
+          0.731691519944413,
+          0.14303665775029745,
+          80.74182283551652
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "string": {
+      "hex": "#698D9D",
+      "rgb": [
+        105,
+        141,
+        157
+      ],
+      "oklch": [
+        0.6222631505747245,
+        0.046785123039772385,
+        227.09458565376207
+      ],
+      "requested_oklch": [
+        0.6227368689672415,
+        0.0467094406991438,
+        226.4134246550946
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_05",
+        "purpose": "code text",
+        "requested_oklch": [
+          0.6227368689672415,
+          0.0467094406991438,
+          226.4134246550946
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "number": {
+      "hex": "#FDEDBF",
+      "rgb": [
+        253,
+        237,
+        191
+      ],
+      "oklch": [
+        0.9475680404571584,
+        0.0618584657704203,
+        91.14274745761686
+      ],
+      "weight": 244.0,
+      "origin": {
+        "source": "color_31",
+        "purpose": "code text",
+        "requested_oklch": [
+          0.9475680404571584,
+          0.0618584657704203,
+          91.14274745761686
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "function": {
+      "hex": "#2F9490",
+      "rgb": [
+        47,
+        148,
+        144
+      ],
+      "oklch": [
+        0.6088019706775989,
+        0.0907910700325867,
+        191.2197470933539
+      ],
+      "requested_oklch": [
+        0.6094425959929364,
+        0.09097775635458037,
+        190.97814015954856
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_17",
+        "purpose": "code text",
+        "requested_oklch": [
+          0.6094425959929364,
+          0.09097775635458037,
+          190.97814015954856
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "type": {
+      "hex": "#F7C646",
+      "rgb": [
+        247,
+        198,
+        70
+      ],
+      "oklch": [
+        0.8481521405532998,
+        0.149954661372958,
+        87.16323586745294
+      ],
+      "weight": 158.0,
+      "origin": {
+        "source": "color_24",
+        "purpose": "code text",
+        "requested_oklch": [
+          0.8481521405532998,
+          0.149954661372958,
+          87.16323586745294
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "operator": {
+      "hex": "#B07D30",
+      "rgb": [
+        176,
+        125,
+        48
+      ],
+      "oklch": [
+        0.6269819588960014,
+        0.11142055590754578,
+        73.9892407898291
+      ],
+      "requested_oklch": [
+        0.6268855207311903,
+        0.1114459841026209,
+        73.77374724978061
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_16",
+        "purpose": "code text",
+        "requested_oklch": [
+          0.6268855207311903,
+          0.1114459841026209,
+          73.77374724978061
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "constant": {
+      "hex": "#FEF26E",
+      "rgb": [
+        254,
+        242,
+        110
+      ],
+      "oklch": [
+        0.945737357772213,
+        0.1523675070936176,
+        104.10826020413043
+      ],
+      "weight": 133.0,
+      "origin": {
+        "source": "color_30",
+        "purpose": "code text",
+        "requested_oklch": [
+          0.945737357772213,
+          0.1523675070936176,
+          104.10826020413043
+        ],
+        "gamut_mapped": false,
+        "derived": false
+      }
+    },
+    "comment": {
+      "hex": "#2F9490",
+      "rgb": [
+        47,
+        148,
+        144
+      ],
+      "oklch": [
+        0.6088019706775989,
+        0.0907910700325867,
+        191.2197470933539
+      ],
+      "requested_oklch": [
+        0.6094425959929364,
+        0.09097775635458037,
+        190.97814015954856
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_17",
+        "purpose": "code text",
+        "requested_oklch": [
+          0.6094425959929364,
+          0.09097775635458037,
+          190.97814015954856
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "primary_hover": {
+      "hex": "#FFE794",
+      "rgb": [
+        255,
+        231,
+        148
+      ],
+      "oklch": [
+        0.9295166880364982,
+        0.10589797402117197,
+        93.84070547843778
+      ],
+      "requested_oklch": [
+        0.9292266514987819,
+        0.15254806746647975,
+        93.75519139966194
+      ],
+      "gamut_mapped": true,
+      "origin": {
+        "source": "color_27",
+        "purpose": "primary hover text",
+        "requested_oklch": [
+          0.9292266514987819,
+          0.15254806746647975,
+          93.75519139966194
+        ],
+        "gamut_mapped": true,
+        "derived": true
+      }
+    },
+    "secondary_hover": {
+      "hex": "#799EAE",
+      "rgb": [
+        121,
+        158,
+        174
+      ],
+      "oklch": [
+        0.6774803242190481,
+        0.04696213651360868,
+        226.28885958429427
+      ],
+      "requested_oklch": [
+        0.6772631505747245,
+        0.0467094406991438,
+        226.4134246550946
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_05",
+        "purpose": "secondary hover text",
+        "requested_oklch": [
+          0.6772631505747245,
+          0.0467094406991438,
+          226.4134246550946
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "warning_hover": {
+      "hex": "#B79643",
+      "rgb": [
+        183,
+        150,
+        67
+      ],
+      "oklch": [
+        0.6871168466975529,
+        0.10876064672331738,
+        87.46451782701551
+      ],
+      "requested_oklch": [
+        0.6870875248394502,
+        0.1090062665307827,
+        87.18361472667459
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_18",
+        "purpose": "warning hover text",
+        "requested_oklch": [
+          0.6870875248394502,
+          0.1090062665307827,
+          87.18361472667459
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "error_hover": {
+      "hex": "#C28E43",
+      "rgb": [
+        194,
+        142,
+        67
+      ],
+      "oklch": [
+        0.6828283471324011,
+        0.11128503303223262,
+        73.90352390237209
+      ],
+      "requested_oklch": [
+        0.6819819588960014,
+        0.1114459841026209,
+        73.77374724978061
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_16",
+        "purpose": "error hover text",
+        "requested_oklch": [
+          0.6819819588960014,
+          0.1114459841026209,
+          73.77374724978061
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "success_hover": {
+      "hex": "#FFFDE4",
+      "rgb": [
+        255,
+        253,
+        228
+      ],
+      "oklch": [
+        0.9890387828218322,
+        0.032645761955071566,
+        103.24246612439069
+      ],
+      "requested_oklch": [
+        0.99,
+        0.1523675070936176,
+        104.10826020413043
+      ],
+      "gamut_mapped": true,
+      "origin": {
+        "source": "color_30",
+        "purpose": "success hover text",
+        "requested_oklch": [
+          0.99,
+          0.1523675070936176,
+          104.10826020413043
+        ],
+        "gamut_mapped": true,
+        "derived": true
+      }
+    },
+    "info_hover": {
+      "hex": "#799EAE",
+      "rgb": [
+        121,
+        158,
+        174
+      ],
+      "oklch": [
+        0.6774803242190481,
+        0.04696213651360868,
+        226.28885958429427
+      ],
+      "requested_oklch": [
+        0.6772631505747245,
+        0.0467094406991438,
+        226.4134246550946
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_05",
+        "purpose": "info hover text",
+        "requested_oklch": [
+          0.6772631505747245,
+          0.0467094406991438,
+          226.4134246550946
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "primary_pressed": {
+      "hex": "#E5C136",
+      "rgb": [
+        229,
+        193,
+        54
+      ],
+      "oklch": [
+        0.819490054915782,
+        0.1525504233911891,
+        93.63582546242723
+      ],
+      "requested_oklch": [
+        0.8192266514987818,
+        0.15254806746647975,
+        93.75519139966194
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_27",
+        "purpose": "primary pressed text",
+        "requested_oklch": [
+          0.8192266514987818,
+          0.15254806746647975,
+          93.75519139966194
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "secondary_pressed": {
+      "hex": "#688C9B",
+      "rgb": [
+        104,
+        140,
+        155
+      ],
+      "oklch": [
+        0.6185637658621699,
+        0.04605266958094494,
+        225.5112393248665
+      ],
+      "requested_oklch": [
+        0.6182351952439724,
+        0.04667451585376234,
+        225.70025639012434
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_05",
+        "purpose": "secondary pressed text",
+        "requested_oklch": [
+          0.6182351952439724,
+          0.04667451585376234,
+          225.70025639012434
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "warning_pressed": {
+      "hex": "#A4832E",
+      "rgb": [
+        164,
+        131,
+        46
+      ],
+      "oklch": [
+        0.625579118623712,
+        0.10877373403936173,
+        87.08598127796915
+      ],
+      "requested_oklch": [
+        0.6260331467684057,
+        0.10903969863076549,
+        86.81374988924281
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_18",
+        "purpose": "warning pressed text",
+        "requested_oklch": [
+          0.6260331467684057,
+          0.10903969863076549,
+          86.81374988924281
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "error_pressed": {
+      "hex": "#B27E32",
+      "rgb": [
+        178,
+        126,
+        50
+      ],
+      "oklch": [
+        0.631468310728346,
+        0.11147199193244244,
+        73.24444977334343
+      ],
+      "requested_oklch": [
+        0.6314001674570895,
+        0.11164289666073919,
+        73.22689380541367
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_16",
+        "purpose": "error pressed text",
+        "requested_oklch": [
+          0.6314001674570895,
+          0.11164289666073919,
+          73.22689380541367
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "success_pressed": {
+      "hex": "#ECE05A",
+      "rgb": [
+        236,
+        224,
+        90
+      ],
+      "oklch": [
+        0.8917666079838179,
+        0.15288661558962469,
+        104.198477567562
+      ],
+      "requested_oklch": [
+        0.890737357772213,
+        0.1523675070936176,
+        104.10826020413043
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_30",
+        "purpose": "success pressed text",
+        "requested_oklch": [
+          0.890737357772213,
+          0.1523675070936176,
+          104.10826020413043
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "info_pressed": {
+      "hex": "#688C9B",
+      "rgb": [
+        104,
+        140,
+        155
+      ],
+      "oklch": [
+        0.6185637658621699,
+        0.04605266958094494,
+        225.5112393248665
+      ],
+      "requested_oklch": [
+        0.6182351952439724,
+        0.04667451585376234,
+        225.70025639012434
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_05",
+        "purpose": "info pressed text",
+        "requested_oklch": [
+          0.6182351952439724,
+          0.04667451585376234,
+          225.70025639012434
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "primary_subdued": {
+      "hex": "#CEB45A",
+      "rgb": [
+        206,
+        180,
+        90
+      ],
+      "oklch": [
+        0.7742351066541046,
+        0.11403809957587674,
+        93.47426589272769
+      ],
+      "requested_oklch": [
+        0.7742266514987819,
+        0.11441105059985981,
+        93.75519139966194
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_27",
+        "purpose": "primary subdued text",
+        "requested_oklch": [
+          0.7742266514987819,
+          0.11441105059985981,
+          93.75519139966194
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "secondary_subdued": {
+      "hex": "#718C97",
+      "rgb": [
+        113,
+        140,
+        151
+      ],
+      "oklch": [
+        0.6230270941302015,
+        0.034873345098047154,
+        224.58889207924028
+      ],
+      "requested_oklch": [
+        0.6217237769678401,
+        0.03508653343363285,
+        225.71470242353328
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_05",
+        "purpose": "secondary subdued text",
+        "requested_oklch": [
+          0.6217237769678401,
+          0.03508653343363285,
+          225.71470242353328
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "warning_subdued": {
+      "hex": "#9C844A",
+      "rgb": [
+        156,
+        132,
+        74
+      ],
+      "oklch": [
+        0.6226099656889837,
+        0.0822698721525354,
+        87.5064040318381
+      ],
+      "requested_oklch": [
+        0.6219595811507926,
+        0.08216800297160631,
+        86.80721062810056
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_18",
+        "purpose": "warning subdued text",
+        "requested_oklch": [
+          0.6219595811507926,
+          0.08216800297160631,
+          86.80721062810056
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "error_subdued": {
+      "hex": "#A7804D",
+      "rgb": [
+        167,
+        128,
+        77
+      ],
+      "oklch": [
+        0.6263600163016001,
+        0.08336696399147425,
+        72.74070294487433
+      ],
+      "requested_oklch": [
+        0.6270777611685343,
+        0.08368231025644692,
+        73.47226077166063
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_16",
+        "purpose": "error subdued text",
+        "requested_oklch": [
+          0.6270777611685343,
+          0.08368231025644692,
+          73.47226077166063
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "success_subdued": {
+      "hex": "#D8D075",
+      "rgb": [
+        216,
+        208,
+        117
+      ],
+      "oklch": [
+        0.8447065687997187,
+        0.11352175170363642,
+        104.11286192921726
+      ],
+      "requested_oklch": [
+        0.845737357772213,
+        0.1142756303202132,
+        104.10826020413043
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_30",
+        "purpose": "success subdued text",
+        "requested_oklch": [
+          0.845737357772213,
+          0.1142756303202132,
+          104.10826020413043
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    },
+    "info_subdued": {
+      "hex": "#718C97",
+      "rgb": [
+        113,
+        140,
+        151
+      ],
+      "oklch": [
+        0.6230270941302015,
+        0.034873345098047154,
+        224.58889207924028
+      ],
+      "requested_oklch": [
+        0.6217237769678401,
+        0.03508653343363285,
+        225.71470242353328
+      ],
+      "gamut_mapped": false,
+      "origin": {
+        "source": "color_05",
+        "purpose": "info subdued text",
+        "requested_oklch": [
+          0.6217237769678401,
+          0.03508653343363285,
+          225.71470242353328
+        ],
+        "gamut_mapped": false,
+        "derived": true
+      }
+    }
+  },
+  "checks": [
+    {
+      "foreground": "foreground",
+      "background": "background",
+      "ratio": 19.62122188876633,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "muted",
+      "background": "background",
+      "ratio": 5.430534572795736,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "primary",
+      "background": "background",
+      "ratio": 13.55902649652445,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "secondary",
+      "background": "background",
+      "ratio": 5.5606666530507605,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "selection_text",
+      "background": "selection",
+      "ratio": 13.481697146301475,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "border",
+      "background": "background",
+      "ratio": 4.4417307442091625,
+      "required": 3,
+      "pass": true
+    },
+    {
+      "foreground": "warning",
+      "background": "background",
+      "ratio": 5.675586342589777,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "error",
+      "background": "background",
+      "ratio": 5.489944188678665,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "success",
+      "background": "background",
+      "ratio": 17.104701499553222,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "info",
+      "background": "background",
+      "ratio": 5.5606666530507605,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "keyword",
+      "background": "background",
+      "ratio": 8.207344614045521,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "string",
+      "background": "background",
+      "ratio": 5.5606666530507605,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "number",
+      "background": "background",
+      "ratio": 17.012587054343538,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "function",
+      "background": "background",
+      "ratio": 5.430534572795736,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "type",
+      "background": "background",
+      "ratio": 12.372148768210712,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "operator",
+      "background": "background",
+      "ratio": 5.489944188678665,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "constant",
+      "background": "background",
+      "ratio": 17.104701499553222,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "comment",
+      "background": "background",
+      "ratio": 5.430534572795736,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "primary_hover",
+      "background": "background",
+      "ratio": 16.13336851409584,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "secondary_hover",
+      "background": "background",
+      "ratio": 6.897186165004793,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "warning_hover",
+      "background": "background",
+      "ratio": 7.031467414300044,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "error_hover",
+      "background": "background",
+      "ratio": 6.830765441080515,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "success_hover",
+      "background": "background",
+      "ratio": 19.256489052732004,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "info_hover",
+      "background": "background",
+      "ratio": 6.897186165004793,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "primary_pressed",
+      "background": "background",
+      "ratio": 11.327276237845439,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "secondary_pressed",
+      "background": "background",
+      "ratio": 5.481171639734088,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "warning_pressed",
+      "background": "background",
+      "ratio": 5.52979508367193,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "error_pressed",
+      "background": "background",
+      "ratio": 5.585417027057181,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "success_pressed",
+      "background": "background",
+      "ratio": 14.498762535383758,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "info_pressed",
+      "background": "background",
+      "ratio": 5.481171639734088,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "primary_subdued",
+      "background": "background",
+      "ratio": 9.712597228621815,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "secondary_subdued",
+      "background": "background",
+      "ratio": 5.563314078989077,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "warning_subdued",
+      "background": "background",
+      "ratio": 5.4811969169773125,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "error_subdued",
+      "background": "background",
+      "ratio": 5.504778505547966,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "success_subdued",
+      "background": "background",
+      "ratio": 12.445557606843847,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "info_subdued",
+      "background": "background",
+      "ratio": 5.563314078989077,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "foreground",
+      "background": "panel",
+      "ratio": 18.541759740860904,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "muted",
+      "background": "panel",
+      "ratio": 5.1317735401007765,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "primary",
+      "background": "panel",
+      "ratio": 12.813076221438644,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "keyword",
+      "background": "panel",
+      "ratio": 7.755817288382387,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "string",
+      "background": "panel",
+      "ratio": 5.254746399810831,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "number",
+      "background": "panel",
+      "ratio": 16.076639035039815,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "function",
+      "background": "panel",
+      "ratio": 5.1317735401007765,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "type",
+      "background": "panel",
+      "ratio": 11.691494609196054,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "operator",
+      "background": "panel",
+      "ratio": 5.187914734071412,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "constant",
+      "background": "panel",
+      "ratio": 16.163685801108876,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "comment",
+      "background": "panel",
+      "ratio": 5.1317735401007765,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "foreground",
+      "background": "elevated",
+      "ratio": 16.324390127335302,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "muted",
+      "background": "elevated",
+      "ratio": 4.518075656493866,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "primary",
+      "background": "elevated",
+      "ratio": 11.280787686462387,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "keyword",
+      "background": "elevated",
+      "ratio": 6.828315593631318,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "string",
+      "background": "elevated",
+      "ratio": 4.626342453445026,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "number",
+      "background": "elevated",
+      "ratio": 14.154067964001781,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "function",
+      "background": "elevated",
+      "ratio": 4.518075656493866,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "type",
+      "background": "elevated",
+      "ratio": 10.293333633892315,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "operator",
+      "background": "elevated",
+      "ratio": 4.567503044476432,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "constant",
+      "background": "elevated",
+      "ratio": 14.230704992444277,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "comment",
+      "background": "elevated",
+      "ratio": 4.518075656493866,
+      "required": 4.5,
+      "pass": true
+    }
+  ],
+  "omitted_canonical": [
+    "color_01",
+    "color_03",
+    "color_04",
+    "color_06",
+    "color_07",
+    "color_08",
+    "color_09",
+    "color_10",
+    "color_11",
+    "color_12",
+    "color_13",
+    "color_14",
+    "color_15",
+    "color_19",
+    "color_20",
+    "color_22",
+    "color_23",
+    "color_25",
+    "color_26",
+    "color_28",
+    "color_29"
+  ],
+  "aliases": [
+    [
+      "foreground",
+      "selection_text"
+    ],
+    [
+      "muted",
+      "function",
+      "comment"
+    ],
+    [
+      "secondary",
+      "info",
+      "string"
+    ],
+    [
+      "error",
+      "operator"
+    ],
+    [
+      "success",
+      "constant"
+    ],
+    [
+      "secondary_hover",
+      "info_hover"
+    ],
+    [
+      "secondary_pressed",
+      "info_pressed"
+    ],
+    [
+      "secondary_subdued",
+      "info_subdued"
+    ]
+  ],
+  "contrast_failures": 0,
+  "examples": [
+    "examples.html",
+    "examples.md"
+  ],
+  "palette_artifacts": {
+    "palette": "apt-factor-typora-palette.toml",
+    "swatch": "apt-factor-typora-swatch.png"
+  }
+}

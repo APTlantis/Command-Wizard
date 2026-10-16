@@ -58,6 +58,11 @@ path = "docs/"
 status = "present"
 reason = "Supporting project documentation or examples"
 
+[[secondary]]
+path = "docs/Themes.md"
+status = "present"
+reason = "Theme role contract, supplied resource provenance, persistence and recovery"
+
 [[exclude]]
 path = "node_modules/"
 status = "present"

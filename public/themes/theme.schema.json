@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CommandWizard Theme v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "mode",
+    "colors"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,79}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "\\S"
+    },
+    "mode": {
+      "enum": [
+        "dark",
+        "light"
+      ]
+    },
+    "colors": {
+      "type": "object",
+      "required": [
+        "canvas",
+        "background",
+        "panel",
+        "elevated",
+        "accentSurface",
+        "border",
+        "muted",
+        "secondaryText",
+        "text",
+        "primary",
+        "focus",
+        "secondary",
+        "warning",
+        "error",
+        "success",
+        "info",
+        "keyword",
+        "string",
+        "number",
+        "function",
+        "operator",
+        "selection",
+        "selectionText"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "canvas": {
+          "$ref": "#/$defs/oklch"
+        },
+        "background": {
+          "$ref": "#/$defs/oklch"
+        },
+        "panel": {
+          "$ref": "#/$defs/oklch"
+        },
+        "elevated": {
+          "$ref": "#/$defs/oklch"
+        },
+        "accentSurface": {
+          "$ref": "#/$defs/oklch"
+        },
+        "border": {
+          "$ref": "#/$defs/oklch"
+        },
+        "muted": {
+          "$ref": "#/$defs/oklch"
+        },
+        "secondaryText": {
+          "$ref": "#/$defs/oklch"
+        },
+        "text": {
+          "$ref": "#/$defs/oklch"
+        },
+        "primary": {
+          "$ref": "#/$defs/oklch"
+        },
+        "focus": {
+          "$ref": "#/$defs/oklch"
+        },
+        "secondary": {
+          "$ref": "#/$defs/oklch"
+        },
+        "warning": {
+          "$ref": "#/$defs/oklch"
+        },
+        "error": {
+          "$ref": "#/$defs/oklch"
+        },
+        "success": {
+          "$ref": "#/$defs/oklch"
+        },
+        "info": {
+          "$ref": "#/$defs/oklch"
+        },
+        "keyword": {
+          "$ref": "#/$defs/oklch"
+        },
+        "string": {
+          "$ref": "#/$defs/oklch"
+        },
+        "number": {
+          "$ref": "#/$defs/oklch"
+        },
+        "function": {
+          "$ref": "#/$defs/oklch"
+        },
+        "operator": {
+          "$ref": "#/$defs/oklch"
+        },
+        "selection": {
+          "$ref": "#/$defs/oklch"
+        },
+        "selectionText": {
+          "$ref": "#/$defs/oklch"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source",
+        "sha256",
+        "mapping"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$"
+        },
+        "mapping": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    }
+  },
+  "$defs": {
+    "oklch": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.4
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 360
+        }
+      ],
+      "items": false
+    }
+  }
+}
