@@ -391,3 +391,4 @@ devcert.pfx
 !/schemas/README.md
 !/docs/schema-evidence/
 !/docs/schema-evidence/*.json
+/schemas/

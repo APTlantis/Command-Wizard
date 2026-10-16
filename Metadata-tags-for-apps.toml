@@ -1,0 +1,1342 @@
+# ─────────────────────────────────────────────────────────────
+# LANGUAGES
+# ─────────────────────────────────────────────────────────────
+
+name = "rust"
+color = "#CE6B32"
+
+name = "go"
+color = "#00A7C4"
+
+name = "python"
+color = "#3776AB"
+
+name = "javascript"
+color = "#D4B830"
+
+name = "typescript"
+color = "#3178C6"
+
+name = "java"
+color = "#E76F00"
+
+name = "kotlin"
+color = "#8B5CF6"
+
+name = "c"
+color = "#5C6BC0"
+
+name = "cpp"
+color = "#4F72C4"
+
+name = "csharp"
+color = "#7C3AED"
+
+name = "visual-basic"
+color = "#6D4AFF"
+
+name = "powershell"
+color = "#3977C3"
+
+name = "shell"
+color = "#64748B"
+
+name = "bash"
+color = "#4EAA25"
+
+name = "ruby"
+color = "#CC342D"
+
+name = "php"
+color = "#777BB4"
+
+name = "swift"
+color = "#F05138"
+
+name = "dart"
+color = "#00A8D6"
+
+name = "lua"
+color = "#5656A8"
+
+name = "haskell"
+color = "#8F4E8B"
+
+name = "scala"
+color = "#DC322F"
+
+name = "elixir"
+color = "#6E4A7E"
+
+name = "erlang"
+color = "#A90533"
+
+name = "zig"
+color = "#E29B38"
+
+name = "nim"
+color = "#D6B94C"
+
+name = "assembly"
+color = "#7D8590"
+
+name = "sql"
+color = "#336791"
+
+name = "html"
+color = "#E34F26"
+
+name = "css"
+color = "#2965F1"
+
+name = "webassembly"
+color = "#654FF0"
+
+
+# ─────────────────────────────────────────────────────────────
+# APPLICATION TYPES
+# ─────────────────────────────────────────────────────────────
+
+name = "cli-tool"
+color = "#8A8D91"
+
+name = "desktop-app"
+color = "#3B82F6"
+
+name = "web-app"
+color = "#06B6D4"
+
+name = "mobile-app"
+color = "#14B8A6"
+
+name = "terminal-app"
+color = "#64748B"
+
+name = "console-app"
+color = "#718096"
+
+name = "gui"
+color = "#4F86F7"
+
+name = "library"
+color = "#7C6EE6"
+
+name = "framework"
+color = "#6366F1"
+
+name = "sdk"
+color = "#8B5CF6"
+
+name = "api"
+color = "#0EA5E9"
+
+name = "service"
+color = "#0891B2"
+
+name = "daemon"
+color = "#475569"
+
+name = "microservice"
+color = "#22A6B3"
+
+name = "background-service"
+color = "#52677D"
+
+name = "windows-service"
+color = "#3973B8"
+
+name = "plugin"
+color = "#A855F7"
+
+name = "extension"
+color = "#9333EA"
+
+name = "browser-extension"
+color = "#7C3AED"
+
+name = "developer-tool"
+color = "#2563EB"
+
+name = "internal-tool"
+color = "#F59E0B"
+
+name = "productivity"
+color = "#10B981"
+
+name = "utility"
+color = "#6B7280"
+
+name = "prototype"
+color = "#F97316"
+
+name = "proof-of-concept"
+color = "#FB923C"
+
+name = "reference-implementation"
+color = "#0D9488"
+
+
+# ─────────────────────────────────────────────────────────────
+# SYSTEMS AND OPERATING SYSTEMS
+# ─────────────────────────────────────────────────────────────
+
+name = "system"
+color = "#6B7280"
+
+name = "systems-programming"
+color = "#B45F35"
+
+name = "operating-system"
+color = "#475569"
+
+name = "windows"
+color = "#258FFA"
+
+name = "linux"
+color = "#D9A21B"
+
+name = "macos"
+color = "#8B95A5"
+
+name = "unix"
+color = "#64748B"
+
+name = "wsl"
+color = "#4F8B3A"
+
+name = "kernel"
+color = "#7A6254"
+
+name = "driver"
+color = "#536779"
+
+name = "firmware"
+color = "#805D3A"
+
+name = "boot"
+color = "#A16207"
+
+name = "uefi"
+color = "#8B6F47"
+
+name = "hardware"
+color = "#596779"
+
+name = "device-management"
+color = "#607D8B"
+
+name = "process-management"
+color = "#526D82"
+
+name = "memory-management"
+color = "#5B6FA8"
+
+name = "disk-management"
+color = "#8B7355"
+
+name = "filesystem"
+color = "#4D7C8A"
+
+name = "storage"
+color = "#3F7C85"
+
+name = "registry"
+color = "#64748B"
+
+name = "ipc"
+color = "#667085"
+
+name = "named-pipes"
+color = "#5B7083"
+
+name = "conpty"
+color = "#486581"
+
+name = "virtualization"
+color = "#576CBC"
+
+name = "emulation"
+color = "#7868A6"
+
+
+# ─────────────────────────────────────────────────────────────
+# SECURITY AND CRYPTOGRAPHY
+# ─────────────────────────────────────────────────────────────
+
+name = "security"
+color = "#E5484D"
+
+name = "cryptography"
+color = "#7C3AED"
+
+name = "encryption"
+color = "#6D28D9"
+
+name = "decryption"
+color = "#7E22CE"
+
+name = "hashing"
+color = "#9333EA"
+
+name = "digital-signatures"
+color = "#A855F7"
+
+name = "pgp"
+color = "#6B46C1"
+
+name = "post-quantum"
+color = "#9C36B5"
+
+name = "key-management"
+color = "#8B5CF6"
+
+name = "certificate-management"
+color = "#7357C7"
+
+name = "authentication"
+color = "#DC4C64"
+
+name = "authorization"
+color = "#C2415D"
+
+name = "identity"
+color = "#B83280"
+
+name = "access-control"
+color = "#D14343"
+
+name = "secrets-management"
+color = "#BE3455"
+
+name = "vulnerability-scanning"
+color = "#EF4444"
+
+name = "malware-analysis"
+color = "#B91C1C"
+
+name = "threat-analysis"
+color = "#C53030"
+
+name = "security-audit"
+color = "#D64545"
+
+name = "code-signing"
+color = "#805AD5"
+
+name = "integrity"
+color = "#9F4BC1"
+
+name = "provenance"
+color = "#A04DAD"
+
+name = "checksums"
+color = "#8D5BB7"
+
+name = "sbom"
+color = "#A855A1"
+
+name = "sandboxing"
+color = "#9D4EDD"
+
+name = "privacy"
+color = "#DB2777"
+
+name = "forensics"
+color = "#9B2C2C"
+
+
+# ─────────────────────────────────────────────────────────────
+# DATA AND DATABASES
+# ─────────────────────────────────────────────────────────────
+
+name = "data"
+color = "#2563EB"
+
+name = "database"
+color = "#336791"
+
+name = "sql-database"
+color = "#2F6690"
+
+name = "nosql"
+color = "#3F8F72"
+
+name = "mongodb"
+color = "#3E8E41"
+
+name = "postgresql"
+color = "#336791"
+
+name = "mysql"
+color = "#4479A1"
+
+name = "sqlite"
+color = "#3C8DBC"
+
+name = "duckdb"
+color = "#D6A900"
+
+name = "redis"
+color = "#C9443D"
+
+name = "elasticsearch"
+color = "#22A6A1"
+
+name = "data-modeling"
+color = "#3B82C4"
+
+name = "data-processing"
+color = "#2878B5"
+
+name = "data-analysis"
+color = "#3273B8"
+
+name = "data-pipeline"
+color = "#1677A7"
+
+name = "etl"
+color = "#0E7490"
+
+name = "data-ingestion"
+color = "#0891B2"
+
+name = "data-export"
+color = "#0284C7"
+
+name = "data-import"
+color = "#0369A1"
+
+name = "migration"
+color = "#4C7F9E"
+
+name = "indexing"
+color = "#3F73A0"
+
+name = "search"
+color = "#2D87B7"
+
+name = "full-text-search"
+color = "#1976A3"
+
+name = "query-engine"
+color = "#356D9A"
+
+name = "analytics"
+color = "#4F6FD5"
+
+name = "reporting"
+color = "#5067C5"
+
+name = "visualization"
+color = "#5B5FC7"
+
+name = "metadata"
+color = "#3B77A8"
+
+name = "catalog"
+color = "#447E9B"
+
+name = "schema"
+color = "#5577A8"
+
+
+# ─────────────────────────────────────────────────────────────
+# STRUCTURED DATA AND DOCUMENT FORMATS
+# ─────────────────────────────────────────────────────────────
+
+name = "structured-data"
+color = "#0F766E"
+
+name = "json"
+color = "#B59A30"
+
+name = "yaml"
+color = "#CB3A3A"
+
+name = "toml"
+color = "#9C6B4A"
+
+name = "xml"
+color = "#E17B25"
+
+name = "csv"
+color = "#2E8B57"
+
+name = "markdown"
+color = "#64748B"
+
+name = "html-processing"
+color = "#D95D39"
+
+name = "document-processing"
+color = "#496F9C"
+
+name = "serialization"
+color = "#287F78"
+
+name = "deserialization"
+color = "#328A80"
+
+name = "schema-validation"
+color = "#26968B"
+
+name = "configuration"
+color = "#708090"
+
+name = "manifest"
+color = "#5C7C8A"
+
+name = "templating"
+color = "#7C6F9F"
+
+name = "parser"
+color = "#52796F"
+
+name = "generator"
+color = "#3A8D7D"
+
+name = "transformer"
+color = "#479F8B"
+
+name = "converter"
+color = "#548C7C"
+
+
+# ─────────────────────────────────────────────────────────────
+# WEB DEVELOPMENT
+# ─────────────────────────────────────────────────────────────
+
+name = "web"
+color = "#0EA5E9"
+
+name = "frontend"
+color = "#38BDF8"
+
+name = "backend"
+color = "#2563EB"
+
+name = "full-stack"
+color = "#4F46E5"
+
+name = "react"
+color = "#149ECA"
+
+name = "nextjs"
+color = "#565B66"
+
+name = "vue"
+color = "#42B883"
+
+name = "svelte"
+color = "#E95520"
+
+name = "angular"
+color = "#DD2C45"
+
+name = "tailwind"
+color = "#06B6D4"
+
+name = "bootstrap"
+color = "#7952B3"
+
+name = "web-components"
+color = "#29A3A3"
+
+name = "rest-api"
+color = "#0891B2"
+
+name = "graphql"
+color = "#D9469D"
+
+name = "websocket"
+color = "#168AAD"
+
+name = "http"
+color = "#2584A8"
+
+name = "https"
+color = "#1D8A7A"
+
+name = "webview"
+color = "#397FB5"
+
+name = "webview2"
+color = "#2B82C9"
+
+name = "static-site"
+color = "#4C9A8A"
+
+name = "server-rendering"
+color = "#2374AB"
+
+name = "client-rendering"
+color = "#3A86C8"
+
+name = "progressive-web-app"
+color = "#5A67D8"
+
+name = "accessibility"
+color = "#0F9D8B"
+
+name = "seo"
+color = "#16A085"
+
+name = "opengraph"
+color = "#4267B2"
+
+name = "json-ld"
+color = "#7C61A8"
+
+
+# ─────────────────────────────────────────────────────────────
+# DESKTOP FRAMEWORKS
+# ─────────────────────────────────────────────────────────────
+
+name = "dotnet"
+color = "#6D4AFF"
+
+name = "wpf"
+color = "#4B72C2"
+
+name = "winui"
+color = "#3B82F6"
+
+name = "windows-app-sdk"
+color = "#3973C6"
+
+name = "tauri"
+color = "#D28B2C"
+
+name = "electron"
+color = "#47848F"
+
+name = "qt"
+color = "#41A85F"
+
+name = "gtk"
+color = "#557EBF"
+
+name = "avalonia"
+color = "#8B5CF6"
+
+name = "native-app"
+color = "#596A7B"
+
+name = "cross-platform"
+color = "#2F8F9D"
+
+name = "system-tray"
+color = "#718096"
+
+name = "installer"
+color = "#3F72AF"
+
+name = "packaging"
+color = "#5271A3"
+
+name = "msix"
+color = "#356FC0"
+
+name = "nsis"
+color = "#677B8F"
+
+name = "portable-app"
+color = "#3D8B7D"
+
+
+# ─────────────────────────────────────────────────────────────
+# DEVOPS AND INFRASTRUCTURE
+# ─────────────────────────────────────────────────────────────
+
+name = "devops"
+color = "#0E7490"
+
+name = "infrastructure"
+color = "#475569"
+
+name = "docker"
+color = "#2496ED"
+
+name = "containers"
+color = "#2287C9"
+
+name = "kubernetes"
+color = "#326CE5"
+
+name = "cloud"
+color = "#4B82C3"
+
+name = "self-hosted"
+color = "#3F6F72"
+
+name = "homelab"
+color = "#4A7180"
+
+name = "server"
+color = "#52677D"
+
+name = "deployment"
+color = "#347A8B"
+
+name = "automation"
+color = "#0D9488"
+
+name = "orchestration"
+color = "#238A8D"
+
+name = "configuration-management"
+color = "#487C8E"
+
+name = "infrastructure-as-code"
+color = "#5C6AC4"
+
+name = "ci-cd"
+color = "#4C6FFF"
+
+name = "github-actions"
+color = "#4078C0"
+
+name = "build-system"
+color = "#68768A"
+
+name = "release-management"
+color = "#397B81"
+
+name = "package-management"
+color = "#64748B"
+
+name = "dependency-management"
+color = "#596B7D"
+
+name = "monitoring"
+color = "#2A9D8F"
+
+name = "observability"
+color = "#238C85"
+
+name = "logging"
+color = "#55757D"
+
+name = "metrics"
+color = "#367588"
+
+name = "diagnostics"
+color = "#3F7282"
+
+name = "health-check"
+color = "#2E8B78"
+
+name = "operations"
+color = "#486879"
+
+
+# ─────────────────────────────────────────────────────────────
+# NETWORKING
+# ─────────────────────────────────────────────────────────────
+
+name = "networking"
+color = "#0284C7"
+
+name = "network-tools"
+color = "#168AAD"
+
+name = "network-diagnostics"
+color = "#207EA0"
+
+name = "dns"
+color = "#3B82B4"
+
+name = "tcp"
+color = "#2274A5"
+
+name = "udp"
+color = "#3690B5"
+
+name = "proxy"
+color = "#527D9A"
+
+name = "reverse-proxy"
+color = "#3B6F8F"
+
+name = "vpn"
+color = "#475FB8"
+
+name = "tunnel"
+color = "#536DB3"
+
+name = "ssh"
+color = "#596579"
+
+name = "ftp"
+color = "#68829B"
+
+name = "irc"
+color = "#5865A8"
+
+name = "socket"
+color = "#3F7893"
+
+name = "port-management"
+color = "#477C91"
+
+name = "packet-analysis"
+color = "#34657F"
+
+name = "web-scraping"
+color = "#188F8B"
+
+name = "downloader"
+color = "#148C7D"
+
+name = "sync"
+color = "#26938D"
+
+name = "remote-access"
+color = "#4C6FA7"
+
+
+# ─────────────────────────────────────────────────────────────
+# ARCHIVING AND PRESERVATION
+# ─────────────────────────────────────────────────────────────
+
+name = "archive"
+color = "#9A6B42"
+
+name = "archiving"
+color = "#9C7048"
+
+name = "digital-preservation"
+color = "#8B6B4F"
+
+name = "web-archive"
+color = "#8D7658"
+
+name = "snapshot"
+color = "#96785A"
+
+name = "backup"
+color = "#617A6F"
+
+name = "restore"
+color = "#568071"
+
+name = "mirror"
+color = "#51788B"
+
+name = "repository-mirror"
+color = "#4B7583"
+
+name = "artifact-management"
+color = "#7B6A58"
+
+name = "artifact-storage"
+color = "#796B59"
+
+name = "evidence"
+color = "#96724E"
+
+name = "release-evidence"
+color = "#88674A"
+
+name = "reproducibility"
+color = "#6C7B65"
+
+name = "versioning"
+color = "#65758A"
+
+name = "history"
+color = "#826C58"
+
+name = "retention"
+color = "#73785B"
+
+name = "deduplication"
+color = "#657A72"
+
+name = "compression"
+color = "#76815C"
+
+name = "torrent"
+color = "#4D8874"
+
+
+# ─────────────────────────────────────────────────────────────
+# MEDIA AND CONTENT
+# ─────────────────────────────────────────────────────────────
+
+name = "media"
+color = "#8B5CF6"
+
+name = "image-processing"
+color = "#EC4899"
+
+name = "image-editor"
+color = "#E4529A"
+
+name = "graphics"
+color = "#D946EF"
+
+name = "svg"
+color = "#E89922"
+
+name = "audio"
+color = "#A855F7"
+
+name = "video"
+color = "#C026D3"
+
+name = "animation"
+color = "#D946B8"
+
+name = "screenshot"
+color = "#F06292"
+
+name = "screen-capture"
+color = "#E85998"
+
+name = "pdf"
+color = "#D94A4A"
+
+name = "document-viewer"
+color = "#A05FB4"
+
+name = "markdown-editor"
+color = "#7B68A8"
+
+name = "text-editor"
+color = "#6670A8"
+
+name = "code-editor"
+color = "#5365B8"
+
+name = "syntax-highlighting"
+color = "#9A5DCF"
+
+name = "diagramming"
+color = "#9B5DE5"
+
+name = "mermaid"
+color = "#A657C8"
+
+name = "visual-design"
+color = "#D64FA8"
+
+name = "branding"
+color = "#C44DA2"
+
+name = "asset-management"
+color = "#B45F9A"
+
+name = "content-management"
+color = "#9267B0"
+
+
+# ─────────────────────────────────────────────────────────────
+# AI AND MACHINE LEARNING
+# ─────────────────────────────────────────────────────────────
+
+name = "ai"
+color = "#8B5CF6"
+
+name = "machine-learning"
+color = "#7C3AED"
+
+name = "deep-learning"
+color = "#6D28D9"
+
+name = "language-model"
+color = "#9333EA"
+
+name = "llm"
+color = "#A855F7"
+
+name = "local-ai"
+color = "#7E57C2"
+
+name = "generative-ai"
+color = "#B24BF3"
+
+name = "natural-language-processing"
+color = "#8E44AD"
+
+name = "computer-vision"
+color = "#C044A7"
+
+name = "embedding"
+color = "#7950C5"
+
+name = "vector-search"
+color = "#7057C4"
+
+name = "rag"
+color = "#8656C4"
+
+name = "inference"
+color = "#6741D9"
+
+name = "model-training"
+color = "#6F3CC3"
+
+name = "fine-tuning"
+color = "#8247C6"
+
+name = "prompt-engineering"
+color = "#A44CC7"
+
+name = "ai-agent"
+color = "#9346B8"
+
+name = "agentic-workflow"
+color = "#8248A8"
+
+name = "automation-agent"
+color = "#7554B3"
+
+name = "model-evaluation"
+color = "#6650A4"
+
+
+# ─────────────────────────────────────────────────────────────
+# DEVELOPMENT WORKFLOW
+# ─────────────────────────────────────────────────────────────
+
+name = "git"
+color = "#E05A3F"
+
+name = "github"
+color = "#59636E"
+
+name = "version-control"
+color = "#D65F47"
+
+name = "source-control"
+color = "#C9634D"
+
+name = "code-generation"
+color = "#4F7CBF"
+
+name = "code-analysis"
+color = "#5670B5"
+
+name = "static-analysis"
+color = "#5B69A7"
+
+name = "linting"
+color = "#6D6FA8"
+
+name = "formatting"
+color = "#7775AA"
+
+name = "refactoring"
+color = "#6174B5"
+
+name = "debugging"
+color = "#C85656"
+
+name = "testing"
+color = "#2F9E6F"
+
+name = "unit-testing"
+color = "#3A9D73"
+
+name = "integration-testing"
+color = "#319B80"
+
+name = "end-to-end-testing"
+color = "#288F87"
+
+name = "benchmarking"
+color = "#D08035"
+
+name = "performance"
+color = "#E07B30"
+
+name = "profiling"
+color = "#D96C32"
+
+name = "optimization"
+color = "#CC7435"
+
+name = "documentation"
+color = "#4F72A8"
+
+name = "developer-experience"
+color = "#5277B8"
+
+name = "workflow"
+color = "#5E7695"
+
+name = "task-runner"
+color = "#4E8290"
+
+name = "command-builder"
+color = "#5C748D"
+
+name = "command-line"
+color = "#6B7280"
+
+
+# ─────────────────────────────────────────────────────────────
+# PACKAGE ECOSYSTEMS
+# ─────────────────────────────────────────────────────────────
+
+name = "cargo"
+color = "#C76A36"
+
+name = "crates-io"
+color = "#C96532"
+
+name = "npm"
+color = "#CB3837"
+
+name = "nodejs"
+color = "#43853D"
+
+name = "pypi"
+color = "#3775A9"
+
+name = "pip"
+color = "#4677A8"
+
+name = "nuget"
+color = "#2D72D9"
+
+name = "maven"
+color = "#B84644"
+
+name = "gradle"
+color = "#3F7C75"
+
+name = "winget"
+color = "#3978C6"
+
+name = "chocolatey"
+color = "#7A4D2C"
+
+name = "homebrew"
+color = "#D9A53A"
+
+name = "apt"
+color = "#A23B54"
+
+name = "dnf"
+color = "#3C6E9E"
+
+name = "pacman"
+color = "#1793D1"
+
+name = "package-registry"
+color = "#63758B"
+
+name = "dependency-resolution"
+color = "#66768B"
+
+name = "package-mirror"
+color = "#58788C"
+
+
+# ─────────────────────────────────────────────────────────────
+# USER INTERFACE AND EXPERIENCE
+# ─────────────────────────────────────────────────────────────
+
+name = "ui"
+color = "#3B82F6"
+
+name = "ux"
+color = "#6366F1"
+
+name = "design-system"
+color = "#725AC1"
+
+name = "component-library"
+color = "#6758B3"
+
+name = "theming"
+color = "#7660B0"
+
+name = "dark-mode"
+color = "#4B5563"
+
+name = "accessibility-ui"
+color = "#0D9488"
+
+name = "responsive-design"
+color = "#268AA5"
+
+name = "dashboard"
+color = "#3978B8"
+
+name = "data-grid"
+color = "#447AA5"
+
+name = "editor-ui"
+color = "#536CB8"
+
+name = "wizard"
+color = "#6C63C7"
+
+name = "drag-and-drop"
+color = "#6774BD"
+
+name = "keyboard-navigation"
+color = "#526A9B"
+
+name = "command-palette"
+color = "#5B64A8"
+
+name = "tabs"
+color = "#6075A4"
+
+name = "tree-view"
+color = "#557789"
+
+name = "split-view"
+color = "#5C7491"
+
+name = "status-panel"
+color = "#527082"
+
+name = "inspector"
+color = "#637089"
+
+
+# ─────────────────────────────────────────────────────────────
+# PROJECT STATUS
+# ─────────────────────────────────────────────────────────────
+
+name = "idea"
+color = "#94A3B8"
+
+name = "planned"
+color = "#73849A"
+
+name = "experimental"
+color = "#D97706"
+
+name = "early-development"
+color = "#F59E0B"
+
+name = "active-development"
+color = "#3B82F6"
+
+name = "alpha"
+color = "#F97316"
+
+name = "beta"
+color = "#D97706"
+
+name = "release-candidate"
+color = "#A16207"
+
+name = "stable"
+color = "#16A36A"
+
+name = "production"
+color = "#059669"
+
+name = "production-ready"
+color = "#07875F"
+
+name = "maintenance"
+color = "#64748B"
+
+name = "paused"
+color = "#8B7D6B"
+
+name = "archived"
+color = "#766B63"
+
+name = "deprecated"
+color = "#B45353"
+
+name = "legacy"
+color = "#8B5E5E"
+
+name = "abandoned"
+color = "#9B4A4A"
+
+name = "complete"
+color = "#218C62"
+
+name = "incomplete"
+color = "#C77A28"
+
+name = "internal"
+color = "#D6921E"
+
+name = "public"
+color = "#278A73"
+
+name = "private"
+color = "#A85574"
+
+name = "open-source"
+color = "#3A9D73"
+
+name = "closed-source"
+color = "#866174"
+
+
+# ─────────────────────────────────────────────────────────────
+# PURPOSE AND SCOPE
+# ─────────────────────────────────────────────────────────────
+
+name = "personal-project"
+color = "#6477A8"
+
+name = "hobby-project"
+color = "#8072B3"
+
+name = "research"
+color = "#7257A6"
+
+name = "educational"
+color = "#4F7FA8"
+
+name = "reference"
+color = "#68768C"
+
+name = "experimental-tool"
+color = "#CB7B32"
+
+name = "operations-tool"
+color = "#47717F"
+
+name = "administration"
+color = "#526D82"
+
+name = "management"
+color = "#5C7185"
+
+name = "governance"
+color = "#6D5F91"
+
+name = "compliance"
+color = "#7A6084"
+
+name = "standards"
+color = "#676F93"
+
+name = "specification"
+color = "#626D9B"
+
+name = "architecture"
+color = "#53698C"
+
+name = "system-design"
+color = "#4A678B"
+
+name = "planning"
+color = "#65758A"
+
+name = "project-management"
+color = "#5D7291"
+
+name = "knowledge-management"
+color = "#6A6F9B"
+
+name = "cataloging"
+color = "#637D8A"
+
+name = "organization"
+color = "#687989"

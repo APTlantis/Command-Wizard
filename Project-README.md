@@ -19,6 +19,10 @@ CLI import can copy a user-selected script into CommandWizard's managed local da
 
 ## Current state
 
+### Schema metadata maintenance — 2026-10-14
+
+The restored 401-schema working copy now has descriptive colored tags from the supplied app vocabulary, with existing tags, command fields, and category routing preserved. See [metadata maintenance](docs/Metadata-Tags-2026-10-14.md) for hashes, recovery, and proof limits. The earlier absence of `schemas/` was part of the operator’s temporary application-data maintenance workflow.
+
 ### Command catalog and Library — 2026-10-12
 
 The repository now contains a portable catalog of 401 reviewed command schemas, with a complete inventory of the 466 temporary references, preserved help/version evidence, and a separate optional-extension list. Command families use display labels, executable identity, and fixed prefixes independently. Catalog files are delivered under `schemas`; this pass does not install them into application data.

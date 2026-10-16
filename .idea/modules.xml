@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/CommandWizard.iml" filepath="$PROJECT_DIR$/.idea/CommandWizard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Command-Wizard.iml" filepath="$PROJECT_DIR$/.idea/Command-Wizard.iml" />
     </modules>
   </component>
 </project>
